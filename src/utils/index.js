@@ -1,4 +1,4 @@
-import { getColor } from "./getColor"
+import { getKnowledgeColor } from "./getColor"
 export default {
-    getColor: getColor,
+    getKnowledgeColor: getKnowledgeColor,
 }

@@ -5,7 +5,7 @@
 <script setup>
 import * as d3 from 'd3';
 import { onMounted, ref, watch } from "vue";
-import getColor from '../utils/index'; 
+import getKnowledgeColor from '../utils/index'; 
 
 
 
@@ -65,17 +65,21 @@ onMounted(()=>{
 function init() {
     const intervalX = 1;
     const intervalY = 3;
-    const cellWidth = 15 + intervalX;
-    const cellHeight = 15 + intervalY;
+    const cellWidth = 16 + intervalX;
+    const cellHeight = 16 + intervalY;
     const width = containerRef.value.clientWidth;
     const height = cellHeight * knowledge.length + 20;
-    
+    const kdot_left = 10
+    const log_left = kdot_left + cellWidth
+    const margin_top = 0.5
+    const r = (cellHeight-intervalY)/2
 
     const gray = "#F1F1F1"
 
-    // const gray = getColor("r8S3g")
+    // const gray = getKnowledgeColor.getKnowledgeColor("t5V9e")
+    console.log(gray)
     
-    console.log("width"+width+"height"+height)
+    // console.log("width"+width+"height"+height)
 
     //处理数据
     var n = 8, m = logData.length;
@@ -94,7 +98,7 @@ function init() {
                 table[i][j] = {"xx": i, "yy": j, "log": null}
     }
     table = table.flat()
-    console.log(table)
+    // console.log(table)
 
     //状态颜色映射
     function getColor(status) {
@@ -113,13 +117,25 @@ function init() {
           .attr("height", height)
           .attr("style", "max-width: 100%; height: auto; font: 12px sans-serif;");
 
-    
-    const log = svg.selectAll("g")
+    const kdot = svg.selectAll("g")
+        .data(knowledge)
+        .join("g")
+        .attr("class", "kl")
+        .attr("transform", function(d, i) {
+            return `translate(${kdot_left}, ${i * cellHeight + margin_top + r})`
+        })
+        .append("circle")
+            .attr("r", r)
+            .attr("fill", d => getKnowledgeColor.getKnowledgeColor(d))
+
+
+    const log = svg.selectAll(".log")
         .data(table)
         .join("g")
+        .attr("class", "log")
         .attr("transform", function(d) {
-            console.log("d"+d)
-                return `translate(${d.yy * cellWidth + 0.5}, ${d.xx * cellHeight + 0.5})`
+            // console.log("d"+d)
+                return `translate(${d.yy * cellWidth + log_left}, ${d.xx * cellHeight + margin_top})`
         })
         .append("rect")
             .attr("width", cellWidth - intervalX)
