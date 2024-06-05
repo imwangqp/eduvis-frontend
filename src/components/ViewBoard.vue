@@ -14,7 +14,9 @@ import LogView from './LogView.vue';
       2
     </div>
     <div class="row-span-1 col-span-1 chart-component">
-      <LogView></LogView>
+      <div style="text-align: left;">答题日志</div>
+      
+      <LogView class="chart-subcomponent"></LogView>
     </div>
     <div class="row-span-1 col-span-1 chart-component">
       4
