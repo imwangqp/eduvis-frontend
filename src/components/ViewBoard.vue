@@ -1,5 +1,6 @@
 <script setup>
-
+import Table from "./Table.vue";
+import KnowledgeTree from "./KnowledgeTree.vue";
 </script>
 
 <template>
@@ -8,10 +9,10 @@
       Learn Scope
     </div>
     <div class="row-span-1 col-span-1 chart-component">
-      1
+      <Table />
     </div>
     <div class="row-span-3 chart-component">
-      2
+      <KnowledgeTree />
     </div>
     <div class="row-span-1 col-span-1 chart-component">
       3
