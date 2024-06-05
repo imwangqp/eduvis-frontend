@@ -1,5 +1,5 @@
 <script setup>
-
+import LogView from './LogView.vue';
 </script>
 
 <template>
@@ -14,7 +14,9 @@
       2
     </div>
     <div class="row-span-1 col-span-1 chart-component">
-      3
+      <div style="text-align: left;">答题日志</div>
+      
+      <LogView class="chart-subcomponent"></LogView>
     </div>
     <div class="row-span-1 col-span-1 chart-component">
       4

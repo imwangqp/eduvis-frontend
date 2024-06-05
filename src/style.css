@@ -36,6 +36,10 @@ body {
     @apply bg-white rounded-lg shadow-lg border-slate-100 border-2 p-2 m-1;
   }
 
+  .chart-subcomponent{
+    @apply bg-white rounded-lg border-slate-100 border-2 p-2 m-1;
+  }
+
   .chart-container{
     @apply w-full h-full;
   }
