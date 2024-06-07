@@ -1,5 +1,6 @@
 <script setup>
 import LogView from './LogView.vue';
+import KLRelationView from './KLRelationView.vue';
 </script>
 
 <template>
@@ -20,6 +21,7 @@ import LogView from './LogView.vue';
     </div>
     <div class="row-span-1 col-span-1 chart-component">
       4
+      <KLRelationView></KLRelationView>
     </div>
   </div>
 </template>
