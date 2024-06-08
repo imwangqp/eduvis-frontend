@@ -1,5 +1,6 @@
 <script setup>
 import LogView from './LogView.vue';
+import StudyMode from "@/components/StudyMode.vue";
 </script>
 
 <template>
@@ -18,8 +19,11 @@ import LogView from './LogView.vue';
       
       <LogView class="chart-subcomponent"></LogView>
     </div>
-    <div class="row-span-1 col-span-1 chart-component">
-      4
+    <div class="row-span-1 col-span-1 chart-component flex">
+      <div class="flex-1"></div>
+      <div class="flex-1">
+        <StudyMode />
+      </div>
     </div>
   </div>
 </template>
