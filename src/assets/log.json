@@ -1,0 +1,456 @@
+{
+    "code": 1,
+    "data": [
+        {
+            "knowledge": "b3C9s",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "b3C9s",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "b3C9s",
+            "score": 4,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "b3C9s",
+            "score": 4,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "b3C9s",
+            "score": 4,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "b3C9s",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "b3C9s",
+            "score": 3,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "b3C9s",
+            "score": 3,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "g7R2j",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "g7R2j",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "g7R2j",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "g7R2j",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "g7R2j",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "s8Y2f",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "s8Y2f",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "k4W1c",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "y9W5d",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Partially_Correct"
+        },
+        {
+            "knowledge": "m3D1v",
+            "score": 3,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Partially_Correct"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Partially_Correct"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Partially_Correct"
+        },
+        {
+            "knowledge": "t5V9e",
+            "score": 2,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Error"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Absolutely_Correct"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error1"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        },
+        {
+            "knowledge": "r8S3g",
+            "score": 1,
+            "status": "Error2"
+        }
+    ],
+    "msg": "数据返回成功"
+}

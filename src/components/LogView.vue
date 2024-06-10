@@ -1,86 +1,191 @@
 <template>
-    <div class="container">
-        <div id="logview" ref="containerRef"> </div>
-  </div>
+    <div id="logview" class="container" ref="containerRef"> 
+        <div> 
+            <svg id="knowledge" ></svg>
+        </div>
 
+        <div id="logContainer" class="overflow-x-auto">
+            <svg id="log" style="min-width:100%;"></svg>
+        </div>
+
+        <div>
+            <svg id="line" style="width: 100%;" ref="lineRef"></svg>
+        </div>
+        
+    </div>
 </template>
 
 <script setup>
 import * as d3 from 'd3';
 import { onMounted, ref, watch } from "vue";
 import getKnowledgeColor from '../utils/index'; 
+import data from '../assets/log.json'
 
 const lineData = [
       [10, 20, 30, 40, 50],
       [30, 40, 10, 20, 50],
-      [20, 10, 30, 50, 40]
+      [20, 10, 30, 50, 40],
+      [15, 20, 27, 32, 35],
+      [10, 20, 30, 40, 45],
+      [0, 5, 15, 20, 40],
+      [0, 10, 25, 30, 45],
+      [0, 15, 20, 35, 50]
 ];
 
-const logData = [
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "r8S3g"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "t5V9e"},
-    {"status": "Error1", "score": 0, "knowledge": "m3D1v"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "s8Y2f"},
-    {"status": "Error2", "score": 0, "knowledge": "m3D1v"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "k4W1c"},
-    {"status": "Error1", "score": 0, "knowledge": "g7R2j"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "r8S3g"},
-    {"status": "Error3", "score": 0, "knowledge": "b3C9s"},
-    {"status": "Error1", "score": 0, "knowledge": "y9W5d"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "t5V9e"},
-    {"status": "Error1", "score": 0, "knowledge": "m3D1v"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "s8Y2f"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "k4W1c"},
-    {"status": "Error1", "score": 0, "knowledge": "g7R2j"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "r8S3g"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "k4W1c"},
-    {"status": "Error1", "score": 0, "knowledge": "g7R2j"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "r8S3g"},
-    {"status": "Error3", "score": 0, "knowledge": "b3C9s"},
-    {"status": "Error1", "score": 0, "knowledge": "y9W5d"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "t5V9e"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "t5V9e"},
-    {"status": "Error1", "score": 0, "knowledge": "m3D1v"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "s8Y2f"},
-    {"status": "Error1", "score": 0, "knowledge": "g7R2j"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "r8S3g"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "k4W1c"},
-    {"status": "Error1", "score": 0, "knowledge": "g7R2j"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "r8S3g"},
-    {"status": "Error3", "score": 0, "knowledge": "b3C9s"},
-    {"status": "Error1", "score": 0, "knowledge": "y9W5d"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "t5V9e"},
-    {"status": "Error1", "score": 0, "knowledge": "m3D1v"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "s8Y2f"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "k4W1c"},
-    {"status": "Error1", "score": 0, "knowledge": "g7R2j"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "r8S3g"},
-    {"status": "Absolutely_Correct", "score": 5, "knowledge": "k4W1c"},
-    {"status": "Error1", "score": 0, "knowledge": "g7R2j"},
-    {"status": "Partially_Correct", "score": 3, "knowledge": "r8S3g"},
-    {"status": "Error3", "score": 0, "knowledge": "b3C9s"},
-]
+var selectedKnowledge = -1;
+
+
 const knowledge = ["r8S3g", "t5V9e", "m3D1v", "s8Y2f", "k4W1c", "g7R2j", "b3C9s", "y9W5d"]
 
 const containerRef = ref()
-
+const lineRef = ref()
 const intervalX = 1;
 const intervalY = 3;
 const cellWidth = 16 + intervalX;
 const cellHeight = 16 + intervalY;
 
+const highlightColor = "yellow"
+const highlightWidth = 2
+
+const lineWidth = 1;
+const newLineWidth = 3;
+
 onMounted(()=>{
+    initKnowledge()
     initLog()
     initLineChart()
 })
+//状态颜色映射
+function getColor(status) {
+    if(status == "Absolutely_Correct")
+        return "#99BC85";
+    if(status == "Partially_Correct")
+        return "#F9F7C9";
+    return "#F19292"; 
+}
 
+function addHighlight(index) {
+    const dots = d3.selectAll(".kl")
+
+    const rects = d3.selectAll(".log")
+
+    const dotSvg = d3.select("#knowledge")
+    const svg = d3.select("#log")
+    //滤镜
+    const filter = dotSvg.append("defs")
+    .append("filter")
+    .attr("id", "blur")
+    .attr("x", "-50%")
+    .attr("y", "-50%")
+    .attr("width", "200%")
+    .attr("height", "200%");
+
+    filter.append("feGaussianBlur")
+    .attr("in", "SourceGraphic")
+    .attr("stdDeviation", 3);
+
+    // dots.filter((d, i) => i !== index)
+    // .attr("filter", "url(#blur)");
+    
+
+    rects.filter((d, i) => d.xx !== index)
+    .attr("filter", "url(#blur)")
+    .attr("opacity", 0.5);
+    
+
+    //突出显示
+    svg.append("defs")
+    .append("filter")
+    .attr("id", "dropShadow")
+    .attr("height", "130%")
+    .attr("width", "130%")
+    .append("feGaussianBlur")
+    .attr("in", "SourceAlpha")
+    .attr("stdDeviation", 3)
+    .attr("result", "blur");
+
+    // rects.filter((d, i) => d.xx === index)
+    // .style("transform", "translateZ(20px)")
+    // .style("transform-style", "preserve-3d");
+
+    //折线图
+    const lines = d3.selectAll(".brokenLine");
+    lines.filter((d, i) => i === index)
+    .attr("stroke-width", newLineWidth)
+
+    lines.filter((d, i) => d.xx !== index)
+    .attr("opacity", 0.5);
+}
+
+function removeHighlight(index) {
+    const dots = d3.selectAll(".kl")
+
+    const rects = d3.selectAll(".log")
+
+    const dotSvg = d3.select("#knowledge")
+    const svg = d3.select("#log")
+
+    dots.attr("filter", null)
+    rects.attr("filter", null)
+
+    //折线图
+    const lines = d3.selectAll(".brokenLine");
+    lines.filter((d, i) => i === index)
+    .attr("stroke-width", lineWidth)
+
+    lines.filter((d, i) => d.xx !== index)
+    .attr("opacity", 1);
+}
+
+function initKnowledge() {
+    const r = (cellHeight-intervalY)/2
+    const radius = 2
+    const margin = { top: 0, right: 10, bottom: 20, left: 10 }
+    const dotSvg = d3.select("#knowledge")
+
+    const kdot = dotSvg.selectAll("g")
+        .data(knowledge)
+        .join("g")
+        .attr("class", "kl")
+        .attr("transform", function(d, i) {
+            return `translate(${margin.left}, ${i * cellHeight + margin.top + r})`
+        })
+        .append("circle")
+            .attr("r", r)
+            .attr("fill", d => getKnowledgeColor.getKnowledgeColor(d))
+        .on("click", handleClick)
+    
+   
+
+    function handleClick(event, d) {
+
+        const xy = d3.pointer(event, dotSvg.node());
+        const yv = xy[1]
+        const index = Math.floor((yv-margin.top)/ cellHeight);
+
+        console.log(index)
+
+        if(selectedKnowledge == index) {
+            removeHighlight(index);    //参数
+            selectedKnowledge = -1;
+            return;
+        }
+
+        if(selectedKnowledge != -1) {
+            removeHighlight(selectedKnowledge)
+        }
+        addHighlight(index)
+        selectedKnowledge = index;
+    }
+}
 function initLineChart() {
-    const start_x = cellWidth * logData.length + 50
-    const width = cellHeight * knowledge.length + 40;
+    // const start_x = cellWidth * logData.length + 50
+    const width = lineRef.value.clientWidth;
+    // const width = cellHeight * knowledge.length + 40;
     const height = cellHeight * knowledge.length ;
     const axis_color = "#b2bbbe"
 
-    const margin = { top: 10, right: 70, bottom: 20, left: 5 }
+    const margin = { top: 10, right: 10, bottom: 20, left: 30 }
     // const lineSvg = d3
     //       .select("#logview")
     //       .append("svg")
@@ -90,8 +195,8 @@ function initLineChart() {
     //       .attr("style", "max-width: 100%; height: auto; font: 12px sans-serif;")
     //       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
-    const svg = d3.select("svg")
-    const lineG = svg.append("g").attr("class", "line").attr("transform", `translate(${start_x + margin.left}, ${margin.top})`)
+    const svg = d3.select("#line")
+    const lineG = svg.append("g").attr("class", "line").attr("transform", `translate(${ margin.left}, ${margin.top})`)
 
     var x = d3.scaleLinear().range([0, width-margin.left-margin.right]).nice();
     var y = d3.scaleLinear().range([height-margin.top-margin.bottom, 0]).nice();
@@ -110,6 +215,7 @@ function initLineChart() {
       .attr("class", "y axis")
       .call(yAxis);
 
+    //坐标轴样式
     function changeAxisStyle() {
         // 设置 x 轴线的颜色和宽度
         d3.select(".x.axis path")
@@ -147,16 +253,18 @@ function initLineChart() {
     // 数据绑定
     var line = d3.line()
       .x((d, i) => x(i))
-      .y(d => y(d));
+      .y(d => y(d))
+      .curve(d3.curveCardinal);
 
     // 添加多条线
-    var paths = lineG.selectAll(".line")
+    var paths = lineG.selectAll(".brokenLine")
       .data(lineData)
       .enter()
       .append("path")
-      .attr("class", "line")
+      .attr("class", "brokenLine")
       .attr("fill", "none")
-      .attr("stroke", (d, i) => d3.schemeCategory10[i]) // 使用不同颜色
+      .attr("stroke", (d, i) => getKnowledgeColor.getKnowledgeColor(knowledge[i])) // 使用不同颜色
+      .attr("stroke-width", lineWidth)
       .attr("d", line);
 
      // 更新函数
@@ -189,22 +297,17 @@ function initLineChart() {
 }
 
 function initLog() {
-    
+    const logData = data.data
     // const width = containerRef.value.clientWidth;
-    const width = cellWidth * logData.length + 30;
+    const width = cellWidth * logData.length + 10;
     const height = cellHeight * knowledge.length + 5;
-    const kdot_left = 10
-    const log_left = kdot_left + cellWidth
-    const margin_top = 0.5
-    const r = (cellHeight-intervalY)/2
+
+    const margin = {left: 0, right: 5, top: 0.5, bottom: 0.5}
+
     const radius = 2
 
     const gray = "#F1F1F1"
 
-    // const gray = getKnowledgeColor.getKnowledgeColor("t5V9e")
-    console.log(gray)
-    
-    // console.log("width"+width+"height"+height)
 
     //处理数据
     var n = 8, m = logData.length;
@@ -225,34 +328,17 @@ function initLog() {
     table = table.flat()
     // console.log(table)
 
-    //状态颜色映射
-    function getColor(status) {
-        if(status == "Absolutely_Correct")
-            return "#99BC85";
-        if(status == "Partially_Correct")
-            return "#F9F7C9";
-        return "#F19292"; 
-    }
+    // const svg = d3
+    //       .select("#logview")
+    //       .append("svg")
+    //       .attr("viewBox", [0, 0, width+height, height])
+    //       .attr("width", width+height)
+    //       .attr("height", height)
+    //       .attr("style", "max-width: 100%; height: auto; font: 12px sans-serif;");
 
-    const svg = d3
-          .select("#logview")
-          .append("svg")
-          .attr("viewBox", [0, 0, width+height, height])
-          .attr("width", width+height)
-          .attr("height", height)
-          .attr("style", "max-width: 100%; height: auto; font: 12px sans-serif;");
+    const svg = d3.select("#log")
 
-    const kdot = svg.selectAll("g")
-        .data(knowledge)
-        .join("g")
-        .attr("class", "kl")
-        .attr("transform", function(d, i) {
-            return `translate(${kdot_left}, ${i * cellHeight + margin_top + r})`
-        })
-        .append("circle")
-            .attr("r", r)
-            .attr("fill", d => getKnowledgeColor.getKnowledgeColor(d))
-
+    svg.attr("width", width)
 
     const log = svg.selectAll(".log")
         .data(table)
@@ -260,7 +346,7 @@ function initLog() {
         .attr("class", "log")
         .attr("transform", function(d) {
             // console.log("d"+d)
-                return `translate(${d.yy * cellWidth + log_left}, ${d.xx * cellHeight + margin_top})`
+                return `translate(${d.yy * cellWidth + margin.left}, ${d.xx * cellHeight + margin.top})`
         })
         .append("rect")
             .attr("rx", radius) // 设置x方向的圆角半径
@@ -273,10 +359,23 @@ function initLog() {
 </script>
 
 <style scoped>
-.axis path,   /* 坐标轴路径设置 */
-.axis line {    /* 设置 坐标轴的线条 */
-  fill: none;   /* 设置坐标轴宽度 */
-  stroke: #929292;  /* 坐标轴颜色 */
-  shape-rendering: crispEdges;  /* 将形状渲染为清晰的边缘 */
+.container {
+  height: auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2rem 3fr 1fr; /* 两列平均分配空间 */
 }
+
+::-webkit-scrollbar	{ 
+    scrollbar-width: thin; 
+    scrollbar-color: red green;
+}
+svg{
+    box-sizing: border-box;
+}
+/* .logContainer {
+    height: fit-content;
+    width: 100%;
+    overflow: auto;
+} */
 </style>
