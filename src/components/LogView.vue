@@ -24,7 +24,12 @@ import data from '../assets/log.json'
 const lineData = [
       [10, 20, 30, 40, 50],
       [30, 40, 10, 20, 50],
-      [20, 10, 30, 50, 40]
+      [20, 10, 30, 50, 40],
+      [15, 20, 27, 32, 35],
+      [10, 20, 30, 40, 45],
+      [0, 5, 15, 20, 40],
+      [0, 10, 25, 30, 45],
+      [0, 15, 20, 35, 50]
 ];
 
 var selectedKnowledge = -1;
@@ -42,6 +47,9 @@ const cellHeight = 16 + intervalY;
 const highlightColor = "yellow"
 const highlightWidth = 2
 
+const lineWidth = 1;
+const newLineWidth = 3;
+
 onMounted(()=>{
     initKnowledge()
     initLog()
@@ -57,14 +65,76 @@ function getColor(status) {
 }
 
 function addHighlight(index) {
-    const dots = d3.select(".kl")
-    dots.attr("stroke", highlightColor)
-        .attr("stroke-width", highlightWidth)
+    const dots = d3.selectAll(".kl")
+
+    const rects = d3.selectAll(".log")
+
+    const dotSvg = d3.select("#knowledge")
+    const svg = d3.select("#log")
+    //滤镜
+    const filter = dotSvg.append("defs")
+    .append("filter")
+    .attr("id", "blur")
+    .attr("x", "-50%")
+    .attr("y", "-50%")
+    .attr("width", "200%")
+    .attr("height", "200%");
+
+    filter.append("feGaussianBlur")
+    .attr("in", "SourceGraphic")
+    .attr("stdDeviation", 3);
+
+    // dots.filter((d, i) => i !== index)
+    // .attr("filter", "url(#blur)");
     
+
+    rects.filter((d, i) => d.xx !== index)
+    .attr("filter", "url(#blur)")
+    .attr("opacity", 0.5);
+    
+
+    //突出显示
+    svg.append("defs")
+    .append("filter")
+    .attr("id", "dropShadow")
+    .attr("height", "130%")
+    .attr("width", "130%")
+    .append("feGaussianBlur")
+    .attr("in", "SourceAlpha")
+    .attr("stdDeviation", 3)
+    .attr("result", "blur");
+
+    // rects.filter((d, i) => d.xx === index)
+    // .style("transform", "translateZ(20px)")
+    // .style("transform-style", "preserve-3d");
+
+    //折线图
+    const lines = d3.selectAll(".brokenLine");
+    lines.filter((d, i) => i === index)
+    .attr("stroke-width", newLineWidth)
+
+    lines.filter((d, i) => d.xx !== index)
+    .attr("opacity", 0.5);
 }
 
 function removeHighlight(index) {
+    const dots = d3.selectAll(".kl")
 
+    const rects = d3.selectAll(".log")
+
+    const dotSvg = d3.select("#knowledge")
+    const svg = d3.select("#log")
+
+    dots.attr("filter", null)
+    rects.attr("filter", null)
+
+    //折线图
+    const lines = d3.selectAll(".brokenLine");
+    lines.filter((d, i) => i === index)
+    .attr("stroke-width", lineWidth)
+
+    lines.filter((d, i) => d.xx !== index)
+    .attr("opacity", 1);
 }
 
 function initKnowledge() {
@@ -183,16 +253,18 @@ function initLineChart() {
     // 数据绑定
     var line = d3.line()
       .x((d, i) => x(i))
-      .y(d => y(d));
+      .y(d => y(d))
+      .curve(d3.curveCardinal);
 
     // 添加多条线
-    var paths = lineG.selectAll(".line")
+    var paths = lineG.selectAll(".brokenLine")
       .data(lineData)
       .enter()
       .append("path")
-      .attr("class", "line")
+      .attr("class", "brokenLine")
       .attr("fill", "none")
-      .attr("stroke", (d, i) => d3.schemeCategory10[i]) // 使用不同颜色
+      .attr("stroke", (d, i) => getKnowledgeColor.getKnowledgeColor(knowledge[i])) // 使用不同颜色
+      .attr("stroke-width", lineWidth)
       .attr("d", line);
 
      // 更新函数
