@@ -2,6 +2,7 @@
 import * as d3 from 'd3'
 import { ref, onMounted, watch, nextTick} from 'vue'
 import {getKnowledgeColor} from '../utils/getColor.js'
+import titleInfo from './titleInfo.vue'
 
 const start = 30
 const nodes = [
@@ -140,10 +141,41 @@ const links = [
 
 ]
 
+const tableData = [
+    {
+        ID:'8b6d1125760bd3939b6e',
+        score:'3',
+        knowledge:[//题目对应的知识点的掌握程度
+            {
+                name:'r8S3g_l0p5viby',
+                value:0.5
+            }
+        ],
+    },
+    {
+        ID:'xxxx',
+        score:'2',
+        knowledge:[//题目对应的知识点的掌握程度
+            {
+                name:'r8S3g_l0p5viby',
+                value:0.9
+            },
+            {
+                name:'k4W1c_25455852',
+                value:0.4
+            }
+        ],
+    },
+
+]
 const graphRef = ref(null)
 const graphDiv = ref(null)
 
-
+const getTitleStudentInfo = (titleId) => {
+    //console.log(titleId)
+    //根据题目ID从后端获取tableData
+    
+}
 const drawGraph = () => {
     const margin = {top: 5, right: 5, bottom: 5, left: 10}
     let width = graphDiv.value.clientWidth - margin.left - margin.right
@@ -270,6 +302,10 @@ const drawGraph = () => {
         .attr('fill', 'white')
         .attr('stroke', 'rgb(150,150,150)')
         .attr('stroke-width', 2)
+        .on('click', d => {
+            //console.log(d.srcElement.__data__.id)
+            getTitleStudentInfo(d.srcElement.__data__.id)
+        })
 
     node.append('title')
         .text(d => d.id)
@@ -448,9 +484,23 @@ onMounted(() => {
 </script>
 
 <template>
-    <div style="width: 100%; height: 80%;overflow:scroll" ref="graphDiv">
-        <svg ref="graphRef"></svg>
+    <div style="width:100%;height:100%">
+        <div style="width: 100%; height: 80%;overflow:scroll" ref="graphDiv">
+            <svg ref="graphRef"></svg>
+        </div>
+        <div style="height:20%">
+            <el-table :data="tableData" :default-sort="{prop:'score',order:'descending'}" max-height="180">
+                <el-table-column prop="ID" label="ID"></el-table-column>
+                <el-table-column prop="score" label="score" sortable></el-table-column>
+                <el-table-column prop="knowledge" label="knowledge">
+                    <template #default="scope">
+                        <titleInfo :tableData="scope.row.knowledge"></titleInfo>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
     </div>
+
 </template>
 
 <style>
