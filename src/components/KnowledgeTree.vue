@@ -218,7 +218,7 @@ const drawGraph = () => {
         .attr('y', d => d.y - 5)
         .attr('width', 15)
         .attr('height', 15)
-        .attr('fill','#d0d0d0')
+        // .attr('fill','#d0d0d0')
         .on('click', d => {
             console.log(d)
         })
@@ -266,6 +266,10 @@ const drawGraph = () => {
             }
         })
     
+    svg.selectAll('rect')
+        .attr('fill', 'white')
+        .attr('stroke', 'rgb(150,150,150)')
+        .attr('stroke-width', 2)
 
     node.append('title')
         .text(d => d.id)
@@ -283,7 +287,7 @@ const drawGraph = () => {
     // 每一个题目右侧绘制柱状图（每个题目共有三个柱形，分别对应0分、部分正确、满分）
     const barData = [
         {id:'Question_VgKw8PjY1FR6cm2QI9XW',value:[15,25,35],knowledge:['r8S3g_l0p5viby']},
-        {id:'Question_q7OpB2zCMmW9wS8uNt3H',value:[[12,22,32],[14,24,34]],knowledge:['r8S3g_l0p5viby','r8S3g_n0m9rsw4']},
+        {id:'Question_q7OpB2zCMmW9wS8uNt3H',value:[[12,22,100],[14,80,34]],knowledge:['r8S3g_l0p5viby','r8S3g_n0m9rsw4']},
         {id:'Question_fZrP3FJ4ebUogW9V7taS',value:[18,28,38],knowledge:['r8S3g_n0m9rsw4']},
         {id:'Question_BW0ItEaymH3TkD6S15JF',value:[16,26,36],knowledge:['r8S3g_n0m9rsw4']},
         {id:'Question_rvB9mVE6Kbd8jAY4NwPx',value:[20,30,40],knowledge:['r8S3g_n0m9rsw4']},
@@ -382,8 +386,8 @@ const drawGraph = () => {
                 .datum(points)
                 .attr('d',line)
                 .attr('fill','none')
-                .attr('stroke','black')
-                .attr('stroke-width',1) 
+                .attr('stroke','#d0d0d0')
+                .attr('stroke-width',1.5) 
         }
         //题目对应两个知识点
         else{
@@ -413,8 +417,8 @@ const drawGraph = () => {
                     .datum(j === 0 ? firstpoints : secondpoints)
                     .attr('d',line)
                     .attr('fill','none')
-                    .attr('stroke','black')
-                    .attr('stroke-width',1)
+                    .attr('stroke','#d0d0d0')
+                    .attr('stroke-width',1.5) 
         })
         }
     })
@@ -452,7 +456,7 @@ onMounted(() => {
 <style>
 .link{
     stroke:#dadbdd;
-    stroke-width: 2px;
+    stroke-width: 1.5px;
     fill: none;
 }
 

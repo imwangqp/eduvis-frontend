@@ -1,6 +1,7 @@
 <script setup>
 import * as d3 from 'd3'
 import { ref, onMounted, watch} from 'vue'
+import { getKnowledgeColor } from '../utils/getColor';
 
 const props = defineProps({
     knowledgeData: {
@@ -13,7 +14,7 @@ const glyphRef = ref(null);
 
 const drawGlyph = () => {
     const knowledgeData = props.knowledgeData;
-
+    console.log(knowledgeData);
     const svg = d3.select(glyphRef.value)
         .attr('width',200)
         .attr('height',100);
@@ -30,10 +31,6 @@ const drawGlyph = () => {
     const g = svg.append('g')
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    const colorScale = d3.scaleOrdinal()
-        .domain(knowledgeData.map(d => d.name))
-        .range(d3.schemeCategory10);
-
     knowledgeData.forEach((d,i)=>{
         const x = i * (radius * 2 + 10) + radius;
         const y = height / 2;
@@ -43,7 +40,7 @@ const drawGlyph = () => {
         
         glyph.append('circle')
             .attr('r', innerRadius)
-            .attr('fill', colorScale(d.name))
+            .attr('fill', getKnowledgeColor(d.name))
             .on('mouseover', function(event, dd) {
                 //console.log(d);
                 // 添加悬浮提示框

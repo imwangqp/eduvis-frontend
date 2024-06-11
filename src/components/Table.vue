@@ -108,32 +108,31 @@ const studentInfo = [
                 value: 125
             }
         ],
-        Knowledge:[//偏好题型（知识点=3）
+        Knowledge:[//偏好题型（知识点>=3）
             {
-                name:'知识点1',
-                value:0.85
-            },
-            {
-                name:'知识点2',
-                value:0.75
-            },
-            {
-                name:'知识点3',
-                value:0.89
-            }
-        ],
-        // 不擅长题型
-        badknowledge:[
-            {
-                name:'知识点4',
+                name:'r8S3g',
                 value:0.3
             },
             {
-                name:'知识点5',
+                name:'t5V9e',
                 value:0.4
             },
             {
-                name:'知识点6',
+                name:'m3D1v',
+                value:0.3
+            },
+        ],
+        badknowledge:[
+            {
+                name:'s8Y2f',
+                value:0.3
+            },
+            {
+                name:'k4W1c',
+                value:0.4
+            },
+            {
+                name:'g7R2j',
                 value:0.3
             }
         ],
@@ -243,32 +242,32 @@ const studentInfo = [
         ],
         Knowledge:[//偏好题型（知识点>=3）
             {
-                name:'知识点1',
+                name:'r8S3g',
                 value:0.3
             },
             {
-                name:'知识点2',
+                name:'t5V9e',
                 value:0.4
             },
             {
-                name:'知识点3',
+                name:'m3D1v',
                 value:0.3
             },
         ],
         badknowledge:[
             {
-                name:'知识点4',
+                name:'s8Y2f',
                 value:0.3
             },
             {
-                name:'知识点5',
+                name:'k4W1c',
                 value:0.4
             },
             {
-                name:'知识点6',
+                name:'g7R2j',
                 value:0.3
             }
-        ]
+        ],
     },
     {
         ID: '8b6d1125760bd3939b6e',
@@ -375,29 +374,29 @@ const studentInfo = [
         ],
         Knowledge:[//偏好题型（知识点>=3）
             {
-                name:'知识点1',
+                name:'r8S3g',
                 value:0.3
             },
             {
-                name:'知识点2',
+                name:'t5V9e',
                 value:0.4
             },
             {
-                name:'知识点3',
+                name:'m3D1v',
                 value:0.3
             },
         ],
         badknowledge:[
             {
-                name:'知识点4',
+                name:'s8Y2f',
                 value:0.3
             },
             {
-                name:'知识点5',
+                name:'k4W1c',
                 value:0.4
             },
             {
-                name:'知识点6',
+                name:'g7R2j',
                 value:0.3
             }
         ],
