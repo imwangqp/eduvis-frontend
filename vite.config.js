@@ -29,7 +29,16 @@ export default defineConfig({
   tailwindcss: {
     config: resolve(__dirname, 'tailwind.config.js')
   },
-  // tailwindcss: {
-  //   config: './tailwind.config.js'
-  // }
+    server: {
+        //用来配置跨域
+        host: '127.0.0.1',
+        port: 8000,
+        proxy: {
+            '/api': {
+                target: 'http://127.0.0.1:5000',//目标服务器地址
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, '')
+            },
+        }
+    }
 })
