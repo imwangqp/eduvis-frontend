@@ -64,7 +64,7 @@ function initTooltip(id, masterData, reviewData) {
       .attr('width', size.tooltipViewWidth)
       .attr('height', size.tooltipViewHeight)
 
-
+  
 }
 
 function initChart(data) {

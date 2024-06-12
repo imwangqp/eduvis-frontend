@@ -1,6 +1,6 @@
 <template>
     <div class="outerContainer" style="max-height: 100%;">
-        <div class="card subcomponent" v-for="(item, index) in cards" :key="index" :style="getCardStyle(index)">
+        <div class="card" v-for="(item, index) in cards" :key="index" :style="getCardStyle(index)">
             <div class="header">
                 <div class="title">学号: {{ item }}</div>
                 <div>
@@ -310,9 +310,9 @@ function initLineChart(index) {
       .call(xAxis);
 
     // 添加y轴
-    lineG.append("g")
-      .attr("class", "y axis")
-      .call(yAxis);
+    // lineG.append("g")
+    //   .attr("class", "y axis")
+    //   .call(yAxis);
 
     //坐标轴样式
     function changeAxisStyle() {
