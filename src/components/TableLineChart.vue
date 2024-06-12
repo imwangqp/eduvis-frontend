@@ -16,12 +16,12 @@ const drawLineChart = () => {
 
     const svg = d3.select(chartRef.value)
         .attr('width',200)
-        .attr('height',100);
+        .attr('height',50);
 
 
     svg.selectAll("*").remove(); // Clear previous chart
 
-    const margin = {top: 10, right: 10, bottom: 20, left: 30};
+    const margin = {top: 10, right: 10, bottom: 20, left: 0};
     const width = +svg.attr('width') - margin.left - margin.right;
     const height = +svg.attr('height') - margin.top - margin.bottom;
     
@@ -44,27 +44,14 @@ const drawLineChart = () => {
       //.attr('transform', `translate(0,0)`)
       .attr('class', 'axis axis--x')
       .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x).ticks(12));
-
-    g.append('g')
-      .attr('class', 'axis axis--y')
-      //.attr('transform', `translate(10,-30)`)
-      .call(d3.axisLeft(y).ticks(3))
-      .append('text')
-      .attr('x',2)
-      .attr('y',y(y.ticks(8).pop()))
-      .attr('dy','0.32em')
-      .attr('fill','#000')
-      .attr('text-anchor','start')
-      .text('value');
+      .call(d3.axisBottom(x).ticks(6).tickFormat(d3.format('d')));
 
 
     g.append('path')
       .datum(data)
-      .attr('class', 'line')
       .attr('d', line)
       .style('fill', 'none')
-      .style('stroke', 'steelblue')
+      .style('stroke', '#D29690')
       .style('stroke-width', '1.5px');
 
 }
@@ -83,9 +70,4 @@ watch(() => props.data, () => {
 </template>
 
 <style scopoed>
-.line {
-    fill: none;
-    stroke: steelblue;
-    stroke-width: 1.5px;
-  }
 </style>

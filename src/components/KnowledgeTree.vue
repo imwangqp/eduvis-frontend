@@ -158,11 +158,31 @@ const tableData = [
         knowledge:[//题目对应的知识点的掌握程度
             {
                 name:'r8S3g_l0p5viby',
-                value:0.9
+                value:1
             },
             {
                 name:'k4W1c_25455852',
                 value:0.4
+            }
+        ],
+    },
+    {
+        ID:'8b6d1125760bd3939b6e',
+        score:'3',
+        knowledge:[//题目对应的知识点的掌握程度
+            {
+                name:'r8S3g_l0p5viby',
+                value:0.5
+            }
+        ],
+    },
+    {
+        ID:'8b6d1125760bd3939b6e',
+        score:'3',
+        knowledge:[//题目对应的知识点的掌握程度
+            {
+                name:'r8S3g_l0p5viby',
+                value:0.5
             }
         ],
     },
@@ -299,8 +319,8 @@ const drawGraph = () => {
         })
     
     svg.selectAll('rect')
-        .attr('fill', 'white')
-        .attr('stroke', 'rgb(150,150,150)')
+        .attr('fill', 'rgb(220,220,220)')
+        .attr('stroke', 'rgb(220,220,220)')
         .attr('stroke-width', 2)
         .on('click', d => {
             //console.log(d.srcElement.__data__.id)
@@ -314,11 +334,29 @@ const drawGraph = () => {
         .attr('transform',`translate(${width * 0.5 + margin.left},${margin.top})`)
 
     const  drawRight = () => {
-    //添加底部的坐标轴    
     rightSide.append('g')
-        .attr('class', 'axis axis--x')
-        .attr('transform', `translate(0,${margin.top})`)
-        .call(d3.axisTop(d3.scaleLinear().domain([0, 3]).range([0, width * 0.45])).ticks(3))
+        .append('text')
+        .attr('class','titleInfo')
+        .attr('x', width * 0.09)
+        .attr('y', 0)
+        .attr('dy', '0.32em')
+        .text('Error');
+
+    rightSide.append('g')
+        .append('text')
+        .attr('class','titleInfo')
+        .attr('x', width * 0.33) 
+        .attr('y', 0) 
+        .attr('dy', '0.32em')
+        .text('Partially Correct');
+
+    rightSide.append('g')
+        .append('text')
+        .attr('class','titleInfo')
+        .attr('x', width * 0.43) 
+        .attr('y', 0) 
+        .attr('dy', '0.32em')
+        .text('Correct');
 
     // 每一个题目右侧绘制柱状图（每个题目共有三个柱形，分别对应0分、部分正确、满分）
     const barData = [
@@ -359,7 +397,7 @@ const drawGraph = () => {
         {id:'Question_xqlJkmRaP0otZcX4fK3W',value:[120,130,140],knowledge:['g7R2j_e0v1yls8']},
         {id:'Question_bumGRTJ0c8p4v5D6eHZa',value:[125,135,145],knowledge:['b3C9s_l4z6od7y']},
         {id:'Question_hZ5wXofebmTlzKB1jNcP',value:[130,140,150],knowledge:['b3C9s_l4z6od7y']},
-        {id:'Question_FNg8X9v5zcbB1tQrxHR3',value:[135,145,155],knowledge:['b3C9s_j0v1yls8']},
+        {id:'Question_FNg8X9v5zcbB1tQrxHR3',value:[20,145,155],knowledge:['b3C9s_j0v1yls8']},
     ]
     let min = 0
     let max = 0
@@ -373,8 +411,8 @@ const drawGraph = () => {
 
     barData.forEach((d,i) => {
         const x = 0
-        const y = i * 20 + 10
-        let barWidth = 20
+        const y = i * 40 + 10
+        let barWidth = 25
         const barPadding = 50
 
         
@@ -397,6 +435,7 @@ const drawGraph = () => {
         const firstcolor = colorMap[firstknowledgePrefix]
         const secondcolor = secondknowledgePrefix ? colorMap[secondknowledgePrefix] : null
          
+        const maxHeight = 30
         //题目对应一个知识点
         if(d.value.length === 3){
             const points = []
@@ -406,10 +445,10 @@ const drawGraph = () => {
                 .append('rect')
                 .attr('x', (d,k) => {
                     const x = k * (barWidth + barPadding) + 20
-                    points.push([x + barWidth / 2,y + barYscale(d)] )
+                    points.push([x + barWidth / 2,maxHeight -  barYscale(d)] )
                     return x
                 })
-                .attr('y', y)
+                .attr('y', d => maxHeight - barYscale(d))
                 .attr('width', barWidth)
                 .attr('height', d => barYscale(d))
                 .attr('fill', d => {
@@ -424,6 +463,18 @@ const drawGraph = () => {
                 .attr('fill','none')
                 .attr('stroke','#d0d0d0')
                 .attr('stroke-width',1.5) 
+
+            bar.selectAll('circle')
+                .data(points)
+                .enter()
+                .append('circle')
+                .attr('cx',d => d[0])
+                .attr('cy',d => d[1])
+                .attr('r',2.5)
+                .attr('fill','#C6CBB9')
+                .attr('stroke','#B0B3A6')
+                .attr('stroke-width',1)
+
         }
         //题目对应两个知识点
         else{
@@ -435,19 +486,19 @@ const drawGraph = () => {
                         .attr('x', d => {
                             const x = k * (barWidth + barPadding) + 20 + (j === 1 ? 12 : 0)
                             if(j === 0){
-                                firstpoints.push([x + barWidth / 2,y + barYscale(value)] )
+                                firstpoints.push([x + barWidth / 4,maxHeight - barYscale(value)] )
                             }
                             else{
-                                secondpoints.push([x + barWidth / 2,y + barYscale(value)] )
+                                secondpoints.push([x + barWidth / 4,maxHeight -  barYscale(value)] )
                             }
                             return x
                         })
-                        .attr('y', y)
+                        .attr('y', maxHeight - barYscale(value))
                         .attr('width', barWidth * 0.5)
                         .attr('height', barYscale(value))
                         .attr('fill', j === 1 ? firstcolor : secondcolor);
                 })
-
+                console.log(firstpoints,secondpoints)
                 const line = d3.line()
                 bar.append('path')
                     .datum(j === 0 ? firstpoints : secondpoints)
@@ -455,6 +506,29 @@ const drawGraph = () => {
                     .attr('fill','none')
                     .attr('stroke','#d0d0d0')
                     .attr('stroke-width',1.5) 
+
+        // 添加circle元素
+        bar.selectAll('circle.first')
+            .data(firstpoints)
+            .enter()
+            .append('circle')
+            .attr('cx', d => d[0])
+            .attr('cy', d => d[1])
+            .attr('r', 2.5)
+            .attr('fill', '#C6CBB9')
+            .attr('stroke', '#B0B3A6')
+            .attr('stroke-width', 1);
+
+        bar.selectAll('circle.second')
+            .data(secondpoints)
+            .enter()
+            .append('circle')
+            .attr('cx', d => d[0])
+            .attr('cy', d => d[1])
+            .attr('r', 2.5)
+            .attr('fill', '#C6CBB9')
+            .attr('stroke', '#B0B3A6')
+            .attr('stroke-width', 1);
         })
         }
     })
@@ -485,14 +559,14 @@ onMounted(() => {
 
 <template>
     <div style="width:100%;height:100%">
-        <div style="width: 100%; height: 80%;overflow:scroll" ref="graphDiv">
+        <div style="width: 100%; height: 70%;overflow:scroll" ref="graphDiv" id="graphDiv">
             <svg ref="graphRef"></svg>
         </div>
-        <div style="height:20%">
-            <el-table :data="tableData" :default-sort="{prop:'score',order:'descending'}" max-height="180">
-                <el-table-column prop="ID" label="ID"></el-table-column>
-                <el-table-column prop="score" label="score" sortable></el-table-column>
-                <el-table-column prop="knowledge" label="knowledge">
+        <div style="height:30%">
+            <el-table :data="tableData" :default-sort="{prop:'score',order:'descending'}" max-height="270">
+                <el-table-column prop="ID" label="ID" width="200" class-name="centered-column"></el-table-column>
+                <el-table-column prop="score" label="score" sortable width="100" class-name="centered-column"></el-table-column>
+                <el-table-column prop="knowledge" label="knowledge" class-name="centered-column">
                     <template #default="scope">
                         <titleInfo :tableData="scope.row.knowledge"></titleInfo>
                     </template>
@@ -504,10 +578,25 @@ onMounted(() => {
 </template>
 
 <style>
+#graphDiv::-webkit-scrollbar {
+    display: none;
+}
+
+#graphDiv {
+    scrollbar-width: none;
+}
 .link{
     stroke:#dadbdd;
     stroke-width: 1.5px;
     fill: none;
 }
-
+.centered-column .cell {
+    text-align: center;
+  }
+.titleInfo{
+    font-size: 12px;
+    fill: #888892;
+    text-anchor: end;
+    font-weight: 600;
+}
 </style>

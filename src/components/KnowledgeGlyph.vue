@@ -17,14 +17,14 @@ const drawGlyph = () => {
     console.log(knowledgeData);
     const svg = d3.select(glyphRef.value)
         .attr('width',200)
-        .attr('height',100);
+        .attr('height',50);
     
     svg.selectAll("*").remove(); // Clear previous chart
 
-    const margin = {top: 10, right: 10, bottom: 10, left: 10};
+    const margin = {top: 10, right: 10, bottom: 10, left: 50};
     const width = +svg.attr('width') - margin.left - margin.right;
     const height = +svg.attr('height') - margin.top - margin.bottom;
-    const radius = Math.min(width, height) / 4;
+    const radius = Math.min(width, height) / 2;
     const innerRadius = 0.6 * radius;
     const outerRadius = 0.9 * radius;
 

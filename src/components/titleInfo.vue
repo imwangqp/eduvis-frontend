@@ -13,20 +13,20 @@ const props = defineProps({
 const tableData = props.tableData;
 const titleInfo = ref(null);
 
-const width = 120;
+const width = 150;
 const x = d3.scaleLinear()
             .domain([0, 1])
             .range([0, width]);
 const drawBar = () => {
+    const margin = {top: 10, right: 0, bottom: 0, left: 10};
     //若knowledge数组只有一个知识点（题目对应一个知识点）
     if(tableData.length === 1){
         //console.log('this is one knowledge');
         //绘制横向柱状图
         const svg = d3.select(titleInfo.value)
-            .attr('width',120)
-            .attr('height',50);
+            .attr('width',160)
+            .attr('height',40);
         svg.selectAll("*").remove(); // Clear previous chart
-        const margin = {top: 10, right: 10, bottom: 10, left: 10};
         const width = +svg.attr('width') - margin.left - margin.right;
         const height = +svg.attr('height') - margin.top - margin.bottom;
         const y = d3.scaleBand()
@@ -51,10 +51,9 @@ const drawBar = () => {
     else if(tableData.length === 2){
         //绘制两个横向柱状图，纵向排列
         const svg = d3.select(titleInfo.value)
-            .attr('width',120)
-            .attr('height',100);
+            .attr('width',160)
+            .attr('height',60);
         svg.selectAll("*").remove(); // Clear previous chart
-        const margin = {top: 10, right: 10, bottom: 10, left: 10};
         const width = +svg.attr('width') - margin.left - margin.right;
         const height = +svg.attr('height') - margin.top - margin.bottom;
         const y = d3.scaleBand()
@@ -78,6 +77,10 @@ const drawBar = () => {
 }
 
 onMounted(()=>{
+    drawBar();
+})
+
+watch(tableData,()=>{
     drawBar();
 })
 </script>
