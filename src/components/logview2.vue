@@ -1,53 +1,51 @@
 <template>
-    <div class="outerContainer" style="max-height: 100%;">
-        <div class="card subcomponent" v-for="(item, index) in cards" :key="index" :style="getCardStyle(index)">
-            <div class="header">
-                <div class="title">学号: {{ item }}</div>
-                <div>
-                    <el-button-group class="button">
-                        <el-button size="small" round> 
-                            <el-icon>
-                                <Upload />
-                            </el-icon>
-                        </el-button>
-                        <el-button @click="moveUp(index)" size="small" round>
-                            <el-icon>
-                                <Top />
-                            </el-icon>
-                        </el-button>
-                        <el-button size="small" round>
-                            <el-icon>
-                                <Download />
-                            </el-icon>
-                        </el-button>
-                        <el-button @click="moveDown(index)" size="small" round >
-                            <el-icon>
-                                <Bottom />
-                            </el-icon>
-                        </el-button>
-                    </el-button-group>
-                </div>
-
+    <div class="">
+        <div class="header">
+            <div class="title">学号: {{ stuID }}</div>
+            <div>
+                <el-button-group class="button">
+                    <el-button size="small" round> 
+                        <el-icon>
+                            <Upload />
+                        </el-icon>
+                    </el-button>
+                    <el-button size="small" round>
+                        <el-icon>
+                            <Top />
+                        </el-icon>
+                    </el-button>
+                    <el-button size="small" round>
+                        <el-icon>
+                            <Download />
+                        </el-icon>
+                    </el-button>
+                    <el-button size="small" round>
+                        <el-icon>
+                            <Bottom />
+                        </el-icon>
+                    </el-button>
+                </el-button-group>
             </div>
 
-            <div id="logview" class="container" > 
-                <div> 
-                    <svg :id="`knowledge-${index}`" ></svg>
-                </div>
-
-                <div id="logContainer" class="overflow-x-auto" >
-                    <svg :id="`log-${index}`" style="min-width:100%;"></svg>
-                </div>
-
-                <div>
-                    <svg :id="`line-${index}`" style="width: 100%;" :ref="(el) => setLineRef(el, index)"></svg>
-                </div>
-            
-            </div>
         </div>
 
-        <div class="tooltip">
-            <!-- <span class="tooltipText"> {{ content }} </span> -->
+        <div id="logview" class="container" > 
+            <div> 
+                <svg id="knowledge" ></svg>
+            </div>
+
+            <div id="logContainer" class="overflow-x-auto" >
+                <svg id="log" ref="containerRef" style="min-width:100%;"></svg>
+            </div>
+
+            <div>
+                <svg id="line" style="width: 100%;" ref="lineRef"></svg>
+            </div>
+
+            <div class="tooltip">
+                <!-- <span class="tooltipText"> {{ content }} </span> -->
+            </div>
+        
         </div>
     </div>
     
@@ -70,13 +68,14 @@ const lineData = [
       [0, 15, 20, 35, 50]
 ];
 
-var cards = ["8b6d1125760bd3939b6e", "8b6d1125760bd3939b6f"];
-
 var selectedKnowledge = -1;
+
+var stuID = "8b6d1125760bd3939b6e"
 
 const knowledge = ["r8S3g", "t5V9e", "m3D1v", "s8Y2f", "k4W1c", "g7R2j", "b3C9s", "y9W5d"]
 
-const lineRef = ref([])
+const containerRef = ref()
+const lineRef = ref()
 const intervalX = 1;
 const intervalY = 3;
 const cellWidth = 16 + intervalX;
@@ -90,47 +89,11 @@ const newLineWidth = 3;
 
 var content = ref()
 
-
 onMounted(()=>{
-    cards.forEach((item, index) => {
-        initKnowledge(index)
-        initLog(index)
-        initLineChart(index)
-    })
-    
+    initKnowledge()
+    initLog()
+    initLineChart()
 })
-
-function setLineRef(el, index) {
-    if(el) {
-        lineRef[index] = el
-    }
-}
-
-function getCardStyle(index) {
-    let top = 0;
-    for (let i = 0; i < index; i++) {
-        top += cards[i].offsetHeight + 16; // 16 是卡片之间的间距
-    }
-    return {
-        top: `${top}px`,
-    };
-}
-
-function moveUp(index) {
-    if (index > 0) {
-        // 交换当前卡片与上一个卡片的位置
-        [this.cards[index], this.cards[index - 1]] = [this.cards[index - 1], this.cards[index]];
-    }
-}
-
-function moveDown(index) {
-    if (index < this.cards.length - 1) {
-        // 交换当前卡片与下一个卡片的位置
-        [this.cards[index], this.cards[index + 1]] = [this.cards[index + 1], this.cards[index]];
-    }
-}
-
-
 //状态颜色映射
 function getColor(status) {
     if(status == "Absolutely_Correct")
@@ -140,11 +103,13 @@ function getColor(status) {
     return "#F19292"; 
 }
 
-function addHighlight(num, index) {
-    const dotSvg = d3.select(`#knowledge-${index}`)
-    const svg = d3.select(`#log-${index}`)
+function addHighlight(index) {
+    const dots = d3.selectAll(".kl")
 
-    const rects = svg.selectAll(".log")
+    const rects = d3.selectAll(".log")
+
+    const dotSvg = d3.select("#knowledge")
+    const svg = d3.select("#log")
     //滤镜
     const filter = dotSvg.append("defs")
     .append("filter")
@@ -162,7 +127,7 @@ function addHighlight(num, index) {
     // .attr("filter", "url(#blur)");
     
 
-    rects.filter((d, i) => d.xx !== num)
+    rects.filter((d, i) => d.xx !== index)
     .attr("filter", "url(#blur)")
     .attr("opacity", 0.5);
     
@@ -199,26 +164,27 @@ function addHighlight(num, index) {
     .append("femergenode")
     .attr("in", "SourceGraphic");
 
-    // rects.filter((d, i) => d.xx === num).style("filter", "drop-shadow(1px 1px 1px #aaa)")
+    rects.filter((d, i) => d.xx === index).style("filter", "drop-shadow(1px 1px 1px #aaa)")
 
 
     //折线图
-
-    const lineSvg = d3.select(`#line-${index}`)
-    const lines = lineSvg.selectAll(".brokenLine");
-    lines.filter((d, i) => i === num)
+    const lines = d3.selectAll(".brokenLine");
+    lines.filter((d, i) => i === index)
     .attr("stroke-width", newLineWidth)
 
-    lines.filter((d, i) => d.xx !== num)
+    lines.filter((d, i) => d.xx !== index)
     .attr("opacity", 0.5);
 }
 
 function removeHighlight(index) {
-    const dotSvg = d3.select(`#knowledge-${index}`)
-    const svg = d3.select(`#log-${index}`)
+    const dots = d3.selectAll(".kl")
 
-    const rects = svg.selectAll(".log")
+    const rects = d3.selectAll(".log")
 
+    const dotSvg = d3.select("#knowledge")
+    const svg = d3.select("#log")
+
+    dots.attr("filter", null)
     rects.attr("filter", null)
     rects.filter((d, i) => d.xx !== index)
     .attr("opacity", 1);
@@ -227,8 +193,7 @@ function removeHighlight(index) {
     .style("filter", null)
 
     //折线图
-    const lineSvg = d3.select(`#line-${index}`)
-    const lines = lineSvg.selectAll(".brokenLine");
+    const lines = d3.selectAll(".brokenLine");
     lines.filter((d, i) => i === index)
     .attr("stroke-width", lineWidth)
 
@@ -236,11 +201,11 @@ function removeHighlight(index) {
     .attr("opacity", 1);
 }
 
-function initKnowledge(index) {
+function initKnowledge() {
     const r = (cellHeight-intervalY)/2
     const radius = 2
     const margin = { top: 0, right: 10, bottom: 20, left: 10 }
-    const dotSvg = d3.select(`#knowledge-${index}`)
+    const dotSvg = d3.select("#knowledge")
 
     const kdot = dotSvg.selectAll("g")
         .data(knowledge)
@@ -253,33 +218,33 @@ function initKnowledge(index) {
             .attr("r", r)
             .attr("fill", d => getKnowledgeColor.getKnowledgeColor(d))
         .on("click", handleClick)
+    
+   
 
     function handleClick(event, d) {
 
         const xy = d3.pointer(event, dotSvg.node());
         const yv = xy[1]
-        console.log(cellHeight)
-        const num = Math.floor((yv-margin.top)/ cellHeight);
+        const index = Math.floor((yv-margin.top)/ cellHeight);
 
-        console.log(num)
+        console.log(index)
 
-        if(selectedKnowledge == num) {
-            removeHighlight(num, index);    //参数
+        if(selectedKnowledge == index) {
+            removeHighlight(index);    //参数
             selectedKnowledge = -1;
             return;
         }
 
         if(selectedKnowledge != -1) {
-            removeHighlight(selectedKnowledge, index)
+            removeHighlight(selectedKnowledge)
         }
-        addHighlight(num, index)
-        selectedKnowledge = num;
+        addHighlight(index)
+        selectedKnowledge = index;
     }
 }
-function initLineChart(index) {
+function initLineChart() {
     // const start_x = cellWidth * logData.length + 50
-    console.log("lineRef"+lineRef[index])
-    const width = lineRef[index].clientWidth;
+    const width = lineRef.value.clientWidth;
     // const width = cellHeight * knowledge.length + 40;
     const height = cellHeight * knowledge.length ;
     const axis_color = "#b2bbbe"
@@ -294,7 +259,7 @@ function initLineChart(index) {
     //       .attr("style", "max-width: 100%; height: auto; font: 12px sans-serif;")
     //       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
-    const svg = d3.select(`#line-${index}`)
+    const svg = d3.select("#line")
     const lineG = svg.append("g").attr("class", "line").attr("transform", `translate(${ margin.left}, ${margin.top})`)
 
     var x = d3.scaleLinear().range([0, width-margin.left-margin.right]).nice();
@@ -395,9 +360,9 @@ function initLineChart(index) {
     updateChart(lineData)
 }
 
-function initLog(index) {
+function initLog() {
     const logData = data.data
-    // const viewWidth = containerRef.value.clientWidth;
+    const viewWidth = containerRef.value.clientWidth;
     const width = cellWidth * logData.length + 10;
     const height = cellHeight * knowledge.length + 5;
 
@@ -425,8 +390,17 @@ function initLog(index) {
                 table[i][j] = {"xx": i, "yy": j, "log": null}
     }
     table = table.flat()
+    // console.log(table)
 
-    const svg = d3.select(`#log-${index}`)
+    // const svg = d3
+    //       .select("#logview")
+    //       .append("svg")
+    //       .attr("viewBox", [0, 0, width+height, height])
+    //       .attr("width", width+height)
+    //       .attr("height", height)
+    //       .attr("style", "max-width: 100%; height: auto; font: 12px sans-serif;");
+
+    const svg = d3.select("#log")
 
     svg.attr("width", width)
 
@@ -473,9 +447,10 @@ function initLog(index) {
         .style("opacity", 0)
 
     function handleMouseOver(event, d) {
+        
         if(d.log == null)
             return;
-
+        console.log("onononon")
         tooltip.transition()
             .duration(200)
             .style("opacity", 0.8);
@@ -497,14 +472,7 @@ function initLog(index) {
 </script>
 
 <style scoped>
-.outerContainer {
-    max-height: 100%;
-    overflow-y: scroll;
-    scroll-behavior: smooth;
-    box-sizing: border-box;
-}
 .container {
-box-sizing: border-box;
   height: auto;
   width: 100%;
   display: grid;
@@ -557,8 +525,4 @@ svg{
 .el-button{
     height: 20px;
 }
-.subcomponent{
-    box-sizing: border-box;
-    @apply bg-white rounded-lg border-slate-100 border-2 p-2 m-1;
-  }
 </style>
