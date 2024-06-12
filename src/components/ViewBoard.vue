@@ -1,4 +1,6 @@
 <script setup>
+import Table from "./Table.vue";
+import KnowledgeTree from "./KnowledgeTree.vue";
 import LogView from './LogView.vue';
 import KLRelationView from "@/components/KLRelationView.vue";
 import StudyMode from "@/components/StudyMode.vue";
@@ -10,8 +12,10 @@ import StudyMode from "@/components/StudyMode.vue";
       Learn Scope
     </div>
     <div class="row-span-1 col-span-1 chart-component">
-      1
+      <Table />
     </div>
+    <div class="row-span-3 chart-component">
+      <KnowledgeTree />
     <div class="row-span-4 chart-component">
       2
     </div>
