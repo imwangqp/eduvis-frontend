@@ -55,11 +55,12 @@
 
 <script setup>
 import * as d3 from 'd3';
-import { onMounted, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import getKnowledgeColor from '../utils/index'; 
 import data from '../assets/log.json'
 
 const lineData = [
+    [
       [10, 20, 30, 40, 50],
       [30, 40, 10, 20, 50],
       [20, 10, 30, 50, 40],
@@ -68,9 +69,20 @@ const lineData = [
       [0, 5, 15, 20, 40],
       [0, 10, 25, 30, 45],
       [0, 15, 20, 35, 50]
+    ],
+    [
+      [10, 20, 30, 40, 50],
+      [10, 20, 30, 40, 50],
+      [10, 20, 30, 40, 50],
+      [15, 20, 27, 32, 35],
+      [10, 20, 30, 40, 45],
+      [0, 5, 15, 20, 40],
+      [0, 10, 25, 30, 45],
+      [0, 15, 20, 35, 50]
+    ],
 ];
 
-var cards = ["8b6d1125760bd3939b6e", "8b6d1125760bd3939b6f"];
+var cards = reactive(["8b6d1125760bd3939b6e", "8b6d1125760bd3939b6f"]);
 
 var selectedKnowledge = -1;
 
@@ -78,9 +90,9 @@ const knowledge = ["r8S3g", "t5V9e", "m3D1v", "s8Y2f", "k4W1c", "g7R2j", "b3C9s"
 
 const lineRef = ref([])
 const intervalX = 1;
-const intervalY = 3;
-const cellWidth = 16 + intervalX;
-const cellHeight = 16 + intervalY;
+const intervalY = 2;
+const cellWidth = 14 + intervalX;
+const cellHeight = 14 + intervalY;
 
 const highlightColor = "yellow"
 const highlightWidth = 2
@@ -109,7 +121,7 @@ function setLineRef(el, index) {
 function getCardStyle(index) {
     let top = 0;
     for (let i = 0; i < index; i++) {
-        top += cards[i].offsetHeight + 16; // 16 是卡片之间的间距
+        top += cards[i].offsetHeight +8; // 16 是卡片之间的间距
     }
     return {
         top: `${top}px`,
@@ -117,16 +129,23 @@ function getCardStyle(index) {
 }
 
 function moveUp(index) {
+    console.log("moveup"+index)
     if (index > 0) {
         // 交换当前卡片与上一个卡片的位置
-        [this.cards[index], this.cards[index - 1]] = [this.cards[index - 1], this.cards[index]];
+        [cards[index], cards[index - 1]] = [cards[index - 1], cards[index]];
+        initLineChart(index)
+        initLineChart(index-1)
+        initLog(index)
+        initLog(index-1)
     }
 }
 
 function moveDown(index) {
-    if (index < this.cards.length - 1) {
+    console.log("movedown"+index)
+    if (index < cards.length - 1) {
         // 交换当前卡片与下一个卡片的位置
-        [this.cards[index], this.cards[index + 1]] = [this.cards[index + 1], this.cards[index]];
+        [cards[index], cards[index + 1]] = [cards[index + 1], cards[index]];
+        console.log("card"+cards[index])
     }
 }
 
@@ -141,12 +160,12 @@ function getColor(status) {
 }
 
 function addHighlight(num, index) {
-    const dotSvg = d3.select(`#knowledge-${index}`)
+    // const dotSvg = d3.select(`#knowledge-${index}`)
     const svg = d3.select(`#log-${index}`)
 
     const rects = svg.selectAll(".log")
     //滤镜
-    const filter = dotSvg.append("defs")
+    const filter = svg.append("defs")
     .append("filter")
     .attr("id", "blur")
     .attr("x", "-50%")
@@ -213,33 +232,33 @@ function addHighlight(num, index) {
     .attr("opacity", 0.5);
 }
 
-function removeHighlight(index) {
-    const dotSvg = d3.select(`#knowledge-${index}`)
+function removeHighlight(num, index) {
+    console.log("index"+index)
+    // const dotSvg = d3.select(`#knowledge-${index}`)
     const svg = d3.select(`#log-${index}`)
-
     const rects = svg.selectAll(".log")
 
     rects.attr("filter", null)
-    rects.filter((d, i) => d.xx !== index)
+    rects.filter((d, i) => d.xx !== num)
     .attr("opacity", 1);
 
-    rects.filter((d, i) => d.xx === index)
+    rects.filter((d, i) => d.xx === num)
     .style("filter", null)
 
     //折线图
     const lineSvg = d3.select(`#line-${index}`)
     const lines = lineSvg.selectAll(".brokenLine");
-    lines.filter((d, i) => i === index)
+    lines.filter((d, i) => i === num)
     .attr("stroke-width", lineWidth)
 
-    lines.filter((d, i) => d.xx !== index)
+    lines.filter((d, i) => i !== num)
     .attr("opacity", 1);
 }
 
 function initKnowledge(index) {
     const r = (cellHeight-intervalY)/2
     const radius = 2
-    const margin = { top: 0, right: 10, bottom: 20, left: 10 }
+    const margin = { top: 0, right: 10, bottom: 10, left: 10 }
     const dotSvg = d3.select(`#knowledge-${index}`)
 
     const kdot = dotSvg.selectAll("g")
@@ -284,7 +303,7 @@ function initLineChart(index) {
     const height = cellHeight * knowledge.length ;
     const axis_color = "#b2bbbe"
 
-    const margin = { top: 10, right: 10, bottom: 20, left: 30 }
+    const margin = { top: 10, right: 10, bottom: 10, left: 30 }
     // const lineSvg = d3
     //       .select("#logview")
     //       .append("svg")
@@ -295,6 +314,9 @@ function initLineChart(index) {
     //       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         
     const svg = d3.select(`#line-${index}`)
+    //清空svg
+    svg.selectAll('*').remove()
+
     const lineG = svg.append("g").attr("class", "line").attr("transform", `translate(${ margin.left}, ${margin.top})`)
 
     var x = d3.scaleLinear().range([0, width-margin.left-margin.right]).nice();
@@ -357,7 +379,7 @@ function initLineChart(index) {
 
     // 添加多条线
     var paths = lineG.selectAll(".brokenLine")
-      .data(lineData)
+      .data(lineData[index])
       .enter()
       .append("path")
       .attr("class", "brokenLine")
@@ -392,7 +414,7 @@ function initLineChart(index) {
         changeAxisStyle();
     }
 
-    updateChart(lineData)
+    updateChart(lineData[index])
 }
 
 function initLog(index) {
@@ -427,6 +449,7 @@ function initLog(index) {
     table = table.flat()
 
     const svg = d3.select(`#log-${index}`)
+    svg.selectAll('*').remove()
 
     svg.attr("width", width)
 
@@ -498,7 +521,7 @@ function initLog(index) {
 
 <style scoped>
 .outerContainer {
-    max-height: 100%;
+    height: fit-content;
     overflow-y: scroll;
     scroll-behavior: smooth;
     box-sizing: border-box;
@@ -559,6 +582,6 @@ svg{
 }
 .subcomponent{
     box-sizing: border-box;
-    @apply bg-white rounded-lg border-slate-100 border-2 p-2 m-1;
+    @apply bg-white rounded-lg border-slate-100 border-0 p-0 m-0;
   }
 </style>
