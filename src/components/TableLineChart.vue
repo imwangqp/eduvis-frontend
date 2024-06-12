@@ -15,9 +15,8 @@ const drawLineChart = () => {
     const data = props.data;
 
     const svg = d3.select(chartRef.value)
-        .attr('width',200)
+        .attr('width',160)
         .attr('height',50);
-
 
     svg.selectAll("*").remove(); // Clear previous chart
 
@@ -35,7 +34,7 @@ const drawLineChart = () => {
     const line = d3.line()
         .x(d => x(d.time))
         .y(d => y(d.value))
-        .curve(d3.curveCardinal)  //曲线效果
+        .curve(d3.curveBumpX)  //曲线效果
 
     const g = svg.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -44,8 +43,10 @@ const drawLineChart = () => {
       //.attr('transform', `translate(0,0)`)
       .attr('class', 'axis axis--x')
       .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x).ticks(6).tickFormat(d3.format('d')));
-
+      .call(d3.axisBottom(x)
+          .tickValues([6, 12, 18, 24])
+          .tickFormat(d3.format('d'))
+);
 
     g.append('path')
       .datum(data)
@@ -69,5 +70,5 @@ watch(() => props.data, () => {
     <svg ref="chartRef"></svg>
 </template>
 
-<style scopoed>
+<style scoped>
 </style>

@@ -17,7 +17,7 @@ const store = useStore()
 import _ from 'lodash'
 
 const relationRef = ref(), clusterRef = ref()
-const bubbleSize = 2
+const bubbleSize = 3
 const clusterCount = 3
 const size = {
   tooltipViewHeight: 100,
@@ -51,9 +51,10 @@ let data = [{
 
 onMounted(() => {
   axios.get('/api/getStudyModeScatter').then(res => {
-    initChart(res.data)
+    console.log(res)
+    initChart(res.data.data.point)
   })
-  initClusterBarChart(data)
+  // initClusterBarChart(data)
 })
 
 function initTooltip(id, masterData, reviewData) {
@@ -74,8 +75,9 @@ function initChart(data) {
       .attr('class', 'tool-tip')
 
   let that = this
+  console.log(relationRef.value.clientHeight)
   const width = relationRef.value.clientWidth;
-  const height = 300;
+  const height = relationRef.value.clientHeight;
   const margin = {left: 20, right: 15, top: 10, bottom: 20}
 
   const maxX = d3.max(data, d => d.position[0]), minX = d3.min(data, d => d.position[0])
@@ -117,13 +119,15 @@ function initChart(data) {
       .data(contours)
       .join("path")
       .attr("fill", (d) => colorScale(d.value))
-      .attr("d", d3.geoPath());
+      .attr("d", d3.geoPath())
+      .attr('class', 'zoom')
 
   const bubble = svg.selectAll('.bubble')
       .data(data)
       .enter()
       .append('circle')
       .attr('class', 'bubble')
+      .attr('class', 'zoom')
       .attr('cx', function (d) {
         return xScale(d.position[0]);
       })
@@ -164,8 +168,8 @@ function initChart(data) {
 
   function zoomed(event) {
     console.log(event)
-    // const zoomDelta = 1 / event.transform.k
-    // svg.selectAll('.zoom:not(.special)').attr("transform", event.transform)
+    const zoomDelta = 1 / event.transform.k
+    svg.selectAll('.zoom').attr("transform", event.transform)
     // const specialElem = d3.selectAll('.special-rect')
     // specialElem.attr('stroke-width', 2 * zoomDelta)
     //     .attr('x', function (d) {
@@ -208,13 +212,5 @@ svg {
 </style>
 
 <style>
-.tool-tip {
-  @apply bg-[#ffffff5a];
-  padding: 5px;
-  border-radius: 1px;
-  position: absolute;
-  width: 200px;
-  height: auto;
-  z-index: 10;
-}
+
 </style>

@@ -16,12 +16,12 @@ const drawGlyph = () => {
     const knowledgeData = props.knowledgeData;
     console.log(knowledgeData);
     const svg = d3.select(glyphRef.value)
-        .attr('width',200)
+        .attr('width',120)
         .attr('height',50);
     
     svg.selectAll("*").remove(); // Clear previous chart
 
-    const margin = {top: 10, right: 10, bottom: 10, left: 50};
+    const margin = {top: 10, right: 10, bottom: 10, left: 10};
     const width = +svg.attr('width') - margin.left - margin.right;
     const height = +svg.attr('height') - margin.top - margin.bottom;
     const radius = Math.min(width, height) / 2;

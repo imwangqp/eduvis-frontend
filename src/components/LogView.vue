@@ -79,7 +79,7 @@ const knowledge = ["r8S3g", "t5V9e", "m3D1v", "s8Y2f", "k4W1c", "g7R2j", "b3C9s"
 const lineRef = ref([])
 const intervalX = 1;
 const intervalY = 3;
-const cellWidth = 16 + intervalX;
+const cellWidth = 4 + intervalX;
 const cellHeight = 16 + intervalY;
 
 const highlightColor = "yellow"

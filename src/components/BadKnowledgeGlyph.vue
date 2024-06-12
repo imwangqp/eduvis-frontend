@@ -21,7 +21,7 @@ const drawGlyph = () => {
     
     svg.selectAll("*").remove(); // Clear previous chart
 
-    const margin = {top: 10, right: 10, bottom: 10, left: 50};
+    const margin = {top: 10, right: 10, bottom: 10, left: 10};
     const width = +svg.attr('width') - margin.left - margin.right;
     const height = +svg.attr('height') - margin.top - margin.bottom;
     const radius = Math.min(width, height) / 2;

@@ -433,46 +433,70 @@ const getMethodClass = (name) => {
         return 'tagStyle_5'
     }
 }
+const getMethodIndex = (name) => {
+  if(name==='Method_5Q4KoXthUuYz3bvrTDFm'){
+    return 'Method 1'
+  }
+  else if(name==='Method_BXr9AIsPQhwNvyGdZL57')
+  {
+    return 'Method 2'
+  }
+  else if(name==='Method_Cj9Ya2R7fZd6xs1q5mNQ'){
+    return 'Method 3'
+  }
+  else if(name==='Method_gj1NLb4Jn7URf9K2kQPd'){
+    return 'Method 4'
+  }
+  else if(name === 'Method_m8vwGkEZc3TSW2xqYUoR'){
+    return 'Method 5'
+  }
+}
 </script>
 
 <template>
-    <el-table :data="studentInfo" style="width:100%" max-height="300">
-        <el-table-column label="ID" prop="ID" width="250" class-name="centered-column"></el-table-column>
-        <el-table-column label="Sex" prop="sex" width="100" class-name="centered-column"></el-table-column>
-        <el-table-column label="Age" prop="age" width="100" class-name="centered-column"></el-table-column>
-        <el-table-column label="Major" prop="major" width="150" class-name="centered-column"></el-table-column>
-        <el-table-column label="HotTime" class-name="centered-column">
-            <!-- 高峰时段：绘制每个时段下提交次数的折线图 -->
-            <template #default="scope">
-                <TableLineChart :data="scope.row.HotTime"></TableLineChart>
-            </template>
-        </el-table-column>
-        <el-table-column label="Knowledge" class-name="centered-column">
-            <!-- 擅长题型：绘制每个知识点下的准确率 -->
-            <template #default="scope">
-                <KnowledgeGlyph :knowledgeData="scope.row.Knowledge"></KnowledgeGlyph>
-            </template>
-        </el-table-column>
-        <el-table-column label="BadKnowledge" class-name="centered-column">
-            <!-- 不擅长题型：绘制每个知识点下的准确率 -->
-            <template #default="scope">
-                <BadKnowledgeGlyph :badknowledgeData="scope.row.badknowledge"></BadKnowledgeGlyph>
-            </template>
-        </el-table-column>
-        <el-table-column label="Method" class-name="centered-column">
-            <template #default="scope">
-                <el-popover effect="light" trigger="hover" placement="top">
-                  <template #default>
-                    <div>method: {{ scope.row.method.name }}</div>
-                    <div>value: {{ scope.row.method.value }}</div>
-                  </template>
-                  <template #reference>
-                    <span :class="getMethodClass(scope.row.method.name)">{{ scope.row.method.name }}</span>
-                  </template>
-                </el-popover>
-              </template>
-        </el-table-column>
+  <div style="width: 1030px">
+    <el-table :data="studentInfo">
+      <el-table-column type="selection" width="40" />
+      <el-table-column label="ID" prop="ID" width="200" class-name="centered-column"></el-table-column>
+      <el-table-column label="性别" prop="sex" width="60" class-name="centered-column">
+        <template #default="scope">
+          {{scope.row.sex==='male'?'男':'女'}}
+        </template>
+      </el-table-column>
+      <el-table-column label="年龄" prop="age" width="60" class-name="centered-column"></el-table-column>
+      <el-table-column label="专业" prop="major" width="80" class-name="centered-column"></el-table-column>
+      <el-table-column label="答题高峰期" class-name="centered-column" width="180">
+        <!-- 高峰时段：绘制每个时段下提交次数的折线图 -->
+        <template #default="scope">
+          <TableLineChart :data="scope.row.HotTime"></TableLineChart>
+        </template>
+      </el-table-column>
+      <el-table-column label="擅长知识点" class-name="centered-column" width="140">
+        <template #default="scope">
+          <KnowledgeGlyph :knowledgeData="scope.row.Knowledge"></KnowledgeGlyph>
+        </template>
+      </el-table-column>
+      <el-table-column label="不擅长知识点" class-name="centered-column" width="140">
+        <!-- 不擅长题型：绘制每个知识点下的准确率 -->
+        <template #default="scope">
+          <BadKnowledgeGlyph :badknowledgeData="scope.row.badknowledge"></BadKnowledgeGlyph>
+        </template>
+      </el-table-column>
+      <el-table-column label="这是啥" class-name="centered-column" width="130">
+        <template #default="scope">
+          <!--&lt;!&ndash;                <el-popover effect="light" trigger="hover" placement="top">&ndash;&gt;-->
+          <!--&lt;!&ndash;                  <template #default>&ndash;&gt;-->
+          <!--&lt;!&ndash;                    <div>method: {{ scope.row.method.name }}</div>&ndash;&gt;-->
+          <!--&lt;!&ndash;                    <div>value: {{ scope.row.method.value }}</div>&ndash;&gt;-->
+          <!--&lt;!&ndash;                  </template>&ndash;&gt;-->
+          <!--&lt;!&ndash;                  <template #reference>&ndash;&gt;-->
+          <span :class="getMethodClass(scope.row.method.name)">{{ getMethodIndex(scope.row.method.name) }}</span>
+          <!--&lt;!&ndash;                  </template>&ndash;&gt;-->
+          <!--&lt;!&ndash;                </el-popover>&ndash;&gt;-->
+        </template>
+      </el-table-column>
     </el-table>
+  </div>
 </template>
 
 <style>
@@ -484,7 +508,7 @@ const getMethodClass = (name) => {
   }
 .tagStyle_1{
     display: inline-block;
-    width: 130px;
+    width: 80px;
     border: 1px solid #EDF7B5;
     border-radius: 6px;
     background-color: #EDF7B5;
@@ -493,7 +517,7 @@ const getMethodClass = (name) => {
 }
 .tagStyle_2{
     display: inline-block;
-    width: 130px;
+    width: 80px;
     border: 1px solid #f1f9dd;
     border-radius: 6px;
     background-color: #f1f9dd;
@@ -502,7 +526,7 @@ const getMethodClass = (name) => {
 }
 .tagStyle_3{
     display: inline-block;
-    width: 130px;
+    width: 80px;
     border: 1px solid #eae4c7;
     border-radius: 6px;
     background-color: #eae4c7;
@@ -511,7 +535,7 @@ const getMethodClass = (name) => {
 }
 .tagStyle_4{
     display: inline-block;
-    width: 130px;
+    width: 80px;
     border: 1px solid #c8ede0;
     border-radius: 6px;
     background-color: #c8ede0;
@@ -520,7 +544,7 @@ const getMethodClass = (name) => {
 }
 .tagStyle_5{
     display: inline-block;
-    width: 130px;
+    width: 80px;
     border: 1px solid #dae6c8;
     border-radius: 6px;
     background-color: #dae6c8;

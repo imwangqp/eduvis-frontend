@@ -4,6 +4,7 @@ import KnowledgeTree from "./KnowledgeTree.vue";
 import LogView from './LogView.vue';
 import KLRelationView from "@/components/KLRelationView.vue";
 import StudyMode from "@/components/StudyMode.vue";
+import RadarView from "@/components/RadarView.vue";
 </script>
 
 <template>
@@ -11,27 +12,30 @@ import StudyMode from "@/components/StudyMode.vue";
     <div class="col-span-2 bg-black font-bold text-left text-white text-2xl align-middle">
       &nbsp;Study Scope
     </div>
-    <div class="row-span-1 col-span-1 chart-component">
+    <div class="row-span-3 col-span-1 chart-component">
       <Table />
     </div>
-    <div class="row-span-3 chart-component">
-      <KnowledgeTree />
     <div class="row-span-4 chart-component">
-      2
-    </div>
-    <div class="row-span-1 col-span-1 chart-component">
-<!--      <div class="view-title" style="text-align: left;">答题日志</div>-->
       <LogView class="chart-subcomponent"></LogView>
+<!--      -->
     </div>
-    <div class="row-span-2 col-span-1 chart-component flex">
-      <div class="flex-1">
-<!--        <KLRelationView />-->
+    <div class="row-span-5 chart-component grid grid-cols-5">
+      <div class="col-span-3">
+        <KLRelationView />
       </div>
-      <div class="flex-1">
-        <StudyMode />
-      </div>
+      <div class="col-span-2 bg-green-500"></div> <!-- 绿色部分，flex-grow值为4 -->
+<!--      <div class="flex-grow-6">-->
+<!--                -->
+<!--      </div>-->
+<!--      <div class="flex-grow-4">-->
+<!--        &lt;!&ndash;        <StudyMode />&ndash;&gt;-->
+<!--      </div>-->
     </div>
-  </div>
+    <div class="row-span-4 col-span-1 chart-component">
+      <RadarView />
+<!--      <KnowledgeTree />-->
+    </div>
+
   </div>
 </template>
 
@@ -40,8 +44,8 @@ import StudyMode from "@/components/StudyMode.vue";
   height: 100vh;
   width: 100%;
   display: grid;
-  grid-template-rows: 2rem 1fr 1fr 1fr 1fr; /* 第一行的高度为20px，其余的行平均分配剩余空间 */
-  grid-template-columns: 3fr 1fr; /* 两列平均分配空间 */
+  grid-template-rows: 2rem repeat(8, 1fr); /* 第一行的高度为20px，其余的行平均分配剩余空间 */
+  grid-template-columns: 5fr 4fr; /* 两列平均分配空间 */
 }
 
 .view-title{

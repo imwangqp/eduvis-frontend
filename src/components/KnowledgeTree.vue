@@ -239,16 +239,26 @@ const drawGraph = () => {
             .attr('x', d => xScale(d.x) - 5)
             //.attr('y', d => yScale(d.y) - 5);
     };
-    
-    const link = svg.selectAll('.link')
+  const bumpX = d3.line()
+      .x(d => d.x)
+      .y(d => d.y)
+      .curve(d3.curveBumpX);
+
+  const link = svg.selectAll('.link')
         .data(links)
         .enter()
-        .append('line')
+        .append('path')
         .attr('class', 'link')
-        .attr('x1',d => nodes.find(n => n.id === d.source).x)
-        .attr('y1',d => nodes.find(n => n.id === d.source).y)
-        .attr('x2',d => nodes.find(n => n.id === d.target).x)
-        .attr('y2',d => nodes.find(n => n.id === d.target).y)
+      .attr('d', d => {
+        // 创建一个包含起点和终点的数组
+        const points = [
+          nodes.find(n => n.id === d.source),
+          nodes.find(n => n.id === d.target)
+        ];
+
+        // 使用bumpX生成器来计算路径
+        return bumpX(points);
+      });
 
 
     const node = svg.selectAll('.node')
@@ -340,7 +350,7 @@ const drawGraph = () => {
         .attr('x', width * 0.09)
         .attr('y', 0)
         .attr('dy', '0.32em')
-        .text('Error');
+        .text('错误');
 
     rightSide.append('g')
         .append('text')
@@ -348,7 +358,7 @@ const drawGraph = () => {
         .attr('x', width * 0.33) 
         .attr('y', 0) 
         .attr('dy', '0.32em')
-        .text('Partially Correct');
+        .text('部分正确');
 
     rightSide.append('g')
         .append('text')
@@ -356,7 +366,7 @@ const drawGraph = () => {
         .attr('x', width * 0.43) 
         .attr('y', 0) 
         .attr('dy', '0.32em')
-        .text('Correct');
+        .text('正确');
 
     // 每一个题目右侧绘制柱状图（每个题目共有三个柱形，分别对应0分、部分正确、满分）
     const barData = [
@@ -457,6 +467,7 @@ const drawGraph = () => {
             
             //三个柱形最高处连接一条线
             const line = d3.line()
+                .curve(d3.curveBumpX)
             bar.append('path')
                 .datum(points)
                 .attr('d',line)
@@ -500,6 +511,7 @@ const drawGraph = () => {
                 })
                 console.log(firstpoints,secondpoints)
                 const line = d3.line()
+                    .curve(d3.curveBumpX)
                 bar.append('path')
                     .datum(j === 0 ? firstpoints : secondpoints)
                     .attr('d',line)
@@ -558,15 +570,15 @@ onMounted(() => {
 </script>
 
 <template>
-    <div style="width:100%;height:100%">
-        <div style="width: 100%; height: 70%;overflow:scroll" ref="graphDiv" id="graphDiv">
+    <div class="grid grid-cols-2">
+        <div class="col-span-1" ref="graphDiv" id="graphDiv">
             <svg ref="graphRef"></svg>
         </div>
-        <div style="height:30%">
+        <div class="col-span-1">
             <el-table :data="tableData" :default-sort="{prop:'score',order:'descending'}" max-height="270">
                 <el-table-column prop="ID" label="ID" width="200" class-name="centered-column"></el-table-column>
-                <el-table-column prop="score" label="score" sortable width="100" class-name="centered-column"></el-table-column>
-                <el-table-column prop="knowledge" label="knowledge" class-name="centered-column">
+                <el-table-column prop="score" label="得分" sortable width="80" class-name="centered-column"></el-table-column>
+                <el-table-column prop="knowledge" label="掌握情况" class-name="centered-column">
                     <template #default="scope">
                         <titleInfo :tableData="scope.row.knowledge"></titleInfo>
                     </template>

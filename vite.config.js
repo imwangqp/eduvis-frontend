@@ -35,7 +35,7 @@ export default defineConfig({
         port: 8000,
         proxy: {
             '/api': {
-                target: 'http://127.0.0.1:5000',//目标服务器地址
+                target: 'http://127.0.0.1:5001',//目标服务器地址
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, '')
             },
