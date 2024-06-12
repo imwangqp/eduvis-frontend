@@ -6,7 +6,7 @@ import {titleColorList} from "@/utils/getColor.js";
 import _ from 'lodash'
 import store from "@/store/index.js";
 
-
+const clusters=[0,1,2,3]
 
 const width = 400,
     height = 100,
@@ -114,23 +114,32 @@ const circleData = [
 
 onMounted(()=>{
   watch(store.state.id, n=>console.log(n))
-  drawCircle(data, [[1,3],[5,8]], circleData)
-  drawChart(data, circleData)
+  // drawCircle(data, [[1,3],[5,8]], circleData)
+  // drawChart(data, circleData)
+
 })
+function initChart(index) {
+  const svg=d3.select(`#cluster-feature-${index}`)
+      .append('svg')
 
-function drawCircle(lineData, interval, circleData){
+  const indexScale = d3.scaleLinear([0, data.length], [0, width]),
+      titleScale = d3.scaleLinear([0, d3.max(data, d=>d.title)], [0, width/3]),
+      xScale = d3.scaleLinear([0,1], [0, width/2]),
+      xScale1 = d3.scaleLinear([0, lineData.length - 1], [0, width]),
+      yScale = d3.scaleLinear([0, _.size(data[0])-1], [0, height]),
+      yScale1 = d3.scaleLinear([0, d3.max(lineData)], [0, height])
 
-
-    const svg = d3.select('#study-mode-1')
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-
-  const lineGroup = svg.append('g')
-      .attr('class', 'line-group')
-  const xScale = d3.scaleLinear([0, lineData.length - 1], [0, width])
-
-  const yScale = d3.scaleLinear([0, d3.max(lineData)], [0, height])
+  svg.append('g')
+      .attr('id', 'title-group')
+      .selectAll('rect')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('x', (_, i)=>indexScale(i))
+      .attr('y', yScale(0))
+      .attr('height', height/2)
+      .attr('width', d=>titleScale(d.title))
+      .attr('fill', 'black')
 
   const area = d3.area()
       .x(d=>xScale(d))
@@ -177,92 +186,12 @@ function drawCircle(lineData, interval, circleData){
         .attr('fill', 'url(#gradient)')
         .attr('d', area)
   })
-
-
-}
-
-function drawChart(lineData, circleData){
-  const xScale = d3.scaleLinear([0, lineData.length - 1], [0, width])
-  const correctArc = d3.arc()
-      .innerRadius(d=>correctScale(d[0]))
-      .outerRadius(d => correctScale(d[1]))
-      .startAngle(d => xScale(d.data.index))
-      .endAngle(d => xScale(d.data.index+1))
-      .padAngle(0.01)
-      .padRadius(0)
-
-  const countArc = d3.arc()
-      .innerRadius(d=>countScale(d[0]))
-      .outerRadius(d => countScale(d[1]))
-      .startAngle(d => xScale(d.data.index))
-      .endAngle(d => xScale(d.data.index+1))
-      .padAngle(0.01)
-      .padRadius(0)
-
-  const correctScale = d3.scaleRadial([0, d3.max(circleData, d => d.new_correct + d.old_correct)], [titleOuterRadius, totalOuterRadius])
-  const countScale = d3.scaleRadial([0, d3.max(circleData, d => d.new_count + d.old_count)], [totalInnerRadius, titleInnerRadius])
-
-  const correctStack = d3.stack()
-      .keys(['new_correct', 'old_correct'])
-      .order(d3.stackOrderNone)
-      .offset(d3.stackOffsetNone);
-
-  const countStack = d3.stack()
-      .keys(['new_count', 'old_count'])
-      .order(d3.stackOrderNone)
-      .offset(d3.stackOffsetNone);
-
-  const svg = d3.select('#master-degree-1')
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height)
-
-  const correctGroups = svg.selectAll(".correct-group")
-      .data(correctStack(circleData))
-      .enter()
-      .append("g")
-      .attr('class', 'correct-group')
-      .selectAll("path")
-      .data(d=>d)
-      .enter()
-      .append("path")
-      .attr('d', correctArc)
-      .attr('fill', 'yellow')
-      .attr('stroke', 'black')
-
-  const countGroups = svg.selectAll(".count-group")
-      .data(countStack(circleData))
-      .enter()
-      .append("g")
-      .attr('class', 'count-group')
-      .selectAll("path")
-      .data(d=>d)
-      .enter()
-      .append("path")
-      .attr('d', countArc)
-      .attr('fill', 'red')
-      .attr('stroke', 'red')
-
 }
 </script>
 
 <template>
   <div class="chart-subcomponent">
-    <div>
-      <span class="float-left">Card name</span>
-      <div class="float-right">
-        <el-button-group size="small">
-          <el-button :icon="Upload" />
-          <el-button :icon="Top" />
-          <el-button :icon="Bottom" />
-          <el-button :icon="Download" />
-        </el-button-group>
-        <span class="w-2 inline-block"></span>
-        <el-button size="small" type="danger" plain :icon="Close" />
-      </div>
-    </div>
-    <div id="study-mode-1"></div>
-    <div id="master-degree-1"></div>
+    <div class="cluster-feature" v-for="i in clusters" :id='`cluster-feature-${i}`'></div>
   </div>
 </template>
 
