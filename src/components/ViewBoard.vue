@@ -16,10 +16,10 @@ import KLRelationView from './KLRelationView.vue'
     </div>
 
     <div class="row-span-1 col-span-1 chart-component log overflow-y-auto">
-      <div class="title" style="text-align: left;">答题日志</div>
-      <div class="overflow-y-auto" style="height:100%;">
+      <!-- <div class="title" style="text-align: left;">答题日志</div> -->
+      <!-- <div class="overflow-y-auto" style="height:100%;"> -->
         <LogView ></LogView>
-      </div>
+      <!-- </div> -->
     </div>
 
     <div class="row-span-1 col-span-1 chart-component">
