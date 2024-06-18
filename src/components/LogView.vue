@@ -108,9 +108,6 @@ const intervalY = 2;
 var cellWidth = value1.value + intervalX;
 
 const cellHeight = 14 + intervalY;
-const intervalY = 3;
-const cellWidth = 4 + intervalX;
-const cellHeight = 16 + intervalY;
 
 const highlightColor = "yellow"
 const highlightWidth = 2
