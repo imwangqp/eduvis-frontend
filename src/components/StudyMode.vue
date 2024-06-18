@@ -1,12 +1,26 @@
 <script setup>
 import {Bottom, Close, Download, Top, Upload} from "@element-plus/icons-vue";
 import * as d3 from 'd3';
-import { onMounted, watch } from "vue";
+import { onMounted, watch, ref } from "vue";
 import {titleColorList} from "@/utils/getColor.js";
 import _ from 'lodash'
 import store from "@/store/index.js";
+import emitter from "@/utils/mitt.js";
 
-const clusters=[0,1,2,3]
+const clusters=[0,1,2]
+
+const size={
+  width: 0,
+  height:300,
+  areaHeight: 50,
+  radarHeight: 60,
+  radarOuterRadius:50,
+  radarInner:20,
+  chartInterval:10,
+  angleStep: Math.PI * 2 / 8,
+  masteryMax:0,
+  countMax: 0
+}
 
 const width = 400,
     height = 100,
@@ -17,39 +31,39 @@ const width = 400,
     lineHeight = 76
 const data = [3, 4, 6, 7, 8, 3, 9, 1, 5, 3, 8, 6, 4, 9, 3, 2, 6, 7, 5, 8, 9];
 
+function findIntervals(arr) {
+  const result = [];
+  for (let i = 1; i < arr.length; i++) {
+    const diff = arr[i] - arr[i - 1];
+    if (diff > 0.05) {
+      // console.log(diff, i)
+      result.push([i-1, i]);
+    }
+  }
+  return result.map(([start, end]) => [start, end + (end - start)]);
+}
+
 function completeRange(arr) {
   return _.range(arr[0], arr[arr.length - 1] + 1);
 }
 
-function splitArrayByRanges(array, ranges) {
-  // 对范围进行排序和处理，确保它们是连续的
-  const sortedRanges = ranges
-      .map(range => range.sort((a, b) => a - b))
-      .sort((a, b) => a[0] - b[0]);
+function octagonPath(center, index, innerRadius) {
+  let path = '';
+  const x0 = center[0] + Math.cos(size.angleStep * index + Math.PI/8) * innerRadius,
+      y0 = center[1] + Math.sin(size.angleStep * index + Math.PI/8) * innerRadius,
+      x1 = center[0] + Math.cos(size.angleStep * (index+1) + Math.PI/8) * innerRadius,
+      y1 = center[1] + Math.sin(size.angleStep * (index+1) + Math.PI/8) * innerRadius,
+      x2 = center[0] + Math.cos(size.angleStep * index + Math.PI/8) * size.radarOuterRadius,
+      y2 = center[1] + Math.sin(size.angleStep * index + Math.PI/8) * size.radarOuterRadius,
+      x3 = center[0] + Math.cos(size.angleStep * (index+1) + Math.PI/8) * size.radarOuterRadius,
+      y3 = center[1] + Math.sin(size.angleStep * (index+1) + Math.PI/8) * size.radarOuterRadius
 
-  // 用于存储最终的分段数组
-  const segments = [];
-  let startIndex = 0;
-
-  // 遍历每个范围，切割数组
-  sortedRanges.forEach(range => {
-    const [begin, end] = range;
-    // 添加当前范围之前的部分
-    if (startIndex < begin - 1) {
-      segments.push(array.slice(startIndex, begin - 1));
-    }
-    // 添加当前范围的部分
-    segments.push(array.slice(begin - 1, end));
-    // 更新下一次切割的起始索引
-    startIndex = end;
-  });
-
-  // 添加最后一个范围之后的部分
-  if (startIndex < array.length) {
-    segments.push(array.slice(startIndex));
-  }
-
-  return segments;
+  path += `M ${x0} ${y0} `;
+  path += `L ${x2} ${y2} `;
+  path += `L ${x3} ${y3} `;
+  path += `L ${x1} ${y1} `;
+  path += 'Z';
+  return path;
 }
 
 const circleData = [
@@ -110,88 +124,134 @@ const circleData = [
     "old_count": 199
   }
 ]
-
+const modeRef = ref()
 
 onMounted(()=>{
-  watch(store.state.id, n=>console.log(n))
-  // drawCircle(data, [[1,3],[5,8]], circleData)
-  // drawChart(data, circleData)
-
+  emitter.on('detail', detail=>{
+    initChart(detail)
+  })
 })
-function initChart(index) {
-  const svg=d3.select(`#cluster-feature-${index}`)
-      .append('svg')
 
-  const indexScale = d3.scaleLinear([0, data.length], [0, width]),
-      titleScale = d3.scaleLinear([0, d3.max(data, d=>d.title)], [0, width/3]),
-      xScale = d3.scaleLinear([0,1], [0, width/2]),
-      xScale1 = d3.scaleLinear([0, lineData.length - 1], [0, width]),
-      yScale = d3.scaleLinear([0, _.size(data[0])-1], [0, height]),
-      yScale1 = d3.scaleLinear([0, d3.max(lineData)], [0, height])
+function initChart(detail){
+  // console.log(detail)
+  size.masteryMax=_.max([_.max(detail[0]['detail']['mastery']), _.max(detail[0]['detail']['mastery']), _.max(detail[0]['detail']['mastery'])])
+  size.countMax=_.max([d3.max(detail[0]['detail']['key_detail'], d=>d.count), d3.max(detail[1]['detail']['key_detail'], d=>d.count), d3.max(detail[1]['detail']['key_detail'], d=>d.count)])
+  size.width=modeRef.value.clientWidth
+  _.forEach(detail, (item ,index)=>{
+    const svg = d3.select(`#cluster-feature-${index}`)
+        .append('svg')
+        .attr('width', size.width)
+        .attr('height', size.height)
+    const areaGroup = svg.append('g')
+        .attr('id', `area-group-${index}`)
+    initAreaChart(areaGroup, item.detail)
+    const radarGroup = svg.append('g')
+        .attr('transform', `translate(0, ${size.areaHeight + size.chartInterval})`)
+        .attr('id', `radar-group-${index}`)
+    initRadarChart(radarGroup, item.detail)
+  })
+}
 
-  svg.append('g')
-      .attr('id', 'title-group')
-      .selectAll('rect')
-      .data(data)
-      .enter()
-      .append('rect')
-      .attr('x', (_, i)=>indexScale(i))
-      .attr('y', yScale(0))
-      .attr('height', height/2)
-      .attr('width', d=>titleScale(d.title))
-      .attr('fill', 'black')
+function initAreaChart(group, data){
+  const mastery = data.mastery
+  const intervals = findIntervals(mastery)
+  const xScale = d3.scaleLinear([0, mastery.length], [0, size.width]),
+      yScale = d3.scaleLinear([0, size.masteryMax], [size.areaHeight, 0])
+
+  const lineGenerator = d3.line()
+      .x((_, i) => xScale(i))
+      .y(d => {
+        return yScale(d)
+      })
+      .curve(d3.curveBumpX);
+
+  const gradient = group.append('defs')
+      .append('linearGradient')
+      .attr('id', 'gradient')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '0%')
+      .attr('y2', '100%');
+  gradient.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', 'tomato');
+  gradient.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', 'white');
 
   const area = d3.area()
       .x(d=>xScale(d))
       .y1(d=>{
-        console.log(lineData[d])
-        return yScale(lineData[d])
+        return yScale(mastery[d])
       })
-      .y0(yScale(d3.max(lineData)))
+      .y0(yScale(0))
       .curve(d3.curveBumpX)
 
-  const lineGenerator = d3.line()
-      .x((d, i) => xScale(i))
-      .y(d => yScale(d))
-      .curve(d3.curveBumpX)
-
-  lineGroup.append('path')
-      .datum(lineData)
-      .attr('d', lineGenerator)
-      .attr('fill', 'none')
-      .attr('stroke', 'steelblue')
-      .attr('stroke-width', 2)
-  // console.log()
-  const gradient = svg.append('defs')
-      .append('linearGradient')
-      .attr('id', 'gradient')
-      .attr('x1', '0%') // 渐变开始位置
-      .attr('y1', '0%') // 渐变开始位置
-      .attr('x2', '0%') // 渐变结束位置
-      .attr('y2', '100%'); // 渐变结束位置
-
-// 2. 设置渐变的颜色和位置
-  gradient.append('stop')
-      .attr('offset', '0%')
-      .attr('stop-color', 'tomato'); // 上边的颜色
-
-  gradient.append('stop')
-      .attr('offset', '100%')
-      .attr('stop-color', 'white');
-  const areaGroup = svg.append('g')
-      .attr('class', 'area-group')
-  _.forEach(interval, item=>{
-    areaGroup.append('path')
+  _.forEach(intervals, item=> {
+    group.append('path')
         .datum(completeRange(item))
         .attr('fill', 'url(#gradient)')
         .attr('d', area)
   })
+
+  group.append('path')
+      .datum(mastery)
+      .attr('d', lineGenerator)
+      .attr('fill', 'none')
+      .attr('stroke', 'steelblue')
+      .attr('stroke-width', 2)
+
+
 }
+
+function initRadarChart(group, data) {
+  group.selectAll('g')
+      .data(new Array(3).fill(0))
+      .enter()
+      .append('g')
+      .attr('id', (d, i)=>`radar-${i}`)
+      .attr('transform', (d, i) => `translate(${size.width/4*(i+1)-size.radarHeight*Math.cos(Math.PI/4)*2}, 0)`)
+  _.forEach(new Array(3).fill(0), (d, i) => {
+    const dataSlice = _.filter(data['key_detail'], {'index': i})
+    const correctScale = d3.scaleLinear([0,1], [size.radarOuterRadius, size.radarHeight]),
+        countScale = d3.scaleLog([0+1, size.countMax+1], [size.radarOuterRadius, size.radarInner])
+    const item = d3.select(`#${group.attr('id')} > #radar-${i}`)
+        item.append('g')
+            .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
+            .selectAll("polygon")
+            .data([dataSlice])
+            .enter()
+            .append("polygon")
+            .attr("points", d=> {
+              return d.map((e, i)=>{
+                return [
+                  (correctScale(e['correctness'])+size.radarInner)*Math.cos(size.angleStep * i + Math.PI/8),
+                  (correctScale(e['correctness'])+size.radarInner)*Math.sin(size.angleStep * i + Math.PI/8)
+                ].join(',')
+              }).join(' ')
+            })
+            .style("stroke", "#999")
+            .style("fill", "none")
+
+    item.append("g")
+        .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) + ")")
+        .selectAll("path")
+        .data(dataSlice)
+        .enter()
+        .append("path")
+        .attr("d", (d, i) => {
+          // console.log(d['count'])
+          const center = [0, 0];
+          return octagonPath(center, i, countScale(d['count']+1));
+        })
+  })
+}
+
 </script>
 
 <template>
-  <div class="chart-subcomponent">
-    <div class="cluster-feature" v-for="i in clusters" :id='`cluster-feature-${i}`'></div>
+  <div class="chart-subcomponent" ref="modeRef">
+    <div class="w-full" v-for="i in clusters" :id='`cluster-feature-${i}`'></div>
   </div>
 </template>
 

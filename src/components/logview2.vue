@@ -227,7 +227,7 @@ function initKnowledge() {
         const yv = xy[1]
         const index = Math.floor((yv-margin.top)/ cellHeight);
 
-        console.log(index)
+        // console.log(index)
 
         if(selectedKnowledge == index) {
             removeHighlight(index);    //参数

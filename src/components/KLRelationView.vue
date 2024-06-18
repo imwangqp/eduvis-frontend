@@ -9,10 +9,11 @@
 import {onMounted, ref} from 'vue';
 import * as d3 from 'd3';
 import axios from "axios";
-import {useStore} from "vuex";
-import {clusterColorList} from "@/utils/getColor.js";
+import {clusterColorList, CommonColor} from "@/utils/getColor.js";
+import emitter from '../utils/mitt'
+import store from "@/store/index.js";
 
-const store = useStore()
+
 
 import _ from 'lodash'
 
@@ -51,8 +52,8 @@ let data = [{
 
 onMounted(() => {
   axios.get('/api/getStudyModeScatter').then(res => {
-    console.log(res)
-    initChart(res.data.data.point)
+    initChart(res.data.scatter)
+    emitter.emit('detail', res.data.detail)
   })
   // initClusterBarChart(data)
 })
@@ -64,18 +65,13 @@ function initTooltip(id, masterData, reviewData) {
       .append('svg')
       .attr('width', size.tooltipViewWidth)
       .attr('height', size.tooltipViewHeight)
-
-  
 }
 
 function initChart(data) {
-  console.log(data)
   let tooltip = d3.select('#relationView')
       .append('div')
       .attr('class', 'tool-tip')
 
-  let that = this
-  console.log(relationRef.value.clientHeight)
   const width = relationRef.value.clientWidth;
   const height = relationRef.value.clientHeight;
   const margin = {left: 20, right: 15, top: 10, bottom: 20}
@@ -104,7 +100,7 @@ function initChart(data) {
       .size([width, height])
       .thresholds(30)(data)
 
-  const colorScale = d3.scaleSequential(['white', '#588dd5'])
+  const colorScale = d3.scaleSequential(['#ffffffff', CommonColor.Density])
       .domain([
         d3.min(contours, (d) => d.value) * 0.9,
         d3.max(contours, (d) => d.value) * 1.1
@@ -139,17 +135,18 @@ function initChart(data) {
       .attr('fill', (d, item) => clusterColorList[d.label])
       // .attr('opacity', .5)
       .on('click', (d, item) => {
-        tooltip.style('left', d.offsetX + 5 + 'px')
-            .style('top', d.offsetY + 5 + 'px')
-            .style('display', 'inline-block')
-            .html(`
-                    <div>
-                    123
-                        <div id="tooltip-master"></div>
-                        <div id="tooltip-review"></div>
-                    </div>
-                  `)
-        initTooltip(item.id)
+        store.commit('addId', [item.id])
+        // tooltip.style('left', d.offsetX + 5 + 'px')
+        //     .style('top', d.offsetY + 5 + 'px')
+        //     .style('display', 'inline-block')
+        //     .html(`
+        //             <div>
+        //             123
+        //                 <div id="tooltip-master"></div>
+        //                 <div id="tooltip-review"></div>
+        //             </div>
+        //           `)
+        // initTooltip(item.id)
       })
       .on('mouseover', d => {
         d3.select('#' + d['target']['id'])

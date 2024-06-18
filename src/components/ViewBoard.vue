@@ -23,12 +23,14 @@ import RadarView from "@/components/RadarView.vue";
       <div class="col-span-3">
         <KLRelationView />
       </div>
-      <div class="col-span-2 bg-green-500"></div> <!-- 绿色部分，flex-grow值为4 -->
+      <div class="col-span-2">
+        <StudyMode />
+      </div> <!-- 绿色部分，flex-grow值为4 -->
 <!--      <div class="flex-grow-6">-->
 <!--                -->
 <!--      </div>-->
 <!--      <div class="flex-grow-4">-->
-<!--        &lt;!&ndash;        <StudyMode />&ndash;&gt;-->
+<!--        &lt;!&ndash;        &ndash;&gt;-->
 <!--      </div>-->
     </div>
     <div class="row-span-4 col-span-1 chart-component">

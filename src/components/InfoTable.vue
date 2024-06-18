@@ -4,6 +4,11 @@ import * as d3 from 'd3'
 import TableLineChart from './TableLineChart.vue';
 import KnowledgeGlyph from './KnowledgeGlyph.vue';
 import BadKnowledgeGlyph from './BadKnowledgeGlyph.vue';
+import store from "@/store/index.js";
+
+//表格组件
+const tableRef = ref()
+
 const studentInfo = [
     {
         ID: '8b6d1125760bd3939b6e',
@@ -426,7 +431,7 @@ const getMethodClass = (name) => {
         return 'tagStyle_3'
     }
     else if(name==='Method_gj1NLb4Jn7URf9K2kQPd'){
-        console.log('tagStyle_4')
+        // console.log('tagStyle_4')
         return 'tagStyle_4'
     }
     else if(name === 'Method_m8vwGkEZc3TSW2xqYUoR'){
@@ -451,11 +456,15 @@ const getMethodIndex = (name) => {
     return 'Method 5'
   }
 }
+const handleSelectionChange = (e) =>{
+  e.map(i=>i)
+  store.commit('addId', e)
+}
 </script>
 
 <template>
   <div style="width: 1030px">
-    <el-table :data="studentInfo">
+    <el-table :data="studentInfo" @selection-change="handleSelectionChange" ref="tableRef" >
       <el-table-column type="selection" width="40" />
       <el-table-column label="ID" prop="ID" width="200" class-name="centered-column"></el-table-column>
       <el-table-column label="性别" prop="sex" width="60" class-name="centered-column">
@@ -482,7 +491,7 @@ const getMethodIndex = (name) => {
           <BadKnowledgeGlyph :badknowledgeData="scope.row.badknowledge"></BadKnowledgeGlyph>
         </template>
       </el-table-column>
-      <el-table-column label="这是啥" class-name="centered-column" width="130">
+      <el-table-column label="常用方法" class-name="centered-column" width="130">
         <template #default="scope">
           <!--&lt;!&ndash;                <el-popover effect="light" trigger="hover" placement="top">&ndash;&gt;-->
           <!--&lt;!&ndash;                  <template #default>&ndash;&gt;-->

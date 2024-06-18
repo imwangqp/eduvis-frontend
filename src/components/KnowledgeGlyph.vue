@@ -14,7 +14,7 @@ const glyphRef = ref(null);
 
 const drawGlyph = () => {
     const knowledgeData = props.knowledgeData;
-    console.log(knowledgeData);
+    // console.log(knowledgeData);
     const svg = d3.select(glyphRef.value)
         .attr('width',120)
         .attr('height',50);

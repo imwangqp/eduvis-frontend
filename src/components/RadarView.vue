@@ -2,77 +2,100 @@
 import { onMounted } from "vue";
 import * as d3 from 'd3';
 
-const data = [{
-  index:0,
-  
-}]
+const data = [
+  {"index": 0, "correct_old": 0.1, "correct_new": 0.8, "count_old": 100, "count_new": 50},
+  {"index": 1, "correct_old": 0.2, "correct_new": 0.8, "count_old": 100, "count_new": 50},
+  {"index": 2, "correct_old": 0.34, "correct_new": 0.8, "count_old": 100, "count_new": 50},
+  {"index": 3, "correct_old": 0.5, "correct_new": 0.8, "count_old": 100, "count_new": 50},
+  {"index": 4, "correct_old": 0.6, "correct_new": 0.8, "count_old": 100, "count_new": 50},
+  {"index": 5, "correct_old": 0.7, "correct_new": 0.8, "count_old": 100, "count_new": 50},
+  {"index": 6, "correct_old": 0.7, "correct_new": 0.8, "count_old": 100, "count_new": 50},
+  {"index": 7, "correct_old": 0.7, "correct_new": 0.8, "count_old": 100, "count_new": 50}
+]
+const angleStep = Math.PI * 2 / 8;
+const center = [0, 0];
+const size = {
+  radarWidth:20,
+  radius:40,
+  barWidth:30
+}
 
 onMounted(()=>{
-  initChart()
+  initChart(data)
 })
 
-function octagonPath(center, innerRadius, outerRadius, angle, angleStep) {
-  let path = '';
-  for (let i = 0; i < 8; i++) {
-    // 内部顶点
-    const x0 = center[0] + Math.cos(angle + angleStep * i) * innerRadius;
-    const y0 = center[1] + Math.sin(angle + angleStep * i) * innerRadius;
-    // 外部顶点
-    const x1 = center[0] + Math.cos(angle + angleStep * i) * outerRadius;
-    const y1 = center[1] + Math.sin(angle + angleStep * i) * outerRadius;
 
-    path += `${i === 0 ? 'M' : 'L'} ${x0} ${y0} `;
-    path += `L ${x1} ${y1} `;
-  }
-  path += 'Z'; // 闭合路径
+function octagonPath(center, index, innerRadius, outerRadius) {
+  let path = '';
+  const x0 = center[0] + Math.cos(angleStep * index + Math.PI/8) * innerRadius,
+      y0 = center[1] + Math.sin(angleStep * index + Math.PI/8) * innerRadius,
+      x1 = center[0] + Math.cos(angleStep * (index+1) + Math.PI/8) * innerRadius,
+      y1 = center[1] + Math.sin(angleStep * (index+1) + Math.PI/8) * innerRadius,
+      x2 = center[0] + Math.cos(angleStep * index + Math.PI/8) * outerRadius,
+      y2 = center[1] + Math.sin(angleStep * index + Math.PI/8) * outerRadius,
+      x3 = center[0] + Math.cos(angleStep * (index+1) + Math.PI/8) * outerRadius,
+      y3 = center[1] + Math.sin(angleStep * (index+1) + Math.PI/8) * outerRadius
+
+  path += `M ${x0} ${y0} `;
+  path += `L ${x2} ${y2} `;
+  path += `L ${x3} ${y3} `;
+  path += `L ${x1} ${y1} `;
+  path += 'Z';
   return path;
 }
 
-function initChart() {
-  // 设置雷达图的大小和边距
-  var width = 450,
+function initChart(data) {
+  const width = 450,
       height = 450,
       margin = { top: 100, right: 100, bottom: 100, left: 100 },
       radius = Math.min(width / 2, height / 2) - (Math.max(margin.top + margin.bottom, margin.left + margin.right) / 2);
 
-// 创建SVG容器
-  var svg = d3.select("#test").append("svg")
+  const svg = d3.select("#test").append("svg")
       .attr("width", width)
       .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
-// 定义八边形的顶点
-  var points = [];
-  var angle = Math.PI * 2 / 8; // 八边形，所以是2π除以8
-  for (var i = 0; i < 8; i++) {
-    points.push([radius * Math.cos(angle * i + Math.PI/8), radius * Math.sin(angle * i + Math.PI/8)]);
-  }
+  const correctScale = d3.scaleLinear([0,1], [0, size.radarWidth])
+  const countScale = d3.scaleLinear([0, d3.max(data, d=>d['count_old']+d['count_new'])], [radius, radius/2])
 
 // 绘制八边形
-  svg.selectAll("polygon")
-      .data([points])
+  svg.append("g")
+      .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
+      .selectAll("polygon")
+      .data([data])
       .enter()
       .append("polygon")
-      .attr("points", function(d) {
-        return d.map(function(d) {
-          return [d[0],d[1]].join(",");
-        }).join(" ");
+      .attr("points", d=> {
+        return d.map((e, i)=>{
+          return [
+            (correctScale(e['correct_old'])+size.radius)*Math.cos(angleStep * i + Math.PI/8),
+            (correctScale(e['correct_old'])+size.radius)*Math.sin(angleStep * i + Math.PI/8)
+          ].join(',')
+        }).join(' ')
       })
-      .style("stroke", "#999") // 边框颜色
-      .style("fill", "none"); // 填充颜色
+      .style("stroke", "#999")
+      .style("fill", "none")
 
-  svg.selectAll("path")
-      .data(series)
-      .enter().append("path")
-      .attr("d", d => {
-        // 计算每个八边形的中心点和角度
-        const center = [0, 0]; // 假设图表的中心点为(0,0)
-        const angle = x(d.data[0]) + x.bandwidth() / 2; // 根据x比例尺计算角度
-        const angleStep = Math.PI * 2 / 8; // 八边形的角度步长
-        return octagonPath(center, y(d[0]), y(d[1]), angle, angleStep);
+  svg.append("g")
+      .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
+      .selectAll("path")
+      .data(data)
+      .enter()
+      .append("path")
+      .attr("d", (d, i) => {
+        const center = [0, 0];
+        return octagonPath(center, i, countScale(0), countScale(d['count_old']));
       })
-      .attr("fill", d => color(d.key));
+
+  svg.append("g")
+      .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
+      .selectAll("path")
+      .data(data)
+      .enter()
+      .append("path")
+      .attr("d", (d, i) => {
+        const center = [0, 0];
+        return octagonPath(center, i, countScale(d['count_old']), countScale(d['count_new']));
+      })
 }
 </script>
 
