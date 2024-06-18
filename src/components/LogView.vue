@@ -1,11 +1,21 @@
 <template>
+    <div class="outerHeader" style="text-align: left;">
+        <div class="title-text" style="text-align: left;">
+            答题日志
+        </div>
+        <div class="slider-demo-block">
+            <!-- <span class="demonstration">宽度</span> -->
+            <el-slider v-model="value1" :min="1" :max="16" size="small"/>
+        </div>
+    </div>
     <div class="outerContainer" style="max-height: 100%;">
         <div class="card" v-for="(item, index) in cards" :key="index" :style="getCardStyle(index)">
             <div class="header">
                 <div class="title">学号: {{ item }}</div>
+
                 <div>
                     <el-button-group class="button">
-                        <el-button size="small" round> 
+                        <el-button @click="toTop(index)" size="small" round>
                             <el-icon>
                                 <Upload />
                             </el-icon>
@@ -15,7 +25,7 @@
                                 <Top />
                             </el-icon>
                         </el-button>
-                        <el-button size="small" round>
+                        <el-button @click="toBottom(index)" size="small" round>
                             <el-icon>
                                 <Download />
                             </el-icon>
@@ -55,11 +65,12 @@
 
 <script setup>
 import * as d3 from 'd3';
-import { onMounted, ref, watch } from "vue";
+import { onMounted, reactive, ref, watch, computed } from "vue";
 import getKnowledgeColor from '../utils/index'; 
 import data from '../assets/log.json'
 
 const lineData = [
+    [
       [10, 20, 30, 40, 50],
       [30, 40, 10, 20, 50],
       [20, 10, 30, 50, 40],
@@ -68,16 +79,35 @@ const lineData = [
       [0, 5, 15, 20, 40],
       [0, 10, 25, 30, 45],
       [0, 15, 20, 35, 50]
+    ],
+    [
+      [10, 20, 30, 40, 50],
+      [10, 20, 30, 40, 50],
+      [10, 20, 30, 40, 50],
+      [15, 20, 27, 32, 35],
+      [10, 20, 30, 40, 45],
+      [0, 5, 15, 20, 40],
+      [0, 10, 25, 30, 45],
+      [0, 15, 20, 35, 50]
+    ],
 ];
 
-var cards = ["8b6d1125760bd3939b6e", "8b6d1125760bd3939b6f"];
+var cards = reactive(["8b6d1125760bd3939b6e", "8b6d1125760bd3939b6f"]);
 
 var selectedKnowledge = -1;
 
 const knowledge = ["r8S3g", "t5V9e", "m3D1v", "s8Y2f", "k4W1c", "g7R2j", "b3C9s", "y9W5d"]
+//方块宽度
+var value1 = ref(8)
 
 const lineRef = ref([])
 const intervalX = 1;
+const intervalY = 2;
+// var cellWidth = ref();
+// cellWidth = value1.value + intervalX;
+var cellWidth = value1.value + intervalX;
+
+const cellHeight = 14 + intervalY;
 const intervalY = 3;
 const cellWidth = 4 + intervalX;
 const cellHeight = 16 + intervalY;
@@ -91,13 +121,25 @@ const newLineWidth = 3;
 var content = ref()
 
 
+
 onMounted(()=>{
+
     cards.forEach((item, index) => {
         initKnowledge(index)
         initLog(index)
         initLineChart(index)
     })
-    
+    console.log("watch")
+    watch(value1, (newVal, oldVal) => {
+        console.log("watch"+newVal, oldVal)
+        cellWidth = newVal + intervalX
+        cards.forEach((item, index) => {
+            // initKnowledge(index)
+            initLog(index)
+            // initLineChart(index)
+        })
+    })
+
 })
 
 function setLineRef(el, index) {
@@ -109,7 +151,7 @@ function setLineRef(el, index) {
 function getCardStyle(index) {
     let top = 0;
     for (let i = 0; i < index; i++) {
-        top += cards[i].offsetHeight + 16; // 16 是卡片之间的间距
+        top += cards[i].offsetHeight +8; // 16 是卡片之间的间距
     }
     return {
         top: `${top}px`,
@@ -117,16 +159,48 @@ function getCardStyle(index) {
 }
 
 function moveUp(index) {
+    console.log("moveup"+index)
     if (index > 0) {
         // 交换当前卡片与上一个卡片的位置
-        [this.cards[index], this.cards[index - 1]] = [this.cards[index - 1], this.cards[index]];
+        [cards[index], cards[index - 1]] = [cards[index - 1], cards[index]];
+        initLineChart(index)
+        initLineChart(index-1)
+        initLog(index)
+        initLog(index-1)
+    }
+}
+
+function toTop(index) {
+    if (index > 0) {
+        // 交换当前卡片与上一个卡片的位置
+        [cards[index], cards[0]] = [cards[0], cards[index]];
+        initLineChart(index)
+        initLineChart(0)
+        initLog(index)
+        initLog(0)
+    }
+}
+
+function toBottom(index) {
+    if (index < cards.length - 1) {
+        // 交换当前卡片与下一个卡片的位置
+        [cards[index], cards[cards.length - 1]] = [cards[cards.length - 1], cards[index]];
+        initLineChart(index)
+        initLineChart(cards.length - 1)
+        initLog(index)
+        initLog(cards.length - 1)
     }
 }
 
 function moveDown(index) {
-    if (index < this.cards.length - 1) {
+    console.log("movedown"+index)
+    if (index < cards.length - 1) {
         // 交换当前卡片与下一个卡片的位置
-        [this.cards[index], this.cards[index + 1]] = [this.cards[index + 1], this.cards[index]];
+        [cards[index], cards[index + 1]] = [cards[index + 1], cards[index]];
+        initLineChart(index)
+        initLineChart(index + 1)
+        initLog(index)
+        initLog(index + 1)
     }
 }
 
@@ -143,10 +217,10 @@ function getColor(status) {
 function addHighlight(num, index) {
     const dotSvg = d3.select(`#knowledge-${index}`)
     const svg = d3.select(`#log-${index}`)
-
+    const dots = dotSvg.selectAll(".kl")
     const rects = svg.selectAll(".log")
     //滤镜
-    const filter = dotSvg.append("defs")
+    const filter = svg.append("defs")
     .append("filter")
     .attr("id", "blur")
     .attr("x", "-50%")
@@ -158,7 +232,8 @@ function addHighlight(num, index) {
     .attr("in", "SourceGraphic")
     .attr("stdDeviation", 3);
 
-    // dots.filter((d, i) => i !== index)
+    dots.filter((d, i) => i !== num)
+    .attr("opacity", .2)
     // .attr("filter", "url(#blur)");
     
 
@@ -175,6 +250,7 @@ function addHighlight(num, index) {
     // const box = d3.select("body").selectAll("rect:empty");
     // const box = d3.selectAll(".box")
     // box.filter((d, i) => i === index).attr("opacity", "1")
+
     const shadowFilter = svg.append("filter")
     .attr("id", "shadowFilter")
     .attr("x", "-10%")
@@ -206,40 +282,57 @@ function addHighlight(num, index) {
 
     const lineSvg = d3.select(`#line-${index}`)
     const lines = lineSvg.selectAll(".brokenLine");
+    const areas = lineSvg.selectAll(".area");
     lines.filter((d, i) => i === num)
     .attr("stroke-width", newLineWidth)
 
-    lines.filter((d, i) => d.xx !== num)
-    .attr("opacity", 0.5);
+    // lines.filter((d, i) => d.xx !== num)
+    // .attr("opacity", 0.5);
+
+    //面积
+    areas.filter((d, i) => i === num)
+    .attr("fill-opacity", .3)
 }
 
-function removeHighlight(index) {
+function removeHighlight(num, index) {
+    console.log("index"+index)
     const dotSvg = d3.select(`#knowledge-${index}`)
     const svg = d3.select(`#log-${index}`)
 
     const rects = svg.selectAll(".log")
+    const dots = dotSvg.selectAll(".kl")
 
     rects.attr("filter", null)
-    rects.filter((d, i) => d.xx !== index)
+    rects.filter((d, i) => d.xx !== num)
     .attr("opacity", 1);
 
-    rects.filter((d, i) => d.xx === index)
+    rects.filter((d, i) => d.xx === num)
     .style("filter", null)
 
     //折线图
     const lineSvg = d3.select(`#line-${index}`)
     const lines = lineSvg.selectAll(".brokenLine");
-    lines.filter((d, i) => i === index)
+    const areas = lineSvg.selectAll(".area");
+
+    lines.filter((d, i) => i === num)
     .attr("stroke-width", lineWidth)
 
-    lines.filter((d, i) => d.xx !== index)
+    lines.filter((d, i) => i !== num)
     .attr("opacity", 1);
+
+    //面积
+    areas.filter((d, i) => i === num)
+    .attr("fill-opacity", .0)
+
+    //知识点
+    dots.filter((d, i) => i !== num)
+    .attr("opacity", 1)
 }
 
 function initKnowledge(index) {
     const r = (cellHeight-intervalY)/2
     const radius = 2
-    const margin = { top: 0, right: 10, bottom: 20, left: 10 }
+    const margin = { top: 0, right: 10, bottom: 10, left: 10 }
     const dotSvg = d3.select(`#knowledge-${index}`)
 
     const kdot = dotSvg.selectAll("g")
@@ -284,21 +377,18 @@ function initLineChart(index) {
     const height = cellHeight * knowledge.length ;
     const axis_color = "#b2bbbe"
 
-    const margin = { top: 10, right: 10, bottom: 20, left: 30 }
-    // const lineSvg = d3
-    //       .select("#logview")
-    //       .append("svg")
-    //       .attr("viewBox", [0, 0, width, height])
-    //       .attr("width", width)
-    //       .attr("height", height)
-    //       .attr("style", "max-width: 100%; height: auto; font: 12px sans-serif;")
-    //       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    const margin = { top: 10, right: 10, bottom: 10, left: 30 }
         
     const svg = d3.select(`#line-${index}`)
+    //清空svg
+    svg.selectAll('*').remove()
+
     const lineG = svg.append("g").attr("class", "line").attr("transform", `translate(${ margin.left}, ${margin.top})`)
 
     var x = d3.scaleLinear().range([0, width-margin.left-margin.right]).nice();
     var y = d3.scaleLinear().range([height-margin.top-margin.bottom, 0]).nice();
+    // x.domain([0, newDataset[0].length - 1]);
+    // y.domain([0, d3.max(newDataset.flat())]);
 
     var xAxis = d3.axisBottom(x).ticks(5).tickSizeOuter(0);
     var yAxis = d3.axisLeft(y).ticks(5).tickSizeOuter(0);
@@ -310,9 +400,9 @@ function initLineChart(index) {
       .call(xAxis);
 
     // 添加y轴
-    // lineG.append("g")
-    //   .attr("class", "y axis")
-    //   .call(yAxis);
+    lineG.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
 
     //坐标轴样式
     function changeAxisStyle() {
@@ -355,44 +445,76 @@ function initLineChart(index) {
       .y(d => y(d))
       .curve(d3.curveCardinal);
 
+
+    //折线图下面积
+    // const area = d3.area()
+    //     .x((d, i) => x(i))
+    //     .y0(height)
+    //     .y1(d => y(d));
+
     // 添加多条线
     var paths = lineG.selectAll(".brokenLine")
-      .data(lineData)
-      .enter()
-      .append("path")
-      .attr("class", "brokenLine")
-      .attr("fill", "none")
-      .attr("stroke", (d, i) => getKnowledgeColor.getKnowledgeColor(knowledge[i])) // 使用不同颜色
-      .attr("stroke-width", lineWidth)
-      .attr("d", line);
+        .data(lineData[index])
+        .enter()
+        .append("path")
+        .attr("class", "brokenLine")
+        .attr("fill", "none")
+        .attr("stroke", (d, i) => getKnowledgeColor.getKnowledgeColor(knowledge[i])) // 使用不同颜色
+        .attr("stroke-width", lineWidth)
+        .attr("d", line);
+
+    //添加面积
+    var areas = lineG.selectAll(".area")
+        .data(lineData[index])
+        .enter()
+        .append("path")
+        .attr("class", "area")
+        .attr("fill", (d, i) => getKnowledgeColor.getKnowledgeColor(knowledge[i]))
+        .attr("fill-opacity", .0)
+        .attr("d", d3.area()
+            .x(function(d, i) { return x(i) })
+            .y0(y(0))
+            .y1((d) => y(d))
+            .curve(d3.curveCardinal)
+        )
 
      // 更新函数
-     function updateChart(newDataset) {
-      // 更新比例尺的域
-      x.domain([0, newDataset[0].length - 1]);
-      y.domain([0, d3.max(newDataset.flat())]);
+    function updateChart(newDataset) {
+        // 更新比例尺的域
+        x.domain([0, newDataset[0].length - 1]);
+        y.domain([0, d3.max(newDataset.flat())]);
 
-      // 更新轴
-      lineG.select(".x.axis")
-        .transition()
-        .duration(500)
-        .call(xAxis);
+        // 更新轴
+        lineG.select(".x.axis")
+            .transition()
+            .duration(500)
+            .call(xAxis);
 
-      lineG.select(".y.axis")
-        .transition()
-        .duration(500)
-        .call(yAxis);
+        lineG.select(".y.axis")
+            .transition()
+            .duration(500)
+            .call(yAxis);
 
-      // 更新线条
-      paths.data(newDataset)
-        .transition()
-        .duration(500)
-        .attr("d", line);
+        // 更新线条
+        paths.data(newDataset)
+            .transition()
+            .duration(500)
+            .attr("d", line);
     
+        areas.data(newDataset)
+            .transition()
+            .duration(500)
+            .attr("d", d3.area()
+                .x(function(d, i) { return x(i) })
+                .y0(y(0))
+                .y1((d) => y(d))
+                .curve(d3.curveCardinal)
+            )
+
         changeAxisStyle();
     }
 
-    updateChart(lineData)
+    updateChart(lineData[index])
 }
 
 function initLog(index) {
@@ -407,6 +529,7 @@ function initLog(index) {
 
     const gray = "#F1F1F1"
 
+    console.log("newwidth"+cellWidth)
 
     //处理数据
     var n = 8, m = logData.length;
@@ -427,6 +550,7 @@ function initLog(index) {
     table = table.flat()
 
     const svg = d3.select(`#log-${index}`)
+    svg.selectAll('*').remove()
 
     svg.attr("width", width)
 
@@ -476,6 +600,11 @@ function initLog(index) {
         if(d.log == null)
             return;
 
+        if(selectedKnowledge != -1 && selectedKnowledge != d.xx)
+            return;
+
+        d3.select(this).style("filter", "drop-shadow(3px 3px 3px #B8B8B8)")
+
         tooltip.transition()
             .duration(200)
             .style("opacity", 0.8);
@@ -488,6 +617,7 @@ function initLog(index) {
     }
 
     function handleMouseOut() {
+        d3.select(this).style("filter", null)
         tooltip.transition()
             .duration(500)
             .style("opacity", 0);
@@ -498,7 +628,7 @@ function initLog(index) {
 
 <style scoped>
 .outerContainer {
-    max-height: 100%;
+    height: fit-content;
     overflow-y: scroll;
     scroll-behavior: smooth;
     box-sizing: border-box;
@@ -535,11 +665,15 @@ svg{
   border-radius: 8px;
   pointer-events: none;
 }
+.outerHeader{
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+}
 .header{
     width: 100%;
     height: fit-content;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 3fr 1fr;
     border-bottom-style: solid;
     border-bottom-color: rgba(207, 207, 207, 0.343);
     border-bottom-width: 1.5px;
@@ -559,6 +693,6 @@ svg{
 }
 .subcomponent{
     box-sizing: border-box;
-    @apply bg-white rounded-lg border-slate-100 border-2 p-2 m-1;
+    @apply bg-white rounded-lg border-slate-100 border-0 p-0 m-0;
   }
 </style>
