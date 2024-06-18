@@ -27,7 +27,7 @@ const drawLineChart = () => {
     
     const x = d3.scaleLinear()
         .domain([1, 24])
-        .range([0, width]);
+        .range([5, width - 10]);
     const y = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.value)])
         .range([height, 0]);
@@ -46,6 +46,12 @@ const drawLineChart = () => {
       .attr('transform', `translate(0,${height})`)
       .call(d3.axisBottom(x).ticks(6).tickFormat(d3.format('d')));
 
+    g.append('text')
+        .attr('x', width - 5)
+        .attr('y', height + 15)
+        .style('text-anchor', 'end')
+        .style('font-size', '7px')
+        .text('时间');
 
     g.append('path')
       .datum(data)
@@ -70,4 +76,7 @@ watch(() => props.data, () => {
 </template>
 
 <style scopoed>
+.axis--x  {
+
+}
 </style>

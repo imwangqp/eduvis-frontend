@@ -3,23 +3,24 @@ import * as d3 from 'd3'
 import { ref, onMounted, watch, nextTick} from 'vue'
 import {getKnowledgeColor} from '../utils/getColor.js'
 import titleInfo from './titleInfo.vue'
+//import title_studentInfoData from '../utils/title_studentInfo.json'
 
 const start = 30
 const nodes = [
-    {id:'r8S3g',x:10,y:50,group:1},
-    {id:'t5V9e',x:10,y:260,group:1},
-    {id:'m3D1v',x:10,y:470,group:1},
-    {id:'s8Y2f',x:10,y:680,group:1},
-    {id:'k4W1c',x:10,y:890,group:1},
-    {id:'y9W5d',x:10,y:1100,group:1},
-    {id:'g7R2j',x:10,y:1310,group:1},
-    {id:'b3C9s',x:10,y:1520,group:1},
+    {id:'r8S3g',x:10,y:100,group:1},
+    {id:'t5V9e',x:10,y:270,group:1},
+    {id:'m3D1v',x:10,y:460,group:1},
+    {id:'s8Y2f',x:10,y:670,group:1},
+    {id:'k4W1c',x:10,y:775,group:1},
+    {id:'y9W5d',x:10,y:985,group:1},
+    {id:'g7R2j',x:10,y:1250,group:1},
+    {id:'b3C9s',x:10,y:1450,group:1},
 
 
 
-    {id:'r8S3g_l0p5viby',x:100,y:40,group:2},
-    {id:'r8S3g_n0m9rsw4',x:100,y:145,group:2},
-    {id:'t5V9e_e1k6cixp',x:100,y:250,group:2},
+    {id:'r8S3g_l0p5viby',x:100,y:50,group:2},
+    {id:'r8S3g_n0m9rsw4',x:100,y:140,group:2},
+    {id:'t5V9e_e1k6cixp',x:100,y:270,group:2},
     {id:'m3D1v_t0v5ts9h',x:100,y:355,group:2},
     {id:'m3D1v_v3d9is1x',x:100,y:460,group:2},
     {id:'m3D1v_r1d7fr3l',x:100,y:565,group:2},
@@ -29,7 +30,7 @@ const nodes = [
     {id:'y9W5d_p8g6dgtv',x:100,y:985,group:2},
     {id:'y9W5d_e2j7p95s',x:100,y:1090,group:2},
 
-    {id:'g7R2j_e0v1yls8',x:100,y:1195,group:2},
+    {id:'g7R2j_e0v1yls8',x:100,y:1210,group:2},
     {id:'g7R2j_j1g8gd3v',x:100,y:1300,group:2},
     {id:'b3C9s_l4z6od7y',x:100,y:1405,group:2},
     {id:'b3C9s_j0v1yls8',x:100,y:1510,group:2},
@@ -158,7 +159,7 @@ const tableData = [
         knowledge:[//题目对应的知识点的掌握程度
             {
                 name:'r8S3g_l0p5viby',
-                value:1
+                value:0.8
             },
             {
                 name:'k4W1c_25455852',
@@ -188,6 +189,8 @@ const tableData = [
     },
 
 ]
+
+//const tableData = title_studentInfoData.data
 const graphRef = ref(null)
 const graphDiv = ref(null)
 
@@ -197,7 +200,7 @@ const getTitleStudentInfo = (titleId) => {
     
 }
 const drawGraph = () => {
-    const margin = {top: 5, right: 5, bottom: 5, left: 10}
+    const margin = {top: 5, right: 5, bottom: 0, left: 10}
     let width = graphDiv.value.clientWidth - margin.left - margin.right
     let height = graphDiv.value.clientHeight - margin.top - margin.bottom
 
@@ -241,14 +244,67 @@ const drawGraph = () => {
     };
     
     const link = svg.selectAll('.link')
-        .data(links)
-        .enter()
-        .append('line')
-        .attr('class', 'link')
-        .attr('x1',d => nodes.find(n => n.id === d.source).x)
-        .attr('y1',d => nodes.find(n => n.id === d.source).y)
-        .attr('x2',d => nodes.find(n => n.id === d.target).x)
-        .attr('y2',d => nodes.find(n => n.id === d.target).y)
+    .data(links)
+    .enter()
+    .append('path')  // 使用 'path' 元素代替 'line'
+    .attr('class', 'link')
+    .attr('d', d => {
+        const sourceNode = nodes.find(n => n.id === d.source);
+        const targetNode = nodes.find(n => n.id === d.target);
+        
+        const linkGenerator = d3.linkHorizontal()
+            .x(d => d.x - 5)
+            .y(d => d.y);
+        
+        const pathData = linkGenerator({
+            source: sourceNode,
+            target: targetNode
+        });
+        
+        return pathData;
+    })
+    .attr('fill', 'none')
+    .attr('stroke', 'black');
+
+    // const link = svg.selectAll('.link')
+    //     .data(links)
+    //     .enter()
+    //     .append('line')
+    //     .attr('class', 'link')
+    //     .attr('x1',d => nodes.find(n => n.id === d.source).x)
+    //     .attr('y1',d => nodes.find(n => n.id === d.source).y)
+    //     .attr('x2',d => nodes.find(n => n.id === d.target).x)
+    //     .attr('y2',d => nodes.find(n => n.id === d.target).y)
+
+    // const link = svg.selectAll('.link')
+    //     .data(links)
+    //     .enter()
+    //     .append('path')  // 使用 'path' 元素代替 'line'
+    //     .attr('class', 'link')
+    //     .attr('d', d => {
+    //         if(nodes.find(n=> n.id==d.source).group === 2){
+    //             const x1 = nodes.find(n => n.id === d.source).x
+    //             const y1 = nodes.find(n => n.id === d.source).y
+    //             const x2 = nodes.find(n => n.id === d.target).x - 5
+    //             const y2 = nodes.find(n => n.id === d.target).y
+    //             return `M${x1},${y1} L${x2},${y2}`
+    //         }
+    //         else{
+    //             const sourceNode = nodes.find(n => n.id === d.source);
+    //             const targetNode = nodes.find(n => n.id === d.target);
+
+    //             const linkGenerator = d3.linkHorizontal()
+    //                 .x(d => d.x - 5)
+    //                 .y(d => d.y);
+
+    //             const pathData = linkGenerator({
+    //                 source: sourceNode,
+    //                 target: targetNode
+    //             });
+
+    //             return pathData;
+    //         }
+    //     })
 
 
     const node = svg.selectAll('.node')
@@ -261,7 +317,11 @@ const drawGraph = () => {
                 return document.createElementNS(d3.namespaces.svg, 'circle');
             }
             else{
-                return document.createElementNS(d3.namespaces.svg, 'rect');
+                //创建rect加上id属性
+                const rect = document.createElementNS(d3.namespaces.svg, 'rect');
+                rect.setAttribute('id', d.id);
+                rect.setAttribute('class', 'question');
+                return rect;
             }
         })
         .attr('cx', d => d.x)//circle
@@ -270,9 +330,34 @@ const drawGraph = () => {
         .attr('y', d => d.y - 5)
         .attr('width', 15)
         .attr('height', 15)
-        // .attr('fill','#d0d0d0')
         .on('click', d => {
-            console.log(d)
+            if(d.srcElement.__data__.group === 2){
+                //添加选择和取消该节点的样式
+                const knowledgeElement = d3.select(d.srcElement)
+                const question = links.filter(l => l.source === d.srcElement.__data__.id)
+                //若选择该节点
+                if(knowledgeElement.attr('fill') === 'white' ){
+                    knowledgeElement.attr('fill', i => {
+                        return getKnowledgeColor(d.srcElement.__data__.id.slice(0,5))
+                    })
+                    knowledgeElement.attr('stroke','#b9b9b9').attr('stroke-width',4).attr('r',8)
+                    // 高亮显示该知识点对应的题目
+                    question.forEach(q => {
+                        const element = d3.select(`#${q.target}`);
+                        element.attr('fill',getKnowledgeColor(d.srcElement.__data__.id.slice(0,5)))
+                    })
+                }
+                //若取消选择该节点
+                else{
+                    knowledgeElement.attr('fill', 'white')
+                    knowledgeElement.attr('stroke',getKnowledgeColor(d.srcElement.__data__.id.slice(0,5)))
+                    knowledgeElement.attr('stroke-width',8)
+                    question.forEach(q => {
+                        const element = d3.select(`#${q.target}`);
+                        element.attr('fill','#c0c0c0')
+                    })
+                }
+            }
         })
 
     svg.selectAll('circle')
@@ -289,7 +374,7 @@ const drawGraph = () => {
                 return 12
             }
             else{
-                return 10
+                return 8
             }
         })
         .attr('stroke', d => {
@@ -305,7 +390,7 @@ const drawGraph = () => {
                 else if(d.id === 'k4W1c_h5r6nux7')
                     return '#fed9a6'
                 else if(d.id === 'g7R2j_e0v1yls8' || d.id === 'g7R2j_j1g8gd3v')
-                    return '#ffffcc'
+                    return '#b3e2cd'
                 else if(d.id === 'b3C9s_l4z6od7y' || d.id === 'b3C9s_j0v1yls8')
                     return '#e5d8bd'
                 else if(d.id === 'y9W5d_c0w4mj5h' || d.id === 'y9W5d_p8g6dgtv' || d.id === 'y9W5d_e2j7p95s')
@@ -318,14 +403,52 @@ const drawGraph = () => {
             }
         })
     
-    svg.selectAll('rect')
-        .attr('fill', 'rgb(220,220,220)')
-        .attr('stroke', 'rgb(220,220,220)')
+    svg.selectAll('rect.question')
+        .attr('fill', '#c0c0c0')
+        .attr('stroke', '#c0c0c0')
         .attr('stroke-width', 2)
         .on('click', d => {
-            //console.log(d.srcElement.__data__.id)
-            getTitleStudentInfo(d.srcElement.__data__.id)
-        })
+            const nodeElement = d3.select(d.srcElement);
+            // 如果元素已经被选中，那么取消选中
+            if (nodeElement.attr('stroke') === '#9e9e9e') {
+                nodeElement.attr('stroke', '#c0c0c0');
+                nodeElement.attr('stroke-width', 2);
+                //移除背景框rect
+                svg.selectAll('.rectInfo').remove();
+            } else {
+                // 取消所有其他 rect 的选中状态
+                svg.selectAll('rect.question')
+                    .attr('stroke', '#c0c0c0')
+                    .attr('stroke-width', 2);
+                //取消背景框rect
+                svg.selectAll('.rectInfo').remove();
+
+                // 选中当前 rect
+                nodeElement.attr('stroke', '#9e9e9e');
+                nodeElement.attr('stroke-width', 2);
+                //添加背景框rect
+                svg.insert('rect',':first-child')
+                    .attr('x', d.srcElement.__data__.x - 20)
+                    .attr('y', i => {
+                        if(d.srcElement.__data__.id === 'Question_FNg8X9v5zcbB1tQrxHR3'){
+                            return d.srcElement.__data__.y - 18
+                        }
+                        else{
+                            return d.srcElement.__data__.y - 12
+                        }
+                    })
+                    .attr('width',width * 0.57)
+                    .attr('height',30)
+                    .attr('class','rectInfo')
+                    .attr('stroke','#141414')
+                    .attr('stroke-width',2)
+                    .attr('rx',5)
+                    .attr('fill','#aeaeae')
+                    .attr('opacity',0.10)
+
+                getTitleStudentInfo(d.srcElement.__data__.id);
+            }
+        });
 
     node.append('title')
         .text(d => d.id)
@@ -340,7 +463,7 @@ const drawGraph = () => {
         .attr('x', width * 0.09)
         .attr('y', 0)
         .attr('dy', '0.32em')
-        .text('Error');
+        .text('Error')
 
     rightSide.append('g')
         .append('text')
@@ -348,7 +471,7 @@ const drawGraph = () => {
         .attr('x', width * 0.33) 
         .attr('y', 0) 
         .attr('dy', '0.32em')
-        .text('Partially Correct');
+        .text('| Partially Correct |');
 
     rightSide.append('g')
         .append('text')
@@ -356,11 +479,11 @@ const drawGraph = () => {
         .attr('x', width * 0.43) 
         .attr('y', 0) 
         .attr('dy', '0.32em')
-        .text('Correct');
+        .text(' Correct');
 
     // 每一个题目右侧绘制柱状图（每个题目共有三个柱形，分别对应0分、部分正确、满分）
     const barData = [
-        {id:'Question_VgKw8PjY1FR6cm2QI9XW',value:[15,25,35],knowledge:['r8S3g_l0p5viby']},
+        {id:'Question_VgKw8PjY1FR6cm2QI9XW',value:[15,100,35],knowledge:['r8S3g_l0p5viby']},
         {id:'Question_q7OpB2zCMmW9wS8uNt3H',value:[[12,22,100],[14,80,34]],knowledge:['r8S3g_l0p5viby','r8S3g_n0m9rsw4']},
         {id:'Question_fZrP3FJ4ebUogW9V7taS',value:[18,28,38],knowledge:['r8S3g_n0m9rsw4']},
         {id:'Question_BW0ItEaymH3TkD6S15JF',value:[16,26,36],knowledge:['r8S3g_n0m9rsw4']},
@@ -379,18 +502,18 @@ const drawGraph = () => {
         {id:'Question_7NJzCXUPcvQF4Mkfh9Wr',value:[50,60,70],knowledge:['m3D1v_v3d9is1x']},
         {id:'Question_ZTbD7mxr2OUp8Fz6iNjy',value:[55,65,75],knowledge:['m3D1v_v3d9is1x']},
         {id:'Question_Jr4Wz5jLqmN01KUwHa7g',value:[60,70,80],knowledge:['m3D1v_t0v5ts9h']},
-        {id:'Question_QRm48lXxzdP7Tn1WgNOf',value:[[45,55,65],[50,60,70]],knowledge:['m3D1v_r1d7fr3l','y9W5d_c0w4mj5h']},
+        {id:'Question_QRm48lXxzdP7Tn1WgNOf',value:[[45,100,65],[50,60,70]],knowledge:['m3D1v_r1d7fr3l','y9W5d_c0w4mj5h']},
         {id:'Question_pVKXjZn0BkSwYcsa7C31',value:[[48,58,68],[52,62,72]],knowledge:['m3D1v_r1d7fr3l','y9W5d_c0w4mj5h']},
         {id:'Question_Ej5mBw9rsOUKkFycGvz2',value:[55,65,75],knowledge:['y9W5d_c0w4mj5h']},
-        {id:'Question_lU2wvHSZq7m43xiVroBc',value:[[60,70,80],[65,75,85]],knowledge:['y9W5d_c0w4mj5h','k4W1c_h5r6nux7']},
+        {id:'Question_lU2wvHSZq7m43xiVroBc',value:[[60,70,80],[65,75,85]],knowledge:['k4W1c_h5r6nux7','y9W5d_c0w4mj5h']},
         {id:'Question_Mh4CZIsrEfxkP1wXtOYV',value:[65,75,85],knowledge:['y9W5d_c0w4mj5h']},
         {id:'Question_62XbhBvJ8NUSnApgDL94',value:[70,80,90],knowledge:['y9W5d_c0w4mj5h']},
-        {id:'Question_x2Fy7rZ3SwYl9jMQkpOD',value:[[75,85,95],[80,90,100]],knowledge:['y9W5d_c0w4mj5h','s8Y2f_v4x8by9j']},
+        {id:'Question_x2Fy7rZ3SwYl9jMQkpOD',value:[[75,85,95],[80,90,100]],knowledge:['s8Y2f_v4x8by9j','y9W5d_c0w4mj5h']},
         {id:'Question_UXqN1F7G3Sbldz02vZne',value:[80,90,100],knowledge:['y9W5d_c0w4mj5h']},
         {id:'Question_Ou3f2Wt9BqExm5DpN7Zk',value:[85,95,105],knowledge:['y9W5d_p8g6dgtv']},
         {id:'Question_Az73sM0rHfWVKuc4X2kL',value:[90,100,110],knowledge:['y9W5d_p8g6dgtv']},
         {id:'Question_EhVPdmlB31M8WKGqL0wc',value:[95,105,115],knowledge:['y9W5d_e2j7p95s']},
-        {id:'Question_oCjnFLbIs4Uxwek9rBpu',value:[[100,110,120],[105,115,125]],knowledge:['g7R2j_e0v1yls8','m3D1v_r1d7fr3l']},
+        {id:'Question_oCjnFLbIs4Uxwek9rBpu',value:[[100,110,120],[105,115,125]],knowledge:['m3D1v_r1d7fr3l','g7R2j_e0v1yls8']},
         {id:'Question_5fgqjSBwTPG7KUV3it6O',value:[105,115,125],knowledge:['g7R2j_e0v1yls8']},
         {id:'Question_X3wF8QlTyi4mZkDp9Kae',value:[110,120,130],knowledge:['g7R2j_e0v1yls8']},
         {id:'Question_YWXHr4G6Cl7bEm9iF2kQ',value:[115,125,135],knowledge:['g7R2j_j1g8gd3v']},
@@ -407,13 +530,13 @@ const drawGraph = () => {
         max = Math.max(max,...temp)
     })
     console.log(min,max)
-    const barYscale = d3.scaleLinear().domain([min,max]).range([0,30])
+    const barYscale = d3.scaleLinear().domain([min,max]).range([0,25])
 
     barData.forEach((d,i) => {
         const x = 0
         const y = i * 40 + 10
         let barWidth = 25
-        const barPadding = 50
+        const barPadding = 46
 
         
         const bar = rightSide.append('g')
@@ -425,7 +548,7 @@ const drawGraph = () => {
             'm3D1v': '#ccebc5',
             's8Y2f': '#decbe4',
             'k4W1c': '#fed9a6',
-            'g7R2j': '#ffffcc',
+            'g7R2j': '#b3e2cd',
             'b3C9s': '#e5d8bd',
             'y9W5d': '#fddaec'
         };
@@ -462,7 +585,21 @@ const drawGraph = () => {
                 .attr('d',line)
                 .attr('fill','none')
                 .attr('stroke','#d0d0d0')
-                .attr('stroke-width',1.5) 
+                .attr('stroke-width',2) 
+                .on('click', d => {
+                    //console.log(d)
+                    //点击 加深颜色
+                    const element = d3.select(d.srcElement)
+                    const circle = bar.selectAll('circle')  
+                    if(element.attr('stroke') === '#d0d0d0'){
+                        element.attr('stroke','#9e9e9e')
+                        circle.attr('fill','#9e9e9e')
+                    }
+                    else{
+                        element.attr('stroke','#d0d0d0')
+                        circle.attr('fill','#C6CBB9')
+                    }
+                })
 
             bar.selectAll('circle')
                 .data(points)
@@ -472,8 +609,8 @@ const drawGraph = () => {
                 .attr('cy',d => d[1])
                 .attr('r',2.5)
                 .attr('fill','#C6CBB9')
-                .attr('stroke','#B0B3A6')
-                .attr('stroke-width',1)
+                .attr('stroke','#4d4d4d')
+                .attr('stroke-width',0.5)
 
         }
         //题目对应两个知识点
@@ -496,39 +633,71 @@ const drawGraph = () => {
                         .attr('y', maxHeight - barYscale(value))
                         .attr('width', barWidth * 0.5)
                         .attr('height', barYscale(value))
-                        .attr('fill', j === 1 ? firstcolor : secondcolor);
+                        .attr('fill', j === 0 ? firstcolor : secondcolor)
                 })
                 console.log(firstpoints,secondpoints)
+                // 添加circle元素
+                bar.selectAll('circle.first')
+                    .data(firstpoints)
+                    .enter()
+                    .append('circle')
+                    .attr('id','firstCircle')
+                    .attr('cx', d => d[0])
+                    .attr('cy', d => d[1])
+                    .attr('r', 2.5)
+                    .attr('fill', '#C6CBB9')
+                    .attr('stroke', '#4d4d4d')
+                    .attr('stroke-width', 0.5);
+                    
+                bar.selectAll('circle.second')
+                    .data(secondpoints)
+                    .enter()
+                    .append('circle')
+                    .attr('id','secondCircle')
+                    .attr('cx', d => d[0])
+                    .attr('cy', d => d[1])
+                    .attr('r', 2.5)
+                    .attr('fill', '#C6CBB9')
+                    .attr('stroke', '#4d4d4d')
+                    .attr('stroke-width', 0.5);
                 const line = d3.line()
                 bar.append('path')
                     .datum(j === 0 ? firstpoints : secondpoints)
                     .attr('d',line)
+                    //加上id属性
+                    .attr('id',j === 0 ? 'first' : 'second')
                     .attr('fill','none')
                     .attr('stroke','#d0d0d0')
-                    .attr('stroke-width',1.5) 
+                    .attr('stroke-width',2)
+                    .on('click', d => {
+                        console.log(d)
+                        //点击 加深颜色
+                        const element = d3.select(d.srcElement)
+                        //const circle = bar.selectAll('circle')  
+                        if(element.attr('stroke') === '#d0d0d0'){
+                            element.attr('stroke','#9e9e9e')
+                            //console.log(element)
+                            if(d.srcElement.id === 'first'){
+                                console.log('first')
+                                bar.selectAll('#firstCircle').attr('fill','#9e9e9e')
+                            }
+                            else{
+                                console.log('second')
+                                bar.selectAll('#secondCircle').attr('fill','#9e9e9e')
+                            }
+                        }
+                        else{
+                            element.attr('stroke','#d0d0d0')
+                            if(d.srcElement.id === 'first'){
+                                bar.selectAll('#firstCircle').attr('fill','#C6CBB9')
+                            }
+                            else{
+                                bar.selectAll('#secondCircle').attr('fill','#C6CBB9')
+                            }
+                        }
+                })
 
-        // 添加circle元素
-        bar.selectAll('circle.first')
-            .data(firstpoints)
-            .enter()
-            .append('circle')
-            .attr('cx', d => d[0])
-            .attr('cy', d => d[1])
-            .attr('r', 2.5)
-            .attr('fill', '#C6CBB9')
-            .attr('stroke', '#B0B3A6')
-            .attr('stroke-width', 1);
 
-        bar.selectAll('circle.second')
-            .data(secondpoints)
-            .enter()
-            .append('circle')
-            .attr('cx', d => d[0])
-            .attr('cy', d => d[1])
-            .attr('r', 2.5)
-            .attr('fill', '#C6CBB9')
-            .attr('stroke', '#B0B3A6')
-            .attr('stroke-width', 1);
         })
         }
     })
@@ -563,10 +732,10 @@ onMounted(() => {
             <svg ref="graphRef"></svg>
         </div>
         <div style="height:30%">
-            <el-table :data="tableData" :default-sort="{prop:'score',order:'descending'}" max-height="270">
+            <el-table :data="tableData" max-height="270" >
                 <el-table-column prop="ID" label="ID" width="200" class-name="centered-column"></el-table-column>
-                <el-table-column prop="score" label="score" sortable width="100" class-name="centered-column"></el-table-column>
-                <el-table-column prop="knowledge" label="knowledge" class-name="centered-column">
+                <el-table-column prop="score" label="分数"  width="100" class-name="centered-column"></el-table-column>
+                <el-table-column prop="knowledge" label="知识点掌握程度"  class-name="centered-column">
                     <template #default="scope">
                         <titleInfo :tableData="scope.row.knowledge"></titleInfo>
                     </template>

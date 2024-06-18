@@ -21,7 +21,7 @@ const drawGlyph = () => {
     
     svg.selectAll("*").remove(); // Clear previous chart
 
-    const margin = {top: 10, right: 10, bottom: 10, left: 50};
+    const margin = {top: 10, right: 10, bottom: 10, left: 30};
     const width = +svg.attr('width') - margin.left - margin.right;
     const height = +svg.attr('height') - margin.top - margin.bottom;
     const radius = Math.min(width, height) / 2;
@@ -41,6 +41,8 @@ const drawGlyph = () => {
         glyph.append('circle')
             .attr('r', innerRadius)
             .attr('fill', getKnowledgeColor(d.name))
+            .attr('stroke', '#ccc')
+            .attr('stroke-width', 1.3)
             .on('mouseover', function(event, dd) {
                 //console.log(d);
                 // 添加悬浮提示框
@@ -51,6 +53,7 @@ const drawGlyph = () => {
                     .style('position', 'absolute')
                     .style('z-index', '10')// 设置提示框的层级
                     .style('visibility', 'hidden')
+                    .style('border-radius', '4px')
                     .text(`知识点：${d.name}；正确率：${d.value}`); // 设置提示框的文本
 
                 tooltip.style('visibility', 'visible')
@@ -71,14 +74,14 @@ const drawGlyph = () => {
 
         glyph.append("path")
             .attr("d", arc)
-            .attr("fill", "lightgreen");
+            .attr("fill", "#8cc88b")
 
         // Draw background circle for the arc
         glyph.append("circle")
             .attr("r", outerRadius)
             .attr("fill", "none")
             .attr("stroke", "#ccc")
-            .attr("stroke-width", 2);
+            .attr("stroke-width", 1.3);
     })
 
 

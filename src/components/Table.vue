@@ -4,9 +4,12 @@ import * as d3 from 'd3'
 import TableLineChart from './TableLineChart.vue';
 import KnowledgeGlyph from './KnowledgeGlyph.vue';
 import BadKnowledgeGlyph from './BadKnowledgeGlyph.vue';
+//导入json数据
+//import studentInfoData from '../utils/studentInfo.json';
 const studentInfo = [
     {
         ID: '8b6d1125760bd3939b6e',
+        class:1,
         sex: 'female',
         age: 18,
         major: 'J87654',
@@ -111,15 +114,15 @@ const studentInfo = [
         Knowledge:[//偏好题型（知识点>=3）
             {
                 name:'r8S3g',
-                value:0.3
+                value:0.8
             },
             {
                 name:'t5V9e',
-                value:0.4
+                value:0.45
             },
             {
                 name:'m3D1v',
-                value:0.3
+                value:0.5
             },
         ],
         badknowledge:[
@@ -136,13 +139,12 @@ const studentInfo = [
                 value:0.3
             }
         ],
-        method:{
-            name:'Method_5Q4KoXthUuYz3bvrTDFm',
-            value:100
-        }
+        method:'Method_5Q4KoXthUuYz3bvrTDFm',
+
     },
     {
         ID: '8b6d1125760bd3939b6e',
+        class:2,
         sex: 'male',
         age: 20,
         major: 'J87654',
@@ -272,13 +274,11 @@ const studentInfo = [
                 value:0.3
             }
         ],
-        method:{
-            name:'Method_BXr9AIsPQhwNvyGdZL57',
-            value:100
-        }
+        method:'Method_5Q4KoXthUuYz3bvrTDFm',
     },
     {
         ID: '8b6d1125760bd3939b6e',
+        class:3,
         sex: 'female',
         age: 22,
         major: 'J87654',
@@ -408,70 +408,49 @@ const studentInfo = [
                 value:0.3
             }
         ],
-        method:{
-            name:'Method_Cj9Ya2R7fZd6xs1q5mNQ',
-            value:100
-        }
+        method:'Method_5Q4KoXthUuYz3bvrTDFm',
     }
 ]
-const getMethodClass = (name) => {
-    if(name==='Method_5Q4KoXthUuYz3bvrTDFm'){
-        return 'tagStyle_1'
-    }
-    else if(name==='Method_BXr9AIsPQhwNvyGdZL57')
-    {
-        return 'tagStyle_2'
-    }
-    else if(name==='Method_Cj9Ya2R7fZd6xs1q5mNQ'){
-        return 'tagStyle_3'
-    }
-    else if(name==='Method_gj1NLb4Jn7URf9K2kQPd'){
-        console.log('tagStyle_4')
-        return 'tagStyle_4'
-    }
-    else if(name === 'Method_m8vwGkEZc3TSW2xqYUoR'){
-        return 'tagStyle_5'
-    }
+
+// const studentInfo = studentInfoData.data
+// console.log(studentInfo[0])
+const filterHandler = (value, row) => {
+    return row.class === value;
 }
 </script>
 
 <template>
     <el-table :data="studentInfo" style="width:100%" max-height="300">
+        <el-table-column type="selection"  width="30"/>
+        <el-table-column label="班级" prop="class" width="100" class-name="centered-column" column-key="class" :filters="[
+            {text:'班级1', value:1},
+            {text:'班级2', value:2},
+            {text:'班级3', value:3},
+        ]"
+        :filter-method="filterHandler"></el-table-column>
         <el-table-column label="ID" prop="ID" width="250" class-name="centered-column"></el-table-column>
-        <el-table-column label="Sex" prop="sex" width="100" class-name="centered-column"></el-table-column>
-        <el-table-column label="Age" prop="age" width="100" class-name="centered-column"></el-table-column>
-        <el-table-column label="Major" prop="major" width="150" class-name="centered-column"></el-table-column>
-        <el-table-column label="HotTime" class-name="centered-column">
+        <el-table-column label="性别" prop="sex" width="100" class-name="centered-column"></el-table-column>
+        <el-table-column label="年龄" prop="age" width="100" class-name="centered-column"></el-table-column>
+        <el-table-column label="专业" prop="major" width="150" class-name="centered-column"></el-table-column>
+        <el-table-column label="提交时段" class-name="centered-column">
             <!-- 高峰时段：绘制每个时段下提交次数的折线图 -->
             <template #default="scope">
                 <TableLineChart :data="scope.row.HotTime"></TableLineChart>
             </template>
         </el-table-column>
-        <el-table-column label="Knowledge" class-name="centered-column">
+        <el-table-column label="擅长知识点" class-name="centered-column">
             <!-- 擅长题型：绘制每个知识点下的准确率 -->
             <template #default="scope">
                 <KnowledgeGlyph :knowledgeData="scope.row.Knowledge"></KnowledgeGlyph>
             </template>
         </el-table-column>
-        <el-table-column label="BadKnowledge" class-name="centered-column">
+        <el-table-column label="不擅长知识点" class-name="centered-column">
             <!-- 不擅长题型：绘制每个知识点下的准确率 -->
             <template #default="scope">
                 <BadKnowledgeGlyph :badknowledgeData="scope.row.badknowledge"></BadKnowledgeGlyph>
             </template>
         </el-table-column>
-        <el-table-column label="Method" class-name="centered-column">
-            <template #default="scope">
-                <el-popover effect="light" trigger="hover" placement="top">
-                  <template #default>
-                    <div>method: {{ scope.row.method.name }}</div>
-                    <div>value: {{ scope.row.method.value }}</div>
-                  </template>
-                  <template #reference>
-                    <span :class="getMethodClass(scope.row.method.name)">{{ scope.row.method.name }}</span>
-                  </template>
-                </el-popover>
-              </template>
-        </el-table-column>
+        <el-table-column label="常用方法" prop='method' class-name="centered-column" style="font-size:8px"></el-table-column>
     </el-table>
 </template>
 
@@ -482,49 +461,7 @@ const getMethodClass = (name) => {
 .centered-column .cell {
     text-align: center;
   }
-.tagStyle_1{
-    display: inline-block;
-    width: 130px;
-    border: 1px solid #EDF7B5;
-    border-radius: 6px;
-    background-color: #EDF7B5;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_2{
-    display: inline-block;
-    width: 130px;
-    border: 1px solid #f1f9dd;
-    border-radius: 6px;
-    background-color: #f1f9dd;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_3{
-    display: inline-block;
-    width: 130px;
-    border: 1px solid #eae4c7;
-    border-radius: 6px;
-    background-color: #eae4c7;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_4{
-    display: inline-block;
-    width: 130px;
-    border: 1px solid #c8ede0;
-    border-radius: 6px;
-    background-color: #c8ede0;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_5{
-    display: inline-block;
-    width: 130px;
-    border: 1px solid #dae6c8;
-    border-radius: 6px;
-    background-color: #dae6c8;
-    color: #6e6e6e;
-    font-size: 12px;
+.labelSelect .cell {
+    text-align: center;
 }
 </style>
