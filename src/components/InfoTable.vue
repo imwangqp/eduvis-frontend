@@ -1,9 +1,11 @@
 <script setup>
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import * as d3 from 'd3'
 import TableLineChart from './TableLineChart.vue';
 import KnowledgeGlyph from './KnowledgeGlyph.vue';
 import BadKnowledgeGlyph from './BadKnowledgeGlyph.vue';
+//导入json数据
+import studentInfoData from '../utils/studentInfo.json';
 import store from "@/store/index.js";
 
 //表格组件
@@ -12,6 +14,7 @@ const tableRef = ref()
 const studentInfo = [
     {
         ID: '8b6d1125760bd3939b6e',
+        class:1,
         sex: 'female',
         age: 18,
         major: 'J87654',
@@ -116,15 +119,15 @@ const studentInfo = [
         Knowledge:[//偏好题型（知识点>=3）
             {
                 name:'r8S3g',
-                value:0.3
+                value:0.8
             },
             {
                 name:'t5V9e',
-                value:0.4
+                value:0.45
             },
             {
                 name:'m3D1v',
-                value:0.3
+                value:0.5
             },
         ],
         badknowledge:[
@@ -141,13 +144,12 @@ const studentInfo = [
                 value:0.3
             }
         ],
-        method:{
-            name:'Method_5Q4KoXthUuYz3bvrTDFm',
-            value:100
-        }
+        method:'Method_5Q4KoXthUuYz3bvrTDFm',
+
     },
     {
         ID: '8b6d1125760bd3939b6e',
+        class:2,
         sex: 'male',
         age: 20,
         major: 'J87654',
@@ -277,13 +279,11 @@ const studentInfo = [
                 value:0.3
             }
         ],
-        method:{
-            name:'Method_BXr9AIsPQhwNvyGdZL57',
-            value:100
-        }
+        method:'Method_5Q4KoXthUuYz3bvrTDFm',
     },
     {
         ID: '8b6d1125760bd3939b6e',
+        class:3,
         sex: 'female',
         age: 22,
         major: 'J87654',
@@ -413,12 +413,26 @@ const studentInfo = [
                 value:0.3
             }
         ],
-        method:{
-            name:'Method_Cj9Ya2R7fZd6xs1q5mNQ',
-            value:100
-        }
+        method:'Method_5Q4KoXthUuYz3bvrTDFm',
     }
 ]
+//多选的数据
+const multipleSelection = ref([])
+// const studentInfo = ref([])
+
+// const studentInfo = studentInfoData.data
+// console.log(studentInfo[0])
+const filterHandler = (value, row) => {
+    return row.class === value;
+}
+const getStudentInfo = () => {
+    //请求数据
+    studentInfo.value = studentInfoData.data
+}
+const handleSelection = (val) => {
+    //console.log(val[0].ID)
+    multipleSelection.value = val
+    console.log(multipleSelection.value)
 const getMethodClass = (name) => {
     if(name==='Method_5Q4KoXthUuYz3bvrTDFm'){
         return 'tagStyle_1'
@@ -460,6 +474,10 @@ const handleSelectionChange = (e) =>{
   e.map(i=>i)
   store.commit('addId', e)
 }
+onMounted(() => {
+    //请求数据
+    //getStudentInfo()
+})
 </script>
 
 <template>
@@ -515,49 +533,7 @@ const handleSelectionChange = (e) =>{
 .centered-column .cell {
     text-align: center;
   }
-.tagStyle_1{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #EDF7B5;
-    border-radius: 6px;
-    background-color: #EDF7B5;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_2{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #f1f9dd;
-    border-radius: 6px;
-    background-color: #f1f9dd;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_3{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #eae4c7;
-    border-radius: 6px;
-    background-color: #eae4c7;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_4{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #c8ede0;
-    border-radius: 6px;
-    background-color: #c8ede0;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_5{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #dae6c8;
-    border-radius: 6px;
-    background-color: #dae6c8;
-    color: #6e6e6e;
-    font-size: 12px;
+.labelSelect .cell {
+    text-align: center;
 }
 </style>
