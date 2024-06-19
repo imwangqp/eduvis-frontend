@@ -1,11 +1,11 @@
 <script setup>
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import * as d3 from 'd3'
 import TableLineChart from './TableLineChart.vue';
 import KnowledgeGlyph from './KnowledgeGlyph.vue';
 import BadKnowledgeGlyph from './BadKnowledgeGlyph.vue';
 //导入json数据
-//import studentInfoData from '../utils/studentInfo.json';
+import studentInfoData from '../utils/studentInfo.json';
 const studentInfo = [
     {
         ID: '8b6d1125760bd3939b6e',
@@ -411,21 +411,49 @@ const studentInfo = [
         method:'Method_5Q4KoXthUuYz3bvrTDFm',
     }
 ]
+//多选的数据
+const multipleSelection = ref([])
+// const studentInfo = ref([])
 
 // const studentInfo = studentInfoData.data
 // console.log(studentInfo[0])
 const filterHandler = (value, row) => {
     return row.class === value;
 }
+const getStudentInfo = () => {
+    //请求数据
+    studentInfo.value = studentInfoData.data
+}
+const handleSelection = (val) => {
+    //console.log(val[0].ID)
+    multipleSelection.value = val
+    console.log(multipleSelection.value)
+}
+onMounted(() => {
+    //请求数据
+    //getStudentInfo()
+})
 </script>
 
 <template>
-    <el-table :data="studentInfo" style="width:100%" max-height="300">
+    <el-table :data="studentInfo" style="width:100%" max-height="300" @selection-change="handleSelection">
         <el-table-column type="selection"  width="30"/>
         <el-table-column label="班级" prop="class" width="100" class-name="centered-column" column-key="class" :filters="[
             {text:'班级1', value:1},
             {text:'班级2', value:2},
             {text:'班级3', value:3},
+            {text:'班级4', value:4},
+            {text:'班级5', value:5},
+            {text:'班级6', value:6},
+            {text:'班级7', value:7},
+            {text:'班级8', value:8},
+            {text:'班级9', value:9},
+            {text:'班级10', value:10},
+            {text:'班级11', value:11},
+            {text:'班级12', value:12},
+            {text:'班级13', value:13},
+            {text:'班级14', value:14},
+            {text:'班级15', value:15},
         ]"
         :filter-method="filterHandler"></el-table-column>
         <el-table-column label="ID" prop="ID" width="250" class-name="centered-column"></el-table-column>

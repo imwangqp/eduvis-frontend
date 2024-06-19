@@ -14,7 +14,7 @@ const glyphRef = ref(null);
 
 const drawGlyph = () => {
     const knowledgeData = props.knowledgeData;
-    console.log(knowledgeData);
+    //console.log(knowledgeData);
     const svg = d3.select(glyphRef.value)
         .attr('width',200)
         .attr('height',50);
@@ -54,11 +54,11 @@ const drawGlyph = () => {
                     .style('z-index', '10')// 设置提示框的层级
                     .style('visibility', 'hidden')
                     .style('border-radius', '4px')
-                    .text(`知识点：${d.name}；正确率：${d.value}`); // 设置提示框的文本
+                    .text(`知识点：${d.name}；正确率：${d.value.toFixed(2)}`); // 设置提示框的文本
 
                 tooltip.style('visibility', 'visible')
                     .style('left', `${event.pageX + 5}px`)// 设置提示框的位置
-                    .style('top', `${event.pageY + 5}px`);
+                    .style('top', `${event.pageY + 5}px`)
             })
             .on('mouseout', function() {
                 glyph.selectAll('text').remove();
@@ -101,5 +101,4 @@ watch(()=>[props.knowledgeData],()=>{
 </template>
 
 <style scoped>
-
 </style>

@@ -54,7 +54,7 @@ const drawGlyph = () => {
                     .style('z-index', '10')// 设置提示框的层级
                     .style('visibility', 'hidden')
                     .style('border-radius', '4px')
-                    .text(`知识点：${d.name}；正确率：${d.value}`); // 设置提示框的文本
+                    .text(`知识点：${d.name}；正确率：${d.value.toFixed(2)}`); // 设置提示框的文本
 
                 tooltip.style('visibility', 'visible')
                     .style('left', `${event.pageX + 5}px`)// 设置提示框的位置
