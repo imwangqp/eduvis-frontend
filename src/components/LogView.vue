@@ -65,9 +65,12 @@
 
 <script setup>
 import * as d3 from 'd3';
-import { onMounted, reactive, ref, watch, computed } from "vue";
+import { onMounted, reactive, ref, watch, computed, watchEffect } from "vue";
 import getKnowledgeColor from '../utils/index'; 
-import data from '../assets/log.json'
+// import data from '../assets/log.json'
+import axios from "axios";
+// import store from "@/store/index.js";
+import { useStore } from 'vuex'
 
 const lineData = [
     [
@@ -91,8 +94,10 @@ const lineData = [
       [0, 15, 20, 35, 50]
     ],
 ];
+var data = new Map();
 
-var cards = reactive(["8b6d1125760bd3939b6e", "8b6d1125760bd3939b6f"]);
+// var cards = reactive(["8b6d1125760bd3939b6e", "63eef37311aaac915a45"]);
+var cards = reactive([]);
 
 var selectedKnowledge = -1;
 
@@ -116,15 +121,67 @@ const lineWidth = 1;
 const newLineWidth = 3;
 
 var content = ref()
-
-
+const store = useStore()
+var signal = ref(0)
+var tempIds = []
 
 onMounted(()=>{
+    console.log("store"+JSON.stringify(store.getters.getId))
+    console.log("store"+store.getters.getId.length)
+    // signal.value = computed(()=>{
+    //     store.getters.getId.length
+    // })
 
+    watch(
+      () => store.getters.getId.length,
+      (newValue, oldValue) => {
+        console.log('itemIds changed:', store.getters.getId[0])
+        tempIds = store.getters.getId
+        if(newValue > oldValue) {
+            cards.push(tempIds[tempIds.length-1].ID)
+            var newId = cards.length-1
+            axios.get('/api/getAnswerLog', {
+                params: {
+                    stu_id: cards[newId]
+                }
+            }).then(res => {
+                if(res.data.code) {
+                    console.log(res.data.code)
+                    // console.log(index+"data---------------"+JSON.stringify(res.data))
+                    data.set(cards[newId], res.data.data)
+                    // data[index] = res.data.data
+                    // emitter.emit('detail', res.data.detail)
+                    initKnowledge(newId)
+                    initLog(newId)
+                    initLineChart(newId)
+                } else {
+                    console.log(res.data.msg)
+                }
+            })
+        }
+      }
+    )
+    
     cards.forEach((item, index) => {
-        initKnowledge(index)
-        initLog(index)
-        initLineChart(index)
+        axios.get('/api/getAnswerLog', {
+            params: {
+                stu_id: cards[index]
+            }
+        }).then(res => {
+            if(res.data.code) {
+                console.log(res.data.code)
+                // console.log(index+"data---------------"+JSON.stringify(res.data))
+                data.set(cards[index], res.data.data)
+                // data[index] = res.data.data
+                // emitter.emit('detail', res.data.detail)
+                initKnowledge(index)
+                initLog(index)
+                initLineChart(index)
+            } else {
+                console.log(res.data.msg)
+            }
+        })
+        
     })
     console.log("watch")
     watch(value1, (newVal, oldVal) => {
@@ -181,7 +238,12 @@ function toTop(index) {
 function toBottom(index) {
     if (index < cards.length - 1) {
         // 交换当前卡片与下一个卡片的位置
-        [cards[index], cards[cards.length - 1]] = [cards[cards.length - 1], cards[index]];
+        var temp = cards[index]
+        cards[index] = cards[cards.length - 1]
+        cards[cards.length - 1] = temp
+        
+        console.log("tobottom")
+        // [cards[index], cards[cards.length - 1]] = [cards[cards.length - 1], cards[index]];
         initLineChart(index)
         initLineChart(cards.length - 1)
         initLog(index)
@@ -193,7 +255,12 @@ function moveDown(index) {
     console.log("movedown"+index)
     if (index < cards.length - 1) {
         // 交换当前卡片与下一个卡片的位置
-        [cards[index], cards[index + 1]] = [cards[index + 1], cards[index]];
+        var temp = cards[index]
+        cards[index] = cards[index + 1]
+        cards[index + 1] = temp
+
+        console.log("tobottom")
+        // [cards[index], cards[index + 1]] = [cards[index + 1], cards[index]];
         initLineChart(index)
         initLineChart(index + 1)
         initLog(index)
@@ -515,8 +582,9 @@ function initLineChart(index) {
 }
 
 function initLog(index) {
-    const logData = data.data
+    var logData = data.get(cards[index])
     // const viewWidth = containerRef.value.clientWidth;
+    console.log(index+"logData----------------"+logData.length)
     const width = cellWidth * logData.length + 10;
     const height = cellHeight * knowledge.length + 5;
 
