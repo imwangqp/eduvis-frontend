@@ -2,7 +2,7 @@
   <div id="relationView" class="container relative" ref="relationRef">
     <svg id="content"></svg>
   </div>
-  <!--  <div id="cluster-view" class="container" ref="clusterRef"></div>-->
+<!--    <div id="cluster-view" class="container" ref="clusterRef"></div>-->
 </template>
 
 <script setup>
@@ -133,28 +133,25 @@ function initChart(data) {
       .attr('r', bubbleSize)
       .attr('id', d => `bubble-${d.id}`)
       .attr('fill', (d, item) => clusterColorList[d.label])
+      .attr("stroke", '#aaa')
       // .attr('opacity', .5)
       .on('click', (d, item) => {
         store.commit('addId', [item.id])
-        // tooltip.style('left', d.offsetX + 5 + 'px')
-        //     .style('top', d.offsetY + 5 + 'px')
-        //     .style('display', 'inline-block')
-        //     .html(`
-        //             <div>
-        //             123
-        //                 <div id="tooltip-master"></div>
-        //                 <div id="tooltip-review"></div>
-        //             </div>
-        //           `)
-        // initTooltip(item.id)
       })
-      .on('mouseover', d => {
-        d3.select('#' + d['target']['id'])
-            .attr('r', bubbleSize * 2)
-        // console.log(d['target']['id'])
+      .on('mouseover', (event, d) => {
+        axios.post('/api/getSingleStudentInfo', {'id': d.id}).then(res=>{
+          const data = res.data.data
+          d3.select('#' + event['target']['id'])
+              .attr('r', bubbleSize * 2)
+          const tooltip=d3.select('.tool-tip')
+          tooltip.html(`<div>ID：${d.id}</div><div>性别：${data.gender==='male'?'男':'女'}</div><div>年龄：${data.gender}</div><div>专业：${data.gender}</div>`)
+              .style('visibility', 'visible')
+              .style('left', `${event.pageX + 5}px`)
+              .style('top', `${event.pageY + 5}px`)
+        })
       })
       .on('mouseout', d => {
-        tooltip.style('display', 'none')
+        d3.select('.tool-tip').style('visibility', 'hidden');
         d3.select('#' + d['target']['id'])
             .attr('r', bubbleSize)
       })
@@ -206,8 +203,4 @@ function initClusterBarChart(data) {
 svg {
   box-sizing: border-box;
 }
-</style>
-
-<style>
-
 </style>

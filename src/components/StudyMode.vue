@@ -2,7 +2,7 @@
 import {Bottom, Close, Download, Top, Upload} from "@element-plus/icons-vue";
 import * as d3 from 'd3';
 import { onMounted, watch, ref } from "vue";
-import {titleColorList} from "@/utils/getColor.js";
+import {clusterColorList, CommonColor, getKnowledgeColor, titleColorList} from "@/utils/getColor.js";
 import _ from 'lodash'
 import store from "@/store/index.js";
 import emitter from "@/utils/mitt.js";
@@ -11,11 +11,11 @@ const clusters=[0,1,2]
 
 const size={
   width: 0,
-  height:300,
+  height:0,
   areaHeight: 50,
-  radarHeight: 60,
-  radarOuterRadius:50,
-  radarInner:20,
+  radarHeight: 40,
+  radarOuterRadius:30,
+  radarInner:10,
   chartInterval:10,
   angleStep: Math.PI * 2 / 8,
   masteryMax:0,
@@ -136,7 +136,9 @@ function initChart(detail){
   // console.log(detail)
   size.masteryMax=_.max([_.max(detail[0]['detail']['mastery']), _.max(detail[0]['detail']['mastery']), _.max(detail[0]['detail']['mastery'])])
   size.countMax=_.max([d3.max(detail[0]['detail']['key_detail'], d=>d.count), d3.max(detail[1]['detail']['key_detail'], d=>d.count), d3.max(detail[1]['detail']['key_detail'], d=>d.count)])
-  size.width=modeRef.value.clientWidth
+  size.width=modeRef.value[0].clientWidth
+  size.height=size.areaHeight+size.chartInterval*4+size.radarHeight*2
+  console.log(modeRef.value[0].clientWidth)
   _.forEach(detail, (item ,index)=>{
     const svg = d3.select(`#cluster-feature-${index}`)
         .append('svg')
@@ -146,7 +148,7 @@ function initChart(detail){
         .attr('id', `area-group-${index}`)
     initAreaChart(areaGroup, item.detail)
     const radarGroup = svg.append('g')
-        .attr('transform', `translate(0, ${size.areaHeight + size.chartInterval})`)
+        .attr('transform', `translate(-158, ${size.areaHeight + size.chartInterval})`)
         .attr('id', `radar-group-${index}`)
     initRadarChart(radarGroup, item.detail)
   })
@@ -174,7 +176,7 @@ function initAreaChart(group, data){
       .attr('y2', '100%');
   gradient.append('stop')
       .attr('offset', '0%')
-      .attr('stop-color', 'tomato');
+      .attr('stop-color', CommonColor.Master);
   gradient.append('stop')
       .attr('offset', '100%')
       .attr('stop-color', 'white');
@@ -198,19 +200,20 @@ function initAreaChart(group, data){
       .datum(mastery)
       .attr('d', lineGenerator)
       .attr('fill', 'none')
-      .attr('stroke', 'steelblue')
+      .attr('stroke', CommonColor.Master)
       .attr('stroke-width', 2)
 
 
 }
 
 function initRadarChart(group, data) {
+  const radarWidth = size.radarHeight*Math.cos(Math.PI/8)*2
   group.selectAll('g')
       .data(new Array(3).fill(0))
       .enter()
       .append('g')
       .attr('id', (d, i)=>`radar-${i}`)
-      .attr('transform', (d, i) => `translate(${size.width/4*(i+1)-size.radarHeight*Math.cos(Math.PI/4)*2}, 0)`)
+      .attr('transform', (d, i) => `translate(${(size.width-12)/2*i-radarWidth/2*i}, 0)`)
   _.forEach(new Array(3).fill(0), (d, i) => {
     const dataSlice = _.filter(data['key_detail'], {'index': i})
     const correctScale = d3.scaleLinear([0,1], [size.radarOuterRadius, size.radarHeight]),
@@ -244,16 +247,26 @@ function initRadarChart(group, data) {
           const center = [0, 0];
           return octagonPath(center, i, countScale(d['count']+1));
         })
+        .attr('fill', (d, i)=>titleColorList[i])
+        // .style("stroke", "#999")
   })
 }
 
 </script>
 
 <template>
-  <div class="chart-subcomponent" ref="modeRef">
-    <div class="w-full" v-for="i in clusters" :id='`cluster-feature-${i}`'></div>
+  <div>
+    <div ref="modeRef" class="w-full chart-subcomponent" v-for="i in clusters" :id='`cluster-feature-${i}`'>
+      <div style="text-align: left"><span class="cluster-icon" :style="{backgroundColor: clusterColorList[i]}"></span> 簇 # {{(i+1)}}</div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.cluster-icon{
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
 </style>

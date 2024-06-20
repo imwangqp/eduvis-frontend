@@ -71,6 +71,7 @@ import getKnowledgeColor from '../utils/index';
 import axios from "axios";
 // import store from "@/store/index.js";
 import { useStore } from 'vuex'
+import _ from 'lodash'
 // import knowledgeData from '../assets/knowledge.json'
 
 // const lineData = [
@@ -197,13 +198,13 @@ onMounted(()=>{
                 })
             })
             .catch(error => {
-            console.log(error)
+              console.log(error)
             })
+      })
 
-            
-        }
-      }
-    )
+
+    })
+  })
     
     // cards.forEach((item, index) => {
     //     axios.get('/api/getAnswerLog', {

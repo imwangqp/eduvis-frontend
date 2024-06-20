@@ -1,7 +1,8 @@
 <script setup>
 import * as d3 from 'd3'
 import { ref, onMounted, watch} from 'vue'
-import { getKnowledgeColor } from '../utils/getColor';
+import {CommonColor, getKnowledgeColor} from '../utils/getColor';
+import axios from "axios";
 
 const props = defineProps({
     badknowledgeData: {
@@ -41,25 +42,18 @@ const drawGlyph = () => {
         glyph.append('circle')
             .attr('r', innerRadius)
             .attr('fill', getKnowledgeColor(d.name))
-            .on('mouseover', function(event, dd) {
-                //console.log(d);
-                // 添加悬浮提示框
-                const tooltip = d3.select('body')
-                    .append('div')
-                    .attr('class', 'tooltip')
-                    .style('background-color', 'rgba(128, 128, 128, 0.7)') // 设置背景颜色为半透明的灰色
-                    .style('position', 'absolute')
-                    .style('z-index', '10')// 设置提示框的层级
-                    .style('visibility', 'hidden')
-                    .text(`知识点：${d.name}；正确率：${d.value}`); // 设置提示框的文本
+            // .attr('stroke', '#ccc')
+            .attr('stroke-width', 1.3)
+            .on('mouseover', function(event, d) {
 
-                tooltip.style('visibility', 'visible')
-                    .style('left', `${event.pageX + 5}px`)// 设置提示框的位置
-                    .style('top', `${event.pageY + 5}px`);
+              const tooltip=d3.select('.tool-tip')
+              tooltip.html(`<div>知识点：${d.name}</div><div>正确率：${d.value.toFixed(2)}</div>`)
+                  .style('visibility', 'visible')
+                  .style('left', `${event.pageX + 5}px`)
+                  .style('top', `${event.pageY + 5}px`)
             })
             .on('mouseout', function() {
-                glyph.selectAll('text').remove();
-                d3.select('.tooltip').remove(); // 移除提示框
+              d3.select('.tool-tip').style('visibility', 'hidden');
             });
         
         // Draw outer arc for accuracy
@@ -71,14 +65,14 @@ const drawGlyph = () => {
 
         glyph.append("path")
             .attr("d", arc)
-            .attr("fill", "lightgreen");
+            .attr("fill", CommonColor.CircleRadius)
 
         // Draw background circle for the arc
         glyph.append("circle")
             .attr("r", outerRadius)
             .attr("fill", "none")
-            .attr("stroke", "#ccc")
-            .attr("stroke-width", 2);
+            .attr("stroke", CommonColor.CircleBorder)
+            .attr("stroke-width", 1.3);
     })
 
 

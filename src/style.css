@@ -46,11 +46,13 @@ body {
 }
 
 .tool-tip {
-  @apply bg-[#ffffff5a];
+  @apply bg-[#0000002a];
   padding: 5px;
-  border-radius: 1px;
+  border-radius: 2px;
   position: absolute;
   width: 200px;
   height: auto;
   z-index: 10;
+  visibility: hidden;
+  color: #242424;
 }

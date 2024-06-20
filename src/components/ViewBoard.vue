@@ -5,9 +5,12 @@ import LogView from './LogView.vue';
 import KLRelationView from "@/components/KLRelationView.vue";
 import StudyMode from "@/components/StudyMode.vue";
 import RadarView from "@/components/RadarView.vue";
+import {onMounted} from "vue";
+import * as d3 from "d3";
 </script>
 
 <template>
+  <div class="tool-tip"></div>
   <div class="grid-container bg-white text-black">
     <div class="col-span-2 bg-black font-bold text-left text-white text-2xl align-middle">
       &nbsp;Study Scope
@@ -34,8 +37,8 @@ import RadarView from "@/components/RadarView.vue";
 <!--      </div>-->
     </div>
     <div class="row-span-4 col-span-1 chart-component">
-      <RadarView />
-<!--      <KnowledgeTree />-->
+<!--      <RadarView />-->
+      <KnowledgeTree />
     </div>
 
   </div>

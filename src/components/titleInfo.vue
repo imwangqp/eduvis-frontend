@@ -15,7 +15,7 @@ const titleInfo = ref(null);
 
 const width = 150;
 const x = d3.scaleLinear()
-            .domain([0, 1])
+            .domain([-0.01, 1])
             .range([0, width]);
 const drawBar = () => {
     const margin = {top: 10, right: 0, bottom: 0, left: 10};
@@ -26,7 +26,6 @@ const drawBar = () => {
         const svg = d3.select(titleInfo.value)
             .attr('width',160)
             .attr('height',40);
-        svg.selectAll("*").remove(); // Clear previous chart
         const width = +svg.attr('width') - margin.left - margin.right;
         const height = +svg.attr('height') - margin.top - margin.bottom;
         const y = d3.scaleBand()
@@ -45,6 +44,34 @@ const drawBar = () => {
             .attr('fill',d => {
                 return getKnowledgeColor(d.name.slice(0,5));
             })
+            .on('mouseover', function(event, d) {
+                // 添加悬浮提示框
+                const tooltip = d3.select('body')
+                    .append('div')
+                    .attr('class', 'tooltip')
+                    .style('background-color', 'rgba(128, 128, 128, 0.7)') // 设置背景颜色为半透明的灰色
+                    .style('position', 'absolute')
+                    .style('z-index', '10')// 设置提示框的层级
+                    .style('visibility', 'hidden')
+                    .style('border-radius', '4px')
+                    .text(`知识点：${d.name}；掌握程度：${d.value.toFixed(2)}`); // 设置提示框的文本
+
+                tooltip.style('visibility', 'visible')
+                    .style('left', `${event.pageX + 5}px`)// 设置提示框的位置
+                    .style('top', `${event.pageY + 5}px`);
+            })
+            .on('mouseout', function() {
+                d3.select('.tooltip').remove();
+            })
+
+        g.append('rect')
+            .attr('x',0)
+            .attr('y',0)
+            .attr('width',150)
+            .attr('height',20)
+            .attr('fill','none')
+            .attr('stroke','rgb(220,220,220)')
+            .attr('stroke-width',1)
         
     }
     //若knowledge数组有2个知识点（题目对应2个知识点）
@@ -53,7 +80,7 @@ const drawBar = () => {
         const svg = d3.select(titleInfo.value)
             .attr('width',160)
             .attr('height',60);
-        svg.selectAll("*").remove(); // Clear previous chart
+        // svg.selectAll("*").remove(); // Clear previous chart
         const width = +svg.attr('width') - margin.left - margin.right;
         const height = +svg.attr('height') - margin.top - margin.bottom;
         const y = d3.scaleBand()
@@ -72,6 +99,43 @@ const drawBar = () => {
             .attr('fill',d => {
                 return getKnowledgeColor(d.name.slice(0,5));
             })
+            .on('mouseover', function(event, d) {
+                // 添加悬浮提示框
+                const tooltip = d3.select('body')
+                    .append('div')
+                    .attr('class', 'tooltip')
+                    .style('background-color', 'rgba(128, 128, 128, 0.7)') // 设置背景颜色为半透明的灰色
+                    .style('position', 'absolute')
+                    .style('z-index', '10')// 设置提示框的层级
+                    .style('visibility', 'hidden')
+                    .style('border-radius', '4px')
+                    .text(`知识点：${d.name}；掌握程度：${d.value.toFixed(2)}`); // 设置提示框的文本
+
+                tooltip.style('visibility', 'visible')
+                    .style('left', `${event.pageX + 5}px`)// 设置提示框的位置
+                    .style('top', `${event.pageY + 5}px`);
+            })
+            .on('mouseout', function() {
+                d3.select('.tooltip').remove();
+            })
+
+        g.append('rect')
+            .attr('x',0)
+            .attr('y',0)
+            .attr('width',150)
+            .attr('height',20)
+            .attr('fill','none')
+            .attr('stroke','rgb(220,220,220)')
+            .attr('stroke-width',1)
+        
+        g.append('rect')
+            .attr('x',0)
+            .attr('y',25)
+            .attr('width',150)
+            .attr('height',20)
+            .attr('fill','none')
+            .attr('stroke','rgb(220,220,220)')
+            .attr('stroke-width',1)
 
     }
 }
@@ -80,9 +144,6 @@ onMounted(()=>{
     drawBar();
 })
 
-watch(tableData,()=>{
-    drawBar();
-})
 </script>
 
 <template>

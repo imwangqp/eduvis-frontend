@@ -23,6 +23,7 @@ const store = createStore({
                     state.id.push(singleId);
                 }
             }
+            console.log(state.id)
         },
         removeId(state, id){
             _.remove(state.id, i => {

@@ -1,424 +1,33 @@
 <script setup>
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import * as d3 from 'd3'
 import TableLineChart from './TableLineChart.vue';
 import KnowledgeGlyph from './KnowledgeGlyph.vue';
 import BadKnowledgeGlyph from './BadKnowledgeGlyph.vue';
+//导入json数据
+// import studentInfoData from '../utils/studentInfo.json';
 import store from "@/store/index.js";
+import axios from "axios";
 
+let tableHeight = ref()
 //表格组件
 const tableRef = ref()
+const tableContainer = ref()
+//多选的数据
+const multipleSelection = ref([])
+let studentInfo = ref([])
 
-const studentInfo = [
-    {
-        ID: '8b6d1125760bd3939b6e',
-        sex: 'female',
-        age: 18,
-        major: 'J87654',
-        HotTime:[//高峰时段，统计每人每个时间段下的提交记录次数，例如：time为 1 表示 0点至1点下提交了30次
-            {
-                time: 1,
-                value: 52
-            },
-            {
-                time: 2,
-                value: 40
-            },
-            {
-                time: 3,
-                value: 50
-            },
-            {
-                time: 4,
-                value: 60
-            },
-            {
-                time: 5,
-                value: 65
-            },
-            {
-                time: 6,
-                value: 80
-            },
-            {
-                time: 7,
-                value: 90
-            },
-            {
-                time: 8,
-                value: 100
-            },
-            {
-                time: 9,
-                value: 20
-            },
-            {
-                time: 10,
-                value: 120
-            },
-            {
-                time: 11,
-                value: 60
-            },
-            {
-                time: 12,
-                value: 140
-            },
-            {
-                time: 13,
-                value: 150
-            },
-            {
-                time: 14,
-                value: 160
-            },
-            {
-                time: 15,
-                value: 170
-            },
-            {
-                time: 16,
-                value: 180
-            },
-            {
-                time: 17,
-                value: 55
-            },
-            {
-                time: 18,
-                value: 200
-            },
-            {
-                time: 19,
-                value: 210
-            },
-            {
-                time: 20,
-                value: 220
-            },
-            {
-                time: 21,
-                value: 230
-            },
-            {
-                time: 22,
-                value: 156
-            },
-            {
-                time: 23,
-                value: 250
-            },
-            {
-                time: 24,
-                value: 125
-            }
-        ],
-        Knowledge:[//偏好题型（知识点>=3）
-            {
-                name:'r8S3g',
-                value:0.3
-            },
-            {
-                name:'t5V9e',
-                value:0.4
-            },
-            {
-                name:'m3D1v',
-                value:0.3
-            },
-        ],
-        badknowledge:[
-            {
-                name:'s8Y2f',
-                value:0.3
-            },
-            {
-                name:'k4W1c',
-                value:0.4
-            },
-            {
-                name:'g7R2j',
-                value:0.3
-            }
-        ],
-        method:{
-            name:'Method_5Q4KoXthUuYz3bvrTDFm',
-            value:100
-        }
-    },
-    {
-        ID: '8b6d1125760bd3939b6e',
-        sex: 'male',
-        age: 20,
-        major: 'J87654',
-        HotTime:[//高峰时段，统计每人每个时间段下的提交记录次数，例如：time为 1 表示 0点至1点下提交了30次
-        {
-                time: 1,
-                value: 30
-            },
-            {
-                time: 2,
-                value: 40
-            },
-            {
-                time: 3,
-                value: 50
-            },
-            {
-                time: 4,
-                value: 60
-            },
-            {
-                time: 5,
-                value: 70
-            },
-            {
-                time: 6,
-                value: 80
-            },
-            {
-                time: 7,
-                value: 90
-            },
-            {
-                time: 8,
-                value: 100
-            },
-            {
-                time: 9,
-                value: 110
-            },
-            {
-                time: 10,
-                value: 120
-            },
-            {
-                time: 11,
-                value: 130
-            },
-            {
-                time: 12,
-                value: 140
-            },
-            {
-                time: 13,
-                value: 150
-            },
-            {
-                time: 14,
-                value: 160
-            },
-            {
-                time: 15,
-                value: 170
-            },
-            {
-                time: 16,
-                value: 180
-            },
-            {
-                time: 17,
-                value: 190
-            },
-            {
-                time: 18,
-                value: 200
-            },
-            {
-                time: 19,
-                value: 210
-            },
-            {
-                time: 20,
-                value: 220
-            },
-            {
-                time: 21,
-                value: 230
-            },
-            {
-                time: 22,
-                value: 240
-            },
-            {
-                time: 23,
-                value: 250
-            },
-            {
-                time: 24,
-                value: 260
-            }
-        ],
-        Knowledge:[//偏好题型（知识点>=3）
-            {
-                name:'r8S3g',
-                value:0.3
-            },
-            {
-                name:'t5V9e',
-                value:0.4
-            },
-            {
-                name:'m3D1v',
-                value:0.3
-            },
-        ],
-        badknowledge:[
-            {
-                name:'s8Y2f',
-                value:0.3
-            },
-            {
-                name:'k4W1c',
-                value:0.4
-            },
-            {
-                name:'g7R2j',
-                value:0.3
-            }
-        ],
-        method:{
-            name:'Method_BXr9AIsPQhwNvyGdZL57',
-            value:100
-        }
-    },
-    {
-        ID: '8b6d1125760bd3939b6e',
-        sex: 'female',
-        age: 22,
-        major: 'J87654',
-        HotTime:[//高峰时段，统计每人每个时间段下的提交记录次数，例如：time为 1 表示 0点至1点下提交了30次
-        {
-                time: 1,
-                value: 30
-            },
-            {
-                time: 2,
-                value: 40
-            },
-            {
-                time: 3,
-                value: 50
-            },
-            {
-                time: 4,
-                value: 60
-            },
-            {
-                time: 5,
-                value: 70
-            },
-            {
-                time: 6,
-                value: 80
-            },
-            {
-                time: 7,
-                value: 90
-            },
-            {
-                time: 8,
-                value: 100
-            },
-            {
-                time: 9,
-                value: 110
-            },
-            {
-                time: 10,
-                value: 120
-            },
-            {
-                time: 11,
-                value: 130
-            },
-            {
-                time: 12,
-                value: 140
-            },
-            {
-                time: 13,
-                value: 150
-            },
-            {
-                time: 14,
-                value: 160
-            },
-            {
-                time: 15,
-                value: 170
-            },
-            {
-                time: 16,
-                value: 180
-            },
-            {
-                time: 17,
-                value: 190
-            },
-            {
-                time: 18,
-                value: 200
-            },
-            {
-                time: 19,
-                value: 210
-            },
-            {
-                time: 20,
-                value: 220
-            },
-            {
-                time: 21,
-                value: 230
-            },
-            {
-                time: 22,
-                value: 240
-            },
-            {
-                time: 23,
-                value: 250
-            },
-            {
-                time: 24,
-                value: 260
-            }
-        ],
-        Knowledge:[//偏好题型（知识点>=3）
-            {
-                name:'r8S3g',
-                value:0.3
-            },
-            {
-                name:'t5V9e',
-                value:0.4
-            },
-            {
-                name:'m3D1v',
-                value:0.3
-            },
-        ],
-        badknowledge:[
-            {
-                name:'s8Y2f',
-                value:0.3
-            },
-            {
-                name:'k4W1c',
-                value:0.4
-            },
-            {
-                name:'g7R2j',
-                value:0.3
-            }
-        ],
-        method:{
-            name:'Method_Cj9Ya2R7fZd6xs1q5mNQ',
-            value:100
-        }
-    }
-]
+// const studentInfo = studentInfoData.data
+// console.log(studentInfo[0])
+const filterHandler = (value, row) => {
+    return row.class === value;
+}
+
+const handleSelection = (val) => {
+  //console.log(val[0].ID)
+  multipleSelection.value = val
+  console.log(multipleSelection.value)
+}
 const getMethodClass = (name) => {
     if(name==='Method_5Q4KoXthUuYz3bvrTDFm'){
         return 'tagStyle_1'
@@ -458,13 +67,23 @@ const getMethodIndex = (name) => {
 }
 const handleSelectionChange = (e) =>{
   e.map(i=>i)
-  store.commit('addId', e)
+  console.log(e)
+  store.commit('addId', e.map(i=>i.ID))
 }
+
+onMounted(()=>{
+  tableHeight.value = tableContainer.value.clientHeight
+  axios.get('/api/getStudentInfo').then(res=>{
+    console.log(res.data.data)
+    studentInfo.value=res.data.data
+  })
+})
+
 </script>
 
 <template>
-  <div style="width: 1030px">
-    <el-table :data="studentInfo" @selection-change="handleSelectionChange" ref="tableRef" >
+  <div style="width: 1030px" class="h-full flex" ref="tableContainer">
+    <el-table :data="studentInfo" @selection-change="handleSelectionChange" ref="tableRef" :height="tableHeight">
       <el-table-column type="selection" width="40" />
       <el-table-column label="ID" prop="ID" width="200" class-name="centered-column"></el-table-column>
       <el-table-column label="性别" prop="sex" width="60" class-name="centered-column">
@@ -493,15 +112,7 @@ const handleSelectionChange = (e) =>{
       </el-table-column>
       <el-table-column label="常用方法" class-name="centered-column" width="130">
         <template #default="scope">
-          <!--&lt;!&ndash;                <el-popover effect="light" trigger="hover" placement="top">&ndash;&gt;-->
-          <!--&lt;!&ndash;                  <template #default>&ndash;&gt;-->
-          <!--&lt;!&ndash;                    <div>method: {{ scope.row.method.name }}</div>&ndash;&gt;-->
-          <!--&lt;!&ndash;                    <div>value: {{ scope.row.method.value }}</div>&ndash;&gt;-->
-          <!--&lt;!&ndash;                  </template>&ndash;&gt;-->
-          <!--&lt;!&ndash;                  <template #reference>&ndash;&gt;-->
           <span :class="getMethodClass(scope.row.method.name)">{{ getMethodIndex(scope.row.method.name) }}</span>
-          <!--&lt;!&ndash;                  </template>&ndash;&gt;-->
-          <!--&lt;!&ndash;                </el-popover>&ndash;&gt;-->
         </template>
       </el-table-column>
     </el-table>
@@ -515,49 +126,7 @@ const handleSelectionChange = (e) =>{
 .centered-column .cell {
     text-align: center;
   }
-.tagStyle_1{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #EDF7B5;
-    border-radius: 6px;
-    background-color: #EDF7B5;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_2{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #f1f9dd;
-    border-radius: 6px;
-    background-color: #f1f9dd;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_3{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #eae4c7;
-    border-radius: 6px;
-    background-color: #eae4c7;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_4{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #c8ede0;
-    border-radius: 6px;
-    background-color: #c8ede0;
-    color: #6e6e6e;
-    font-size: 12px;
-}
-.tagStyle_5{
-    display: inline-block;
-    width: 80px;
-    border: 1px solid #dae6c8;
-    border-radius: 6px;
-    background-color: #dae6c8;
-    color: #6e6e6e;
-    font-size: 12px;
+.labelSelect .cell {
+    text-align: center;
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup>
 import * as d3 from 'd3'
 import { ref, onMounted, watch} from 'vue'
+import {CommonColor} from "@/utils/getColor.js";
 
 const props = defineProps({
     data: {
@@ -15,7 +16,7 @@ const drawLineChart = () => {
     const data = props.data;
 
     const svg = d3.select(chartRef.value)
-        .attr('width',160)
+        .attr('width',140)
         .attr('height',50);
 
     svg.selectAll("*").remove(); // Clear previous chart
@@ -26,7 +27,7 @@ const drawLineChart = () => {
     
     const x = d3.scaleLinear()
         .domain([1, 24])
-        .range([0, width]);
+        .range([margin.left, width - 10]);
     const y = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.value)])
         .range([height, 0]);
@@ -43,16 +44,13 @@ const drawLineChart = () => {
       //.attr('transform', `translate(0,0)`)
       .attr('class', 'axis axis--x')
       .attr('transform', `translate(0,${height})`)
-      .call(d3.axisBottom(x)
-          .tickValues([6, 12, 18, 24])
-          .tickFormat(d3.format('d'))
-);
+      .call(d3.axisBottom(x).ticks(4).tickFormat(d3.format('d')));
 
     g.append('path')
       .datum(data)
       .attr('d', line)
       .style('fill', 'none')
-      .style('stroke', '#D29690')
+      .style('stroke', CommonColor.HotTime)
       .style('stroke-width', '1.5px');
 
 }
