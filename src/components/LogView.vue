@@ -71,6 +71,7 @@ import getKnowledgeColor from '../utils/index';
 import axios from "axios";
 // import store from "@/store/index.js";
 import { useStore } from 'vuex'
+import _ from 'lodash'
 // import knowledgeData from '../assets/knowledge.json'
 
 // const lineData = [
@@ -130,82 +131,42 @@ var meanLines = []
 var knowledgeData = []
 
 onMounted(()=>{
-    console.log("store"+JSON.stringify(store.getters.getId))
-    console.log("store"+store.getters.getId.length)
-    // signal.value = computed(()=>{
-    //     store.getters.getId.length
-    // })
-
-    watch(
-      () => store.getters.getId.length,
-      (newValue, oldValue) => {
-        // console.log('itemIds changed:', store.getters.getId[0])
-        tempIds = store.getters.getId
-        if(newValue > oldValue) {
-            cards.push(tempIds[tempIds.length-1].ID)
-            var newId = cards.length-1
-            axios.get('/api/getAnswerLog', {
-                params: {
-                    stu_id: cards[newId]
-                }
-            }).then(res => {
-                if(res.data.code) {
-                    console.log(res.data.code)
-                    // console.log(index+"data---------------"+JSON.stringify(res.data))
-                    data.set(cards[newId], res.data.data)
-                    // data[index] = res.data.data
-                    // emitter.emit('detail', res.data.detail)
-                    initKnowledge(newId)
-                    initLog(newId)
-                    
-                } else {
-                    console.log(res.data.msg)
-                }
-            })
-
-            //折线图数据
-            axios.get('/api/getKnowledgeMastery', {
-                params: {
-                    stu_id: cards[newId]
-                }
-            })
-            .then(response => {
-                console.log("===============")
-                console.log(response.data)
-                knowledgeData[newId] = response.data.data
-                console.log("linedata---------", response.data.data)
-                // initLineChart(newId)
+  watch(store.state.id, ids=>{
+    _.forEach(ids,id=>{
+      axios.post('/api/getAnswerLog', {
+        id: id
+      }).then(res1 =>{
+        axios.get('/api/getKnowledgeMastery', {
+          params: {
+            stu_id: id
+          }
+        }).then(res2 => {
+              axios.post('/api/getAvgMastery', {
+                id: id
+              }).then(res3 => {
 
 
-                //折线图数据
-                axios.post('/api/getAvgMastery', {
-                    id: cards[newId]
-                })
-                .then(response => {
-                    console.log("===============")
-                    console.log(response.data)
-                    meanLines = response.data
-                    initLineChart(newId)
-                })
-                .catch(error => {
-                console.log(error)
-                })
+                  })
+                  .catch(error => {
+                    console.log(error)
+                  })
+              // console.log("===============")
+              // console.log(response.data)
+              // knowledgeData[newId] = response.data.data
+              // console.log("linedata---------", response.data.data)
             })
             .catch(error => {
-            console.log(error)
+              console.log(error)
             })
+      })
 
-            
-        }
-      }
-    )
+
+    })
+  })
     
     cards.forEach((item, index) => {
-        axios.get('/api/getAnswerLog', {
-            params: {
-                stu_id: cards[index]
-            }
-        }).then(res => {
+      console.log(item)
+        axios.post('/api/getAnswerLog', {'id': cards[index]}).then(res => {
             if(res.data.code) {
                 console.log("-----------")
                 // console.log(index+"data---------------"+JSON.stringify(res.data))

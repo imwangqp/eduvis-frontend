@@ -3,8 +3,10 @@ import * as d3 from 'd3'
 import { ref, onMounted, watch, nextTick} from 'vue'
 import {getKnowledgeColor} from '../utils/getColor.js'
 import titleInfo from './titleInfo.vue'
-import title_studentInfoData from '../utils/title_studentInfo.json'
+// import title_studentInfoData from '../utils/title_studentInfo.json'
 import title_knowledge from '../utils/title_knowledge.json'
+import axios from "axios";
+import emitter from "@/utils/mitt.js";
 
 const start = 30
 const nodes = [
@@ -143,7 +145,7 @@ const links = [
 
 ]
 
-var tableData = ref([])
+let tableData = ref([])
 
 //const tableData = title_studentInfoData.data
 const graphRef = ref(null)
@@ -369,7 +371,10 @@ const drawGraph = () => {
         .attr('fill', '#c0c0c0')
         .attr('stroke', '#c0c0c0')
         .attr('stroke-width', 2)
-        .on('click', d => {
+        .on('click', (d, item) => {
+          axios.post('/api/getMasteryByTitle', {'id': item['id']}).then(res=>{
+            tableData.value = res.data.data
+          })
             const nodeElement = d3.select(d.srcElement);
             // 如果元素已经被选中，那么取消选中
             if (nodeElement.attr('stroke') === '#9e9e9e') {
@@ -681,7 +686,10 @@ const drawGraph = () => {
 
     
 }
+const tableRef = ref()
+const tableHeight = ref()
 onMounted(() => {
+  tableHeight.value = tableRef.value.clientHeight
     nextTick(() => {
         drawGraph()
     })
@@ -690,22 +698,20 @@ onMounted(() => {
 </script>
 
 <template>
-    <div style="width:100%;height:100%">
-        <div style="width: 100%; height: 70%;overflow:scroll" ref="graphDiv" id="graphDiv">
-            <svg ref="graphRef"></svg>
-        </div>
-        <div style="height:30%">
-            <el-table :data="tableData"  max-height="270" >
-                <el-table-column prop="ID" label="ID" width="200" class-name="centered-column"></el-table-column>
-                <el-table-column prop="score" label="分数"  width="100" class-name="centered-column"></el-table-column>
-                <el-table-column prop="knowledge" label="知识点掌握程度"  class-name="centered-column">
-                    <template #default="scope">
-                        <titleInfo :tableData="scope.row.knowledge"></titleInfo>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </div>
+  <div class="w-full h-full flex">
+    <div class="overflow-scroll" style="flex: 6" ref="graphDiv" id="graphDiv">
+      <svg ref="graphRef"></svg>
     </div>
+    <div style="flex: 4" class="h-full" ref="tableRef">
+      <el-table :data="tableData" :height="tableHeight">
+        <el-table-column prop="id" label="ID" width="180" class-name="centered-column"></el-table-column>
+        <el-table-column prop="score" label="得分" sortable width="80" class-name="centered-column"></el-table-column>
+        <el-table-column prop="timeconsume" label="耗时" width="60" class-name="centered-column"></el-table-column>
+        <el-table-column prop="memory" label="内存" width="60" class-name="centered-column"></el-table-column>
+      </el-table>
+    </div>
+  </div>
+
 
 </template>
 
