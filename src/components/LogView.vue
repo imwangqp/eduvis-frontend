@@ -71,32 +71,34 @@ import getKnowledgeColor from '../utils/index';
 import axios from "axios";
 // import store from "@/store/index.js";
 import { useStore } from 'vuex'
+// import knowledgeData from '../assets/knowledge.json'
 
-const lineData = [
-    [
-      [10, 20, 30, 40, 50],
-      [30, 40, 10, 20, 50],
-      [20, 10, 30, 50, 40],
-      [15, 20, 27, 32, 35],
-      [10, 20, 30, 40, 45],
-      [0, 5, 15, 20, 40],
-      [0, 10, 25, 30, 45],
-      [0, 15, 20, 35, 50]
-    ],
-    [
-      [10, 20, 30, 40, 50],
-      [10, 20, 30, 40, 50],
-      [10, 20, 30, 40, 50],
-      [15, 20, 27, 32, 35],
-      [10, 20, 30, 40, 45],
-      [0, 5, 15, 20, 40],
-      [0, 10, 25, 30, 45],
-      [0, 15, 20, 35, 50]
-    ],
-];
+// const lineData = [
+//     [
+//       [10, 20, 30, 40, 50],
+//       [30, 40, 10, 20, 50],
+//       [20, 10, 30, 50, 40],
+//       [15, 20, 27, 32, 35],
+//       [10, 20, 30, 40, 45],
+//       [0, 5, 15, 20, 40],
+//       [0, 10, 25, 30, 45],
+//       [0, 15, 20, 35, 50]
+//     ],
+//     [
+//       [10, 20, 30, 40, 50],
+//       [10, 20, 30, 40, 50],
+//       [10, 20, 30, 40, 50],
+//       [15, 20, 27, 32, 35],
+//       [10, 20, 30, 40, 45],
+//       [0, 5, 15, 20, 40],
+//       [0, 10, 25, 30, 45],
+//       [0, 15, 20, 35, 50]
+//     ],
+// ];
 var data = new Map();
 
 // var cards = reactive(["8b6d1125760bd3939b6e", "63eef37311aaac915a45"]);
+// var cards = reactive(["3c89c7f1db26ae691db8"]);
 var cards = reactive([]);
 
 var selectedKnowledge = -1;
@@ -124,6 +126,8 @@ var content = ref()
 const store = useStore()
 var signal = ref(0)
 var tempIds = []
+var meanLines = []
+var knowledgeData = []
 
 onMounted(()=>{
     console.log("store"+JSON.stringify(store.getters.getId))
@@ -135,7 +139,7 @@ onMounted(()=>{
     watch(
       () => store.getters.getId.length,
       (newValue, oldValue) => {
-        console.log('itemIds changed:', store.getters.getId[0])
+        // console.log('itemIds changed:', store.getters.getId[0])
         tempIds = store.getters.getId
         if(newValue > oldValue) {
             cards.push(tempIds[tempIds.length-1].ID)
@@ -153,11 +157,45 @@ onMounted(()=>{
                     // emitter.emit('detail', res.data.detail)
                     initKnowledge(newId)
                     initLog(newId)
-                    initLineChart(newId)
+                    
                 } else {
                     console.log(res.data.msg)
                 }
             })
+
+            //折线图数据
+            axios.get('/api/getKnowledgeMastery', {
+                params: {
+                    stu_id: cards[newId]
+                }
+            })
+            .then(response => {
+                console.log("===============")
+                console.log(response.data)
+                knowledgeData[newId] = response.data.data
+                console.log("linedata---------", response.data.data)
+                // initLineChart(newId)
+
+
+                //折线图数据
+                axios.post('/api/getAvgMastery', {
+                    id: cards[newId]
+                })
+                .then(response => {
+                    console.log("===============")
+                    console.log(response.data)
+                    meanLines = response.data
+                    initLineChart(newId)
+                })
+                .catch(error => {
+                console.log(error)
+                })
+            })
+            .catch(error => {
+            console.log(error)
+            })
+
+            
         }
       }
     )
@@ -169,7 +207,7 @@ onMounted(()=>{
             }
         }).then(res => {
             if(res.data.code) {
-                console.log(res.data.code)
+                console.log("-----------")
                 // console.log(index+"data---------------"+JSON.stringify(res.data))
                 data.set(cards[index], res.data.data)
                 // data[index] = res.data.data
@@ -181,6 +219,39 @@ onMounted(()=>{
                 console.log(res.data.msg)
             }
         })
+
+        //折线图数据
+        //折线图数据
+        axios.get('/api/getKnowledgeMastery', {
+                params: {
+                    stu_id: cards[index]
+                }
+            })
+            .then(response => {
+                console.log("===============")
+                console.log(response.data)
+                knowledgeData[index] = response.data.data
+                console.log("linedata---------", response.data.data)
+                // initLineChart(newId)
+
+
+                //折线图数据
+                axios.post('/api/getAvgMastery', {
+                    id: cards[index]
+                })
+                .then(response => {
+                    console.log("===============")
+                    console.log(response.data)
+                    meanLines = response.data
+                    initLineChart(index)
+                })
+                .catch(error => {
+                console.log(error)
+                })
+            })
+            .catch(error => {
+            console.log(error)
+            })
         
     })
     console.log("watch")
@@ -348,7 +419,11 @@ function addHighlight(num, index) {
     const lines = lineSvg.selectAll(".brokenLine");
     const areas = lineSvg.selectAll(".area");
     lines.filter((d, i) => i === num)
-    .attr("stroke-width", newLineWidth)
+    .attr("stroke", getKnowledgeColor.getKnowledgeColor(knowledge[num]))
+    .attr("stroke-width", newLineWidth);
+
+    lines.filter((d, i) => i !== num)
+    .attr("stroke", null)
 
     // lines.filter((d, i) => d.xx !== num)
     // .attr("opacity", 0.5);
@@ -359,7 +434,7 @@ function addHighlight(num, index) {
 }
 
 function removeHighlight(num, index) {
-    console.log("index"+index)
+    // console.log("index"+index)
     const dotSvg = d3.select(`#knowledge-${index}`)
     const svg = d3.select(`#log-${index}`)
 
@@ -383,6 +458,9 @@ function removeHighlight(num, index) {
 
     lines.filter((d, i) => i !== num)
     .attr("opacity", 1);
+
+    lines.filter((d, i) => i === num)
+    .attr("stroke", null)
 
     //面积
     areas.filter((d, i) => i === num)
@@ -415,10 +493,10 @@ function initKnowledge(index) {
 
         const xy = d3.pointer(event, dotSvg.node());
         const yv = xy[1]
-        console.log(cellHeight)
+        // console.log(cellHeight)
         const num = Math.floor((yv-margin.top)/ cellHeight);
 
-        console.log(num)
+        // console.log(num)
 
         if(selectedKnowledge == num) {
             removeHighlight(num, index);    //参数
@@ -435,14 +513,42 @@ function initKnowledge(index) {
 }
 function initLineChart(index) {
     // const start_x = cellWidth * logData.length + 50
-    console.log("lineRef"+lineRef[index])
+    // console.log("lineRef"+lineRef[index])
     const width = lineRef[index].clientWidth;
     // const width = cellHeight * knowledge.length + 40;
     const height = cellHeight * knowledge.length ;
     const axis_color = "#b2bbbe"
 
     const margin = { top: 10, right: 10, bottom: 10, left: 30 }
+    var lineData = getdata(knowledgeData[index])
+    console.log("linData"+lineData)
+    function getdata(data) {
+        var datda = data.datda
+        var xAxis = data.xAxis
+        var yy;
+        var lineAxis = []
         
+        for(var i = 0; i < datda.length; i ++) {
+            yy = datda[i]
+            var xx = [];
+            var num = 0
+            //换x坐标
+            for(var j = 0; j < xAxis[i].length; j ++) {
+                if(xAxis[i][j])
+                    xx[num ++] = j
+            }
+
+            var pointers = []
+            for(var j = 0; j < yy.length; j ++) {
+                pointers.push({'x': xx[j], 'y': yy[j]})
+            }
+            lineAxis[i] = pointers
+            // console.log("pointers"+JSON.stringify(pointers))
+        }
+        return lineAxis
+    }
+
+
     const svg = d3.select(`#line-${index}`)
     //清空svg
     svg.selectAll('*').remove()
@@ -456,6 +562,9 @@ function initLineChart(index) {
 
     var xAxis = d3.axisBottom(x).ticks(5).tickSizeOuter(0);
     var yAxis = d3.axisLeft(y).ticks(5).tickSizeOuter(0);
+
+    //另一个轴
+    var yy = d3.scaleLinear().range([height-margin.top-margin.bottom, 0]).nice();
 
     // 添加x轴
     lineG.append("g")
@@ -505,20 +614,14 @@ function initLineChart(index) {
     
     // 数据绑定
     var line = d3.line()
-      .x((d, i) => x(i))
-      .y(d => y(d))
-      .curve(d3.curveCardinal);
-
-
-    //折线图下面积
-    // const area = d3.area()
-    //     .x((d, i) => x(i))
-    //     .y0(height)
-    //     .y1(d => y(d));
+      .x((d) => x(d.x))
+      .y(d => {/*console.log("yyyyyyyyyyyyy"+y(d.y));*/return yy(d.y)})
+      .curve(d3.curveBasis);
+     // .curve(d3.curveCardinal);
 
     // 添加多条线
     var paths = lineG.selectAll(".brokenLine")
-        .data(lineData[index])
+        .data(lineData)
         .enter()
         .append("path")
         .attr("class", "brokenLine")
@@ -527,26 +630,64 @@ function initLineChart(index) {
         .attr("stroke-width", lineWidth)
         .attr("d", line);
 
+    //平均折线图
+    var line2 = d3.line()
+      .x((d, i) => {/*console.log("xxxx"+i); */ return x(i)})
+      .y(d => {/*console.log("yyyy"+y(d));*/ return y(d)})
+      .curve(d3.curveBasis);
+    
+      console.log("meanlines", meanLines)
+ 
+
+    
+
+    // var nodes = []
+    // for(var i = 0; i < lineData.length; i ++){
+    //     nodes[i] = lineG.selectAll('.node')
+    //         .data(lineData[i])
+    //         .enter()
+    //         .append('circle')
+    //         .attr('class', 'node')
+    //         .attr('cx', d => x(d.x))
+    //         .attr('cy', d => y(d.y))
+    //         .attr('r', 2)
+    //         .attr('fill', 'white')
+    //         .attr('stroke', 'steelblue')
+    //         .attr('stroke-width', 2);
+    // }
+    
+
     //添加面积
     var areas = lineG.selectAll(".area")
-        .data(lineData[index])
+        .data(lineData)
         .enter()
         .append("path")
         .attr("class", "area")
         .attr("fill", (d, i) => getKnowledgeColor.getKnowledgeColor(knowledge[i]))
         .attr("fill-opacity", .0)
         .attr("d", d3.area()
-            .x(function(d, i) { return x(i) })
-            .y0(y(0))
-            .y1((d) => y(d))
-            .curve(d3.curveCardinal)
+            .x(function(d) { return x(d.x) })
+            .y0(yy(0))
+            .y1((d) => yy(d.y))
+            .curve(d3.curveBasis)
         )
 
      // 更新函数
     function updateChart(newDataset) {
         // 更新比例尺的域
-        x.domain([0, newDataset[0].length - 1]);
-        y.domain([0, d3.max(newDataset.flat())]);
+        const allXValues = newDataset.flatMap(d => d.map(p => p.x));
+        const allYValues = newDataset.flatMap(d => d.map(p => p.y));
+        
+        console.log("meanlines", d3.max(meanLines))
+        console.log("extent"+d3.extent(allXValues))
+        console.log("extent"+Math.max(d3.max(allYValues), d3.max(meanLines)))
+        // x.domain(d3.extent(allXValues));
+        // y.domain(d3.extent(allYValues));
+        x.domain(d3.extent(allXValues));
+        y.domain([0, d3.max(meanLines)]);
+        // y.domain([0, d3.max(allYValues)]);
+
+        yy.domain([0, d3.max(allYValues)]);
 
         // 更新轴
         lineG.select(".x.axis")
@@ -564,21 +705,55 @@ function initLineChart(index) {
             .transition()
             .duration(500)
             .attr("d", line);
+
+        var meanPath = lineG
+        .append("path")
+        .datum(meanLines)
+        .attr("class", "meanLine")
+        .attr("fill", "none")
+        .attr("stroke", "#FF0000") // 使用不同颜色
+        .attr("stroke-width", lineWidth)
+        .attr("d", line2);
+
+        // meanPath.data(meanLines)
+        //     .transition()
+        //     .duration(500)
+        //     .attr("d", line2);
+
+        // var meanPath = lineG.selectAll(".meanLine")
+        // .append("path")
+        // .attr("class", "meanLine")
+        // .attr("d", line2(meanLines)) // 调用生成器
+        // .attr('fill', 'none') // 设置填充
+        // .attr('stroke-width', 1) // 设置线条的宽度
+        // .attr('stroke', 'green'); // 设置线条的颜色
+
+        paths.attr("stroke", null)
+
+        // nodes.data(newDataset)
+        //     .transition()
+        //     .duration(500);
+
+        // for(var i = 0; i < newDataset.length; i ++){
+        //     nodes[i].data(newDataset[i])
+        //         .transition()
+        //         .duration(500);
+        // }
     
         areas.data(newDataset)
             .transition()
             .duration(500)
             .attr("d", d3.area()
-                .x(function(d, i) { return x(i) })
-                .y0(y(0))
-                .y1((d) => y(d))
-                .curve(d3.curveCardinal)
+                .x(function(d) { return x(d.x) })
+                .y0(yy(0))
+                .y1((d) => yy(d.y))
+                .curve(d3.curveBasis)
             )
 
         changeAxisStyle();
     }
 
-    updateChart(lineData[index])
+    updateChart(lineData)
 }
 
 function initLog(index) {
@@ -703,7 +878,7 @@ box-sizing: border-box;
   height: auto;
   width: 100%;
   display: grid;
-  grid-template-columns: 2rem 3fr 1fr; /* 两列平均分配空间 */
+  grid-template-columns: 2rem 3fr 2fr; /* 两列平均分配空间 */
 }
 
 ::-webkit-scrollbar	{ 
