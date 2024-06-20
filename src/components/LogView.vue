@@ -144,11 +144,16 @@ onMounted(()=>{
         if(newValue > oldValue) {
             cards.push(tempIds[tempIds.length-1].ID)
             var newId = cards.length-1
-            axios.get('/api/getAnswerLog', {
-                params: {
-                    stu_id: cards[newId]
-                }
-            }).then(res => {
+            // axios.get('/api/getAnswerLog', {
+            //     params: {
+            //         stu_id: cards[newId]
+            //     }
+            // })
+            
+            axios.post('/api/getAnswerLog', {
+                id: cards[newId]
+            })
+            .then(res => {
                 if(res.data.code) {
                     console.log(res.data.code)
                     // console.log(index+"data---------------"+JSON.stringify(res.data))
@@ -184,7 +189,7 @@ onMounted(()=>{
                 .then(response => {
                     console.log("===============")
                     console.log(response.data)
-                    meanLines = response.data
+                    meanLines[newId] = response.data
                     initLineChart(newId)
                 })
                 .catch(error => {
@@ -200,61 +205,63 @@ onMounted(()=>{
       }
     )
     
-    cards.forEach((item, index) => {
-        axios.get('/api/getAnswerLog', {
-            params: {
-                stu_id: cards[index]
-            }
-        }).then(res => {
-            if(res.data.code) {
-                console.log("-----------")
-                // console.log(index+"data---------------"+JSON.stringify(res.data))
-                data.set(cards[index], res.data.data)
-                // data[index] = res.data.data
-                // emitter.emit('detail', res.data.detail)
-                initKnowledge(index)
-                initLog(index)
-                initLineChart(index)
-            } else {
-                console.log(res.data.msg)
-            }
-        })
+    // cards.forEach((item, index) => {
+    //     axios.get('/api/getAnswerLog', {
+    //         params: {
+    //             stu_id: cards[index]
+    //         }
+    //     }).then(res => {
+    //         if(res.data.code) {
+    //             console.log("-----------")
+    //             // console.log(index+"data---------------"+JSON.stringify(res.data))
+    //             data.set(cards[index], res.data.data)
+    //             // data[index] = res.data.data
+    //             // emitter.emit('detail', res.data.detail)
+    //             initKnowledge(index)
+    //             initLog(index)
+    //             initLineChart(index)
+    //         } else {
+    //             console.log(res.data.msg)
+    //         }
+    //     })
 
-        //折线图数据
-        //折线图数据
-        axios.get('/api/getKnowledgeMastery', {
-                params: {
-                    stu_id: cards[index]
-                }
-            })
-            .then(response => {
-                console.log("===============")
-                console.log(response.data)
-                knowledgeData[index] = response.data.data
-                console.log("linedata---------", response.data.data)
-                // initLineChart(newId)
+    //     //折线图数据
+    //     //折线图数据
+    //     axios.get('/api/getKnowledgeMastery', {
+    //             params: {
+    //                 stu_id: cards[index]
+    //             }
+    //         })
+    //         .then(response => {
+    //             console.log("===============")
+    //             console.log(response.data)
+    //             knowledgeData[index] = response.data.data
+    //             console.log("linedata---------", response.data.data)
+    //             // initLineChart(newId)
 
 
-                //折线图数据
-                axios.post('/api/getAvgMastery', {
-                    id: cards[index]
-                })
-                .then(response => {
-                    console.log("===============")
-                    console.log(response.data)
-                    meanLines = response.data
-                    initLineChart(index)
-                })
-                .catch(error => {
-                console.log(error)
-                })
-            })
-            .catch(error => {
-            console.log(error)
-            })
+    //             //折线图数据
+    //             axios.post('/api/getAvgMastery', {
+    //                 id: cards[index]
+    //             })
+    //             .then(response => {
+    //                 console.log("===============")
+    //                 console.log(response.data)
+    //                 meanLines = response.data
+    //                 initLineChart(index)
+    //             })
+    //             .catch(error => {
+    //             console.log(error)
+    //             })
+    //         })
+    //         .catch(error => {
+    //         console.log(error)
+    //         })
         
-    })
+    // })
+    
     console.log("watch")
+
     watch(value1, (newVal, oldVal) => {
         console.log("watch"+newVal, oldVal)
         cellWidth = newVal + intervalX
@@ -636,7 +643,7 @@ function initLineChart(index) {
       .y(d => {/*console.log("yyyy"+y(d));*/ return y(d)})
       .curve(d3.curveBasis);
     
-      console.log("meanlines", meanLines)
+      console.log("meanlines", meanLines[index])
  
 
     
@@ -678,13 +685,13 @@ function initLineChart(index) {
         const allXValues = newDataset.flatMap(d => d.map(p => p.x));
         const allYValues = newDataset.flatMap(d => d.map(p => p.y));
         
-        console.log("meanlines", d3.max(meanLines))
+        console.log("meanlines", d3.max(meanLines[index]))
         console.log("extent"+d3.extent(allXValues))
-        console.log("extent"+Math.max(d3.max(allYValues), d3.max(meanLines)))
+        console.log("extent"+Math.max(d3.max(allYValues), d3.max(meanLines[index])))
         // x.domain(d3.extent(allXValues));
         // y.domain(d3.extent(allYValues));
         x.domain(d3.extent(allXValues));
-        y.domain([0, d3.max(meanLines)]);
+        y.domain([0, 1]);
         // y.domain([0, d3.max(allYValues)]);
 
         yy.domain([0, d3.max(allYValues)]);
@@ -708,37 +715,15 @@ function initLineChart(index) {
 
         var meanPath = lineG
         .append("path")
-        .datum(meanLines)
+        .datum(meanLines[index])
         .attr("class", "meanLine")
         .attr("fill", "none")
         .attr("stroke", "#FF0000") // 使用不同颜色
         .attr("stroke-width", lineWidth)
         .attr("d", line2);
 
-        // meanPath.data(meanLines)
-        //     .transition()
-        //     .duration(500)
-        //     .attr("d", line2);
-
-        // var meanPath = lineG.selectAll(".meanLine")
-        // .append("path")
-        // .attr("class", "meanLine")
-        // .attr("d", line2(meanLines)) // 调用生成器
-        // .attr('fill', 'none') // 设置填充
-        // .attr('stroke-width', 1) // 设置线条的宽度
-        // .attr('stroke', 'green'); // 设置线条的颜色
-
         paths.attr("stroke", null)
 
-        // nodes.data(newDataset)
-        //     .transition()
-        //     .duration(500);
-
-        // for(var i = 0; i < newDataset.length; i ++){
-        //     nodes[i].data(newDataset[i])
-        //         .transition()
-        //         .duration(500);
-        // }
     
         areas.data(newDataset)
             .transition()
