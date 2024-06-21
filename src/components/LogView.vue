@@ -838,7 +838,7 @@ function initLog(index) {
         if(d.log == null)
             return;
 
-        if(selectedKnowledge != -1 && selectedKnowledge != d.xx)
+        if(selectedKnowledge[index] != -1 && selectedKnowledge[index] != d.xx)
             return;
 
         d3.select(this).style("filter", "drop-shadow(3px 3px 3px #B8B8B8)")
