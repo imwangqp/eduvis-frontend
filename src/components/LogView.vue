@@ -67,42 +67,17 @@
 import * as d3 from 'd3';
 import { onMounted, reactive, ref, watch, computed, watchEffect } from "vue";
 import getKnowledgeColor from '../utils/index'; 
-// import data from '../assets/log.json'
 import axios from "axios";
-// import store from "@/store/index.js";
 import { useStore } from 'vuex'
 import _ from 'lodash'
-// import knowledgeData from '../assets/knowledge.json'
 
-// const lineData = [
-//     [
-//       [10, 20, 30, 40, 50],
-//       [30, 40, 10, 20, 50],
-//       [20, 10, 30, 50, 40],
-//       [15, 20, 27, 32, 35],
-//       [10, 20, 30, 40, 45],
-//       [0, 5, 15, 20, 40],
-//       [0, 10, 25, 30, 45],
-//       [0, 15, 20, 35, 50]
-//     ],
-//     [
-//       [10, 20, 30, 40, 50],
-//       [10, 20, 30, 40, 50],
-//       [10, 20, 30, 40, 50],
-//       [15, 20, 27, 32, 35],
-//       [10, 20, 30, 40, 45],
-//       [0, 5, 15, 20, 40],
-//       [0, 10, 25, 30, 45],
-//       [0, 15, 20, 35, 50]
-//     ],
-// ];
 var data = new Map();
 
 // var cards = reactive(["8b6d1125760bd3939b6e", "63eef37311aaac915a45"]);
 // var cards = reactive(["3c89c7f1db26ae691db8"]);
 var cards = reactive([]);
 
-var selectedKnowledge = -1;
+var selectedKnowledge = [-1, -1, -1, -1, -1, -1, -1, -1];
 
 const knowledge = ["r8S3g", "t5V9e", "m3D1v", "s8Y2f", "k4W1c", "g7R2j", "b3C9s", "y9W5d"]
 //方块宽度
@@ -127,8 +102,8 @@ var content = ref()
 const store = useStore()
 var signal = ref(0)
 var tempIds = []
-var meanLines = []
-var knowledgeData = []
+var meanLines = new Map();
+var knowledgeData = new Map();
 
 onMounted(()=>{
     console.log("store"+JSON.stringify(store.getters.getId))
@@ -143,7 +118,7 @@ onMounted(()=>{
         // console.log('itemIds changed:', store.getters.getId[0])
         tempIds = store.getters.getId
         if(newValue > oldValue) {
-            cards.push(tempIds[tempIds.length-1].ID)
+            cards.push(tempIds[tempIds.length-1])
             var newId = cards.length-1
             // axios.get('/api/getAnswerLog', {
             //     params: {
@@ -177,20 +152,22 @@ onMounted(()=>{
             })
             .then(response => {
                 console.log("===============")
+                console.log(cards[newId])
                 console.log(response.data)
-                knowledgeData[newId] = response.data.data
+                knowledgeData.set(cards[newId], response.data.data)
                 console.log("linedata---------", response.data.data)
                 // initLineChart(newId)
 
 
                 //折线图数据
+                console.log("cards"+cards[newId])
                 axios.post('/api/getAvgMastery', {
                     id: cards[newId]
                 })
                 .then(response => {
                     console.log("===============")
                     console.log(response.data)
-                    meanLines[newId] = response.data
+                    meanLines.set(cards[newId], response.data)
                     initLineChart(newId)
                 })
                 .catch(error => {
@@ -200,11 +177,10 @@ onMounted(()=>{
             .catch(error => {
               console.log(error)
             })
-      })
+        }})
 
 
-    })
-  })
+
     
     // cards.forEach((item, index) => {
     //     axios.get('/api/getAnswerLog', {
@@ -267,9 +243,14 @@ onMounted(()=>{
         console.log("watch"+newVal, oldVal)
         cellWidth = newVal + intervalX
         cards.forEach((item, index) => {
-            // initKnowledge(index)
+            initKnowledge(index)
             initLog(index)
-            // initLineChart(index)
+            initLineChart(index)
+            
+        })
+        cards.forEach((item, index) => {
+            if(selectedKnowledge[index] != -1)
+                addHighlight(selectedKnowledge[index], index)
         })
     })
 
@@ -300,6 +281,17 @@ function moveUp(index) {
         initLineChart(index-1)
         initLog(index)
         initLog(index-1)
+        initKnowledge(index)
+        initKnowledge(index - 1)
+
+        var selectTmp = selectedKnowledge[index]
+        selectedKnowledge[index] = selectedKnowledge[index - 1]
+        selectedKnowledge[index - 1]=selectTmp
+        // [selectedKnowledge[index], selectedKnowledge[index-1]] = [selectedKnowledge[index-1], selectedKnowledge[index]]
+        if(selectedKnowledge[index] != -1) 
+            addHighlight(selectedKnowledge[index], index)
+        if(selectedKnowledge[index-1] != -1) 
+            addHighlight(selectedKnowledge[index-1], index-1)
     }
 }
 
@@ -311,6 +303,16 @@ function toTop(index) {
         initLineChart(0)
         initLog(index)
         initLog(0)
+        initKnowledge(index)
+        initKnowledge(0)
+        var selectTmp = selectedKnowledge[index]
+        selectedKnowledge[index] = selectedKnowledge[0]
+        selectedKnowledge[0]=selectTmp
+        // [selectedKnowledge[index], selectedKnowledge[0]] = [selectedKnowledge[0], selectedKnowledge[index]]
+        if(selectedKnowledge[index] != -1) 
+            addHighlight(selectedKnowledge[index], index)
+        if(selectedKnowledge[0] != -1) 
+            addHighlight(selectedKnowledge[0], 0)
     }
 }
 
@@ -323,10 +325,20 @@ function toBottom(index) {
         
         console.log("tobottom")
         // [cards[index], cards[cards.length - 1]] = [cards[cards.length - 1], cards[index]];
+        initKnowledge(index)
+        initKnowledge(cards.length - 1)
         initLineChart(index)
         initLineChart(cards.length - 1)
         initLog(index)
         initLog(cards.length - 1)
+        var selectTmp = selectedKnowledge[index]
+        selectedKnowledge[index] = selectedKnowledge[cards.length - 1]
+        selectedKnowledge[cards.length - 1]=selectTmp
+
+        if(selectedKnowledge[index] != -1) 
+            addHighlight(selectedKnowledge[index], index)
+        if(selectedKnowledge[cards.length - 1] != -1) 
+            addHighlight(selectedKnowledge[cards.length - 1], cards.length - 1)
     }
 }
 
@@ -340,10 +352,23 @@ function moveDown(index) {
 
         console.log("tobottom")
         // [cards[index], cards[index + 1]] = [cards[index + 1], cards[index]];
+        initKnowledge(index)
+        initKnowledge(index + 1)
         initLineChart(index)
         initLineChart(index + 1)
         initLog(index)
         initLog(index + 1)
+
+        console.log("movedown"+selectedKnowledge[index])
+        var selectTmp = selectedKnowledge[index]
+        selectedKnowledge[index] = selectedKnowledge[index + 1]
+        selectedKnowledge[index + 1]=selectTmp
+        // [selectedKnowledge[index], selectedKnowledge[index + 1]] = [selectedKnowledge[index + 1], selectedKnowledge[index]]
+        console.log("movedown"+selectedKnowledge[index+1])
+        if(selectedKnowledge[index] != -1) 
+            addHighlight(selectedKnowledge[index], index)
+        if(selectedKnowledge[index + 1] != -1) 
+            addHighlight(selectedKnowledge[index + 1], index + 1)
     }
 }
 
@@ -358,6 +383,8 @@ function getColor(status) {
 }
 
 function addHighlight(num, index) {
+    console.log("addhighlight"+num)
+    console.log("addhighlight"+index)
     const dotSvg = d3.select(`#knowledge-${index}`)
     const svg = d3.select(`#log-${index}`)
     const dots = dotSvg.selectAll(".kl")
@@ -484,6 +511,7 @@ function initKnowledge(index) {
     const radius = 2
     const margin = { top: 0, right: 10, bottom: 10, left: 10 }
     const dotSvg = d3.select(`#knowledge-${index}`)
+    dotSvg.selectAll('*').remove()
 
     const kdot = dotSvg.selectAll("g")
         .data(knowledge)
@@ -506,17 +534,17 @@ function initKnowledge(index) {
 
         // console.log(num)
 
-        if(selectedKnowledge == num) {
+        if(selectedKnowledge[index] == num) {
             removeHighlight(num, index);    //参数
-            selectedKnowledge = -1;
+            selectedKnowledge[index] = -1;
             return;
         }
 
-        if(selectedKnowledge != -1) {
-            removeHighlight(selectedKnowledge, index)
+        if(selectedKnowledge[index] != -1) {
+            removeHighlight(selectedKnowledge[index], index)
         }
         addHighlight(num, index)
-        selectedKnowledge = num;
+        selectedKnowledge[index] = num;
     }
 }
 function initLineChart(index) {
@@ -527,8 +555,10 @@ function initLineChart(index) {
     const height = cellHeight * knowledge.length ;
     const axis_color = "#b2bbbe"
 
+    // console.log("index" + index)
     const margin = { top: 10, right: 10, bottom: 10, left: 30 }
-    var lineData = getdata(knowledgeData[index])
+    var lineData = getdata(knowledgeData.get(cards[index]))
+    var meanData = meanLines.get(cards[index])
     console.log("linData"+lineData)
     function getdata(data) {
         var datda = data.datda
@@ -557,22 +587,21 @@ function initLineChart(index) {
     }
 
 
-    const svg = d3.select(`#line-${index}`)
-    //清空svg
-    svg.selectAll('*').remove()
-
-    const lineG = svg.append("g").attr("class", "line").attr("transform", `translate(${ margin.left}, ${margin.top})`)
-
     var x = d3.scaleLinear().range([0, width-margin.left-margin.right]).nice();
     var y = d3.scaleLinear().range([height-margin.top-margin.bottom, 0]).nice();
-    // x.domain([0, newDataset[0].length - 1]);
-    // y.domain([0, d3.max(newDataset.flat())]);
 
     var xAxis = d3.axisBottom(x).ticks(5).tickSizeOuter(0);
     var yAxis = d3.axisLeft(y).ticks(5).tickSizeOuter(0);
 
     //另一个轴
     var yy = d3.scaleLinear().range([height-margin.top-margin.bottom, 0]).nice();
+
+    const svg = d3.select(`#line-${index}`)
+    //清空svg
+    svg.selectAll('*').remove()
+    var lineG = svg.append("g").attr("class", "line").attr("transform", `translate(${ margin.left}, ${margin.top})`)
+
+
 
     // 添加x轴
     lineG.append("g")
@@ -644,25 +673,8 @@ function initLineChart(index) {
       .y(d => {/*console.log("yyyy"+y(d));*/ return y(d)})
       .curve(d3.curveBasis);
     
-      console.log("meanlines", meanLines[index])
+    //   console.log("meanlines", meanLines[index])
  
-
-    
-
-    // var nodes = []
-    // for(var i = 0; i < lineData.length; i ++){
-    //     nodes[i] = lineG.selectAll('.node')
-    //         .data(lineData[i])
-    //         .enter()
-    //         .append('circle')
-    //         .attr('class', 'node')
-    //         .attr('cx', d => x(d.x))
-    //         .attr('cy', d => y(d.y))
-    //         .attr('r', 2)
-    //         .attr('fill', 'white')
-    //         .attr('stroke', 'steelblue')
-    //         .attr('stroke-width', 2);
-    // }
     
 
     //添加面积
@@ -686,9 +698,9 @@ function initLineChart(index) {
         const allXValues = newDataset.flatMap(d => d.map(p => p.x));
         const allYValues = newDataset.flatMap(d => d.map(p => p.y));
         
-        console.log("meanlines", d3.max(meanLines[index]))
-        console.log("extent"+d3.extent(allXValues))
-        console.log("extent"+Math.max(d3.max(allYValues), d3.max(meanLines[index])))
+        // console.log("meanlines", d3.max(meanData))
+        // console.log("extent"+d3.extent(allXValues))
+        // console.log("extent"+Math.max(d3.max(allYValues), d3.max(meanLines[index])))
         // x.domain(d3.extent(allXValues));
         // y.domain(d3.extent(allYValues));
         x.domain(d3.extent(allXValues));
@@ -700,23 +712,23 @@ function initLineChart(index) {
         // 更新轴
         lineG.select(".x.axis")
             .transition()
-            .duration(500)
+            .duration(10)
             .call(xAxis);
 
         lineG.select(".y.axis")
             .transition()
-            .duration(500)
+            .duration(10)
             .call(yAxis);
 
         // 更新线条
         paths.data(newDataset)
             .transition()
-            .duration(500)
+            .duration(10)
             .attr("d", line);
 
         var meanPath = lineG
         .append("path")
-        .datum(meanLines[index])
+        .datum(meanData)
         .attr("class", "meanLine")
         .attr("fill", "none")
         .attr("stroke", "#FF0000") // 使用不同颜色
@@ -728,7 +740,7 @@ function initLineChart(index) {
     
         areas.data(newDataset)
             .transition()
-            .duration(500)
+            .duration(10)
             .attr("d", d3.area()
                 .x(function(d) { return x(d.x) })
                 .y0(yy(0))
