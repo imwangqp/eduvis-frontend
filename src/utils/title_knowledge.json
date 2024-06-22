@@ -1,344 +1,533 @@
 [
     {
+        "Knowledge": [
+            "r8S3g_l0p5viby"
+        ],
         "id": "Question_VgKw8PjY1FR6cm2QI9XW",
-        "knowledge": "r8S3g_l0p5viby",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.043802983650426446,
+                0,
+                0.9411534825796333
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "r8S3g_l0p5viby",
+            "r8S3g_n0m9rsw4"
+        ],
         "id": "Question_q7OpB2zCMmW9wS8uNt3H",
-        "knowledge": "r8S3g_n0m9rsw4",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.024619706773286967,
+                0,
+                0.8192601684142218
+            ],
+            [
+                0.024619706773286967,
+                0,
+                0.8192601684142218
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "r8S3g_n0m9rsw4"
+        ],
         "id": "Question_fZrP3FJ4ebUogW9V7taS",
-        "knowledge": "r8S3g_n0m9rsw4",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.02776453923232838,
+                0,
+                0.792891830725823
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "r8S3g_n0m9rsw4"
+        ],
         "id": "Question_BW0ItEaymH3TkD6S15JF",
-        "knowledge": "r8S3g_n0m9rsw4",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.03442578091922395,
+                0,
+                0.8077684476706797
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "r8S3g_n0m9rsw4"
+        ],
         "id": "Question_rvB9mVE6Kbd8jAY4NwPx",
-        "knowledge": "r8S3g_n0m9rsw4",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.05180475934856995,
+                0,
+                0.9501618218479168
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "t5V9e_e1k6cixp"
+        ],
         "id": "Question_3oPyUzDmQtcMfLpGZ0jW",
-        "knowledge": "t5V9e_e1k6cixp",
         "value": [
-            0,
-            0.5045093547137114,
-            1
+            [
+                0.061729207823459364,
+                0.7909426111954054,
+                1.322075308000385
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "t5V9e_e1k6cixp"
+        ],
         "id": "Question_3MwAFlmNO8EKrpY5zjUd",
-        "knowledge": "t5V9e_e1k6cixp",
         "value": [
-            0,
-            0.5136028342051594,
-            1
+            [
+                0.13418516316267753,
+                0.86954963983931,
+                1.4363379425321152
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "t5V9e_e1k6cixp"
+        ],
         "id": "Question_x2L7AqbMuTjCwPFy6vNr",
-        "knowledge": "t5V9e_e1k6cixp",
         "value": [
-            0,
-            0.5035814618517567,
-            1
+            [
+                0.10247978325477257,
+                0.862938308212563,
+                1.5265435551062028
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "t5V9e_e1k6cixp"
+        ],
         "id": "Question_tgOjrpZLw4RdVzQx85h6",
-        "knowledge": "t5V9e_e1k6cixp",
         "value": [
-            0,
-            0.5159983912459495,
-            1
+            [
+                0.0907693043557673,
+                0.8444392511918728,
+                1.4196945489338106
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "t5V9e_e1k6cixp"
+        ],
         "id": "Question_s6VmP1G4UbEQWRYHK9Fd",
-        "knowledge": "t5V9e_e1k6cixp",
         "value": [
-            0,
-            0.49789993259462123,
-            1
+            [
+                0.10031886372426708,
+                0.7883452663109315,
+                1.376385556247852
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_r1d7fr3l"
+        ],
         "id": "Question_h7pXNg80nJbw1C4kAPRm",
-        "knowledge": "m3D1v_r1d7fr3l",
         "value": [
-            0,
-            0.5497246676356341,
-            1
+            [
+                0.1117915469542761,
+                1.143633686483165,
+                1.73037284442442
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_r1d7fr3l"
+        ],
         "id": "Question_6RQj2gF3OeK5AmDvThUV",
-        "knowledge": "m3D1v_r1d7fr3l",
         "value": [
-            0,
-            0.3553203782927499,
-            1
+            [
+                0.14598169504278782,
+                0.7749674114698503,
+                1.931252880643572
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_r1d7fr3l"
+        ],
         "id": "Question_4nHcauCQ0Y6Pm8DgKlLo",
-        "knowledge": "m3D1v_r1d7fr3l",
         "value": [
-            0,
-            0.47897753717930963,
-            1
+            [
+                0.18295220447551908,
+                1.0894015409042155,
+                1.965630917144304
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_r1d7fr3l"
+        ],
         "id": "Question_TmKaGvfNoXYq4FZ2JrBu",
-        "knowledge": "m3D1v_r1d7fr3l",
         "value": [
-            0,
-            0.09641955928367944,
-            1
+            [
+                0.10341460694269197,
+                0.7325396298003162,
+                1.8045528690136745
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_r1d7fr3l"
+        ],
         "id": "Question_NixCn84GdK2tySa5rB1V",
-        "knowledge": "m3D1v_r1d7fr3l",
         "value": [
-            0,
-            0.3265990721640906,
-            1
+            [
+                0.12452715644528133,
+                0.6377271468093642,
+                1.9833928430868843
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_r1d7fr3l"
+        ],
         "id": "Question_n2BTxIGw1Mc3Zo6RLdUe",
-        "knowledge": "m3D1v_r1d7fr3l",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.10565724537683613,
+                0,
+                2.3270374209238764
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_v3d9is1x"
+        ],
         "id": "Question_7NJzCXUPcvQF4Mkfh9Wr",
-        "knowledge": "m3D1v_v3d9is1x",
         "value": [
-            0,
-            0.5334282949260823,
-            1
+            [
+                0.12882448652297693,
+                1.1281993850810912,
+                1.9870688805115835
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_v3d9is1x"
+        ],
         "id": "Question_ZTbD7mxr2OUp8Fz6iNjy",
-        "knowledge": "m3D1v_v3d9is1x",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.16276847101046688,
+                0,
+                2.7156298913122945
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_t0v5ts9h"
+        ],
         "id": "Question_Jr4Wz5jLqmN01KUwHa7g",
-        "knowledge": "m3D1v_t0v5ts9h",
         "value": [
-            0,
-            0.45705867596894123,
-            1
+            [
+                0.11529343994922768,
+                0.7976763424665051,
+                1.5682057140585006
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_r1d7fr3l",
+            "y9W5d_c0w4mj5h"
+        ],
         "id": "Question_QRm48lXxzdP7Tn1WgNOf",
-        "knowledge": "y9W5d_c0w4mj5h",
         "value": [
-            0,
-            0.5519909192809693,
-            1
+            [
+                0.20029085179348025,
+                1.1485229228973224,
+                1.9299980490032005
+            ],
+            [
+                0.20029085179348025,
+                1.1485229228973224,
+                1.9299980490032005
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "m3D1v_r1d7fr3l",
+            "y9W5d_c0w4mj5h"
+        ],
         "id": "Question_pVKXjZn0BkSwYcsa7C31",
-        "knowledge": "y9W5d_c0w4mj5h",
         "value": [
-            0,
-            0.3496153656505332,
-            1
+            [
+                0.10808683440925605,
+                0.7018836942026303,
+                1.7020952749998548
+            ],
+            [
+                0.10808683440925605,
+                0.7018836942026303,
+                1.7020952749998548
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "y9W5d_c0w4mj5h"
+        ],
         "id": "Question_Ej5mBw9rsOUKkFycGvz2",
-        "knowledge": "y9W5d_c0w4mj5h",
         "value": [
-            0,
-            0.49273509133253396,
-            1
+            [
+                0.12004008048545804,
+                1.0217464738628503,
+                1.8137467567032615
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "k4W1c_h5r6nux7",
+            "y9W5d_c0w4mj5h"
+        ],
         "id": "Question_lU2wvHSZq7m43xiVroBc",
-        "knowledge": "y9W5d_c0w4mj5h",
         "value": [
-            0,
-            0.47193053799500767,
-            1
+            [
+                0.1619741676274691,
+                1.0422670278192718,
+                1.890785245983133
+            ],
+            [
+                0.1619741676274691,
+                1.0422670278192718,
+                1.890785245983133
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "y9W5d_c0w4mj5h"
+        ],
         "id": "Question_Mh4CZIsrEfxkP1wXtOYV",
-        "knowledge": "y9W5d_c0w4mj5h",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.1222242485676885,
+                0,
+                2.5676127023349604
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "y9W5d_c0w4mj5h"
+        ],
         "id": "Question_62XbhBvJ8NUSnApgDL94",
-        "knowledge": "y9W5d_c0w4mj5h",
         "value": [
-            0,
-            0.20284422872520202,
-            1
+            [
+                0.1362588262308369,
+                1.3807719224347241,
+                2.09235542821374
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "s8Y2f_v4x8by9j",
+            "y9W5d_c0w4mj5h"
+        ],
         "id": "Question_x2Fy7rZ3SwYl9jMQkpOD",
-        "knowledge": "y9W5d_c0w4mj5h",
         "value": [
-            0,
-            0.22766223398064622,
-            1
+            [
+                0.11254792618450768,
+                0.9040373529286498,
+                1.8220857244052953
+            ],
+            [
+                0.11254792618450768,
+                0.9040373529286498,
+                1.8220857244052953
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "y9W5d_c0w4mj5h"
+        ],
         "id": "Question_UXqN1F7G3Sbldz02vZne",
-        "knowledge": "y9W5d_c0w4mj5h",
         "value": [
-            0,
-            0.35452150470438654,
-            1
+            [
+                0.2078265432765879,
+                1.0474401583239732,
+                2.058135044635081
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "y9W5d_p8g6dgtv"
+        ],
         "id": "Question_Ou3f2Wt9BqExm5DpN7Zk",
-        "knowledge": "y9W5d_p8g6dgtv",
         "value": [
-            0,
-            0.432696035353524,
-            1
+            [
+                0.12180432273083355,
+                0.985973760578235,
+                1.9799605636032538
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "y9W5d_p8g6dgtv"
+        ],
         "id": "Question_Az73sM0rHfWVKuc4X2kL",
-        "knowledge": "y9W5d_p8g6dgtv",
         "value": [
-            0,
-            0.44072754505780887,
-            1
+            [
+                0.17867527734354982,
+                1.0352964526272344,
+                1.9581308346599748
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "y9W5d_e2j7p95s"
+        ],
         "id": "Question_EhVPdmlB31M8WKGqL0wc",
-        "knowledge": "y9W5d_e2j7p95s",
         "value": [
-            0,
-            0.382226318728506,
-            1
+            [
+                0.16834769374750067,
+                0.8203925925482163,
+                1.9401837504137975
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "g7R2j_e0v1yls8",
+            "m3D1v_r1d7fr3l"
+        ],
         "id": "Question_oCjnFLbIs4Uxwek9rBpu",
-        "knowledge": "g7R2j_e0v1yls8",
         "value": [
-            0,
-            0.4027852490082491,
-            1
+            [
+                0.13805439387181087,
+                1.010820729113062,
+                1.9405045171425885
+            ],
+            [
+                0.13805439387181087,
+                1.010820729113062,
+                1.9405045171425885
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "g7R2j_e0v1yls8"
+        ],
         "id": "Question_5fgqjSBwTPG7KUV3it6O",
-        "knowledge": "g7R2j_e0v1yls8",
         "value": [
-            0,
-            0.34100701260503097,
-            1
+            [
+                0.19550310023133366,
+                0.8409365509221952,
+                1.6751676870726533
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "g7R2j_e0v1yls8"
+        ],
         "id": "Question_X3wF8QlTyi4mZkDp9Kae",
-        "knowledge": "g7R2j_e0v1yls8",
         "value": [
-            0,
-            0.49879882077277843,
-            1
+            [
+                0.13054897562777376,
+                1.0215113339238355,
+                1.905565084032946
+            ]
         ]
     },
+
     {
+        "Knowledge": [
+            "g7R2j_j1g8gd3v"
+        ],
         "id": "Question_YWXHr4G6Cl7bEm9iF2kQ",
-        "knowledge": "g7R2j_j1g8gd3v",
         "value": [
-            0,
-            0.6481079840938788,
-            1
+            [
+                0.14103555296003745,
+                1.3904533261339727,
+                2.18591432900948
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "g7R2j_e0v1yls8"
+        ],
         "id": "Question_xqlJkmRaP0otZcX4fK3W",
-        "knowledge": "g7R2j_e0v1yls8",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.09647354449469667,
+                0,
+                2.6024971259652743
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "b3C9s_l4z6od7y"
+        ],
         "id": "Question_bumGRTJ0c8p4v5D6eHZa",
-        "knowledge": "b3C9s_l4z6od7y",
         "value": [
-            0,
-            0.5288262121635273,
-            1
+            [
+                0.1472075849134832,
+                1.0941963363230212,
+                2.040598724118687
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "b3C9s_l4z6od7y"
+        ],
         "id": "Question_hZ5wXofebmTlzKB1jNcP",
-        "knowledge": "b3C9s_l4z6od7y",
         "value": [
-            0,
-            0,
-            1
+            [
+                0.15236407810192765,
+                0,
+                2.7210688567396777
+            ]
         ]
     },
     {
+        "Knowledge": [
+            "b3C9s_j0v1yls8"
+        ],
         "id": "Question_FNg8X9v5zcbB1tQrxHR3",
-        "knowledge": "b3C9s_j0v1yls8",
         "value": [
-            0,
-            0.5029063466359059,
-            1
+            [
+                0.21364847650402946,
+                1.45481340639874,
+                2.646103793391592
+            ]
         ]
     }
 ]

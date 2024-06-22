@@ -9,14 +9,6 @@ export function getKnowledgeColor(k){
         return "#FFFFFF"
 }
 
-
-
-
-
-
-
-
-
 export const titleColorList = ['#b3e2cd', '#fdcdac', '#cbd5e8', '#f4cae4', '#e6f5c9', '#fff2ae', '#f1e2cc', '#cccccc']
 export const circleColorList = ['red', 'blue']
 export const clusterColorList = ['#CCB98D', '#2F474D', '#8DC1CC']

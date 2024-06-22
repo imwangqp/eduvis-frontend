@@ -6,6 +6,7 @@ import {clusterColorList, CommonColor, getKnowledgeColor, titleColorList} from "
 import _ from 'lodash'
 import store from "@/store/index.js";
 import emitter from "@/utils/mitt.js";
+import axios from "axios";
 
 const clusters=[0,1,2]
 
@@ -128,6 +129,7 @@ const modeRef = ref()
 
 onMounted(()=>{
   emitter.on('detail', detail=>{
+    console.log(detail)
     initChart(detail)
   })
 })
@@ -136,9 +138,8 @@ function initChart(detail){
   // console.log(detail)
   size.masteryMax=_.max([_.max(detail[0]['detail']['mastery']), _.max(detail[0]['detail']['mastery']), _.max(detail[0]['detail']['mastery'])])
   size.countMax=_.max([d3.max(detail[0]['detail']['key_detail'], d=>d.count), d3.max(detail[1]['detail']['key_detail'], d=>d.count), d3.max(detail[1]['detail']['key_detail'], d=>d.count)])
-  size.width=modeRef.value[0].clientWidth
+  size.width=modeRef.value[0].clientWidth - 20
   size.height=size.areaHeight+size.chartInterval*4+size.radarHeight*2
-  console.log(modeRef.value[0].clientWidth)
   _.forEach(detail, (item ,index)=>{
     const svg = d3.select(`#cluster-feature-${index}`)
         .append('svg')
@@ -203,7 +204,13 @@ function initAreaChart(group, data){
       .attr('stroke', CommonColor.Master)
       .attr('stroke-width', 2)
 
+  group.append('g')
+      .attr('transform', `translate(0,${size.areaHeight})`)
+      .attr('class', 'xAxis')
+      .call(d3.axisBottom(xScale).tickSize(0).tickFormat(''))
 
+  group.selectAll('.xAxis')
+      .style('stroke', '#ccc')
 }
 
 function initRadarChart(group, data) {
@@ -213,11 +220,12 @@ function initRadarChart(group, data) {
       .enter()
       .append('g')
       .attr('id', (d, i)=>`radar-${i}`)
-      .attr('transform', (d, i) => `translate(${(size.width-12)/2*i-radarWidth/2*i}, 0)`)
+      .attr('transform', (d, i) => `translate(${(size.width-12)/2*i-radarWidth/2*i+4}, 0)`)
   _.forEach(new Array(3).fill(0), (d, i) => {
     const dataSlice = _.filter(data['key_detail'], {'index': i})
     const correctScale = d3.scaleLinear([0,1], [size.radarOuterRadius, size.radarHeight]),
-        countScale = d3.scaleLog([0+1, size.countMax+1], [size.radarOuterRadius, size.radarInner])
+        countScale = d3.scaleLinear([0, size.countMax], [size.radarOuterRadius,size.radarInner])
+        // countScale = d3.scaleLog([0+1, size.countMax+1], [size.radarOuterRadius, size.radarInner])
     const item = d3.select(`#${group.attr('id')} > #radar-${i}`)
         item.append('g')
             .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
@@ -243,21 +251,39 @@ function initRadarChart(group, data) {
         .enter()
         .append("path")
         .attr("d", (d, i) => {
-          // console.log(d['count'])
           const center = [0, 0];
-          return octagonPath(center, i, countScale(d['count']+1));
+          return octagonPath(center, i, countScale(d['count']));
         })
         .attr('fill', (d, i)=>titleColorList[i])
-        // .style("stroke", "#999")
+        .on('mouseover', (event, d) => {
+          const tooltip=d3.select('.tool-tip')
+          tooltip.html(
+              `<div class="tool-tip-line"><span class="tool-tip-title">知识点：</span>${dataSlice[0]['knowledge']}&nbsp;&nbsp;<span class="tool-tip-title">数量：</span>${dataSlice[0]['count']}&nbsp;&nbsp;<span class="tool-tip-title">正确率：</span>${(dataSlice[0]['correctness']*100).toFixed(2)}%</div>
+                <div class="tool-tip-line"><span class="tool-tip-title">知识点：</span>${dataSlice[1]['knowledge']}&nbsp;&nbsp;<span class="tool-tip-title">数量：</span>${dataSlice[1]['count']}&nbsp;&nbsp;<span class="tool-tip-title">正确率：</span>${(dataSlice[1]['correctness']*100).toFixed(2)}%</div>
+                <div class="tool-tip-line"><span class="tool-tip-title">知识点：</span>${dataSlice[2]['knowledge']}&nbsp;&nbsp;<span class="tool-tip-title">数量：</span>${dataSlice[2]['count']}&nbsp;&nbsp;<span class="tool-tip-title">正确率：</span>${(dataSlice[2]['correctness']*100).toFixed(2)}%</div>
+                <div class="tool-tip-line"><span class="tool-tip-title">知识点：</span>${dataSlice[3]['knowledge']}&nbsp;&nbsp;<span class="tool-tip-title">数量：</span>${dataSlice[3]['count']}&nbsp;&nbsp;<span class="tool-tip-title">正确率：</span>${(dataSlice[3]['correctness']*100).toFixed(2)}%</div>
+                <div class="tool-tip-line"><span class="tool-tip-title">知识点：</span>${dataSlice[4]['knowledge']}&nbsp;&nbsp;<span class="tool-tip-title">数量：</span>${dataSlice[4]['count']}&nbsp;&nbsp;<span class="tool-tip-title">正确率：</span>${(dataSlice[4]['correctness']*100).toFixed(2)}%</div>
+                <div class="tool-tip-line"><span class="tool-tip-title">知识点：</span>${dataSlice[5]['knowledge']}&nbsp;&nbsp;<span class="tool-tip-title">数量：</span>${dataSlice[5]['count']}&nbsp;&nbsp;<span class="tool-tip-title">正确率：</span>${(dataSlice[5]['correctness']*100).toFixed(2)}%</div>
+                <div class="tool-tip-line"><span class="tool-tip-title">知识点：</span>${dataSlice[6]['knowledge']}&nbsp;&nbsp;<span class="tool-tip-title">数量：</span>${dataSlice[6]['count']}&nbsp;&nbsp;<span class="tool-tip-title">正确率：</span>${(dataSlice[6]['correctness']*100).toFixed(2)}%</div>
+                <div class="tool-tip-line"><span class="tool-tip-title">知识点：</span>${dataSlice[7]['knowledge']}&nbsp;&nbsp;<span class="tool-tip-title">数量：</span>${dataSlice[7]['count']}&nbsp;&nbsp;<span class="tool-tip-title">正确率：</span>${(dataSlice[7]['correctness']*100).toFixed(2)}%</div>
+              `)
+              .style('visibility', 'visible')
+              .style('left', `${event.pageX + 5}px`)
+              .style('top', `${event.pageY + 5}px`)
+              .style('width', '300px')
+        })
+        .on('mouseout', d => {
+          d3.select('.tool-tip').style('visibility', 'hidden');
+        })
   })
 }
 
 </script>
 
 <template>
-  <div>
+  <div class="scroll-auto" style="height: 40%">
     <div ref="modeRef" class="w-full chart-subcomponent" v-for="i in clusters" :id='`cluster-feature-${i}`'>
-      <div style="text-align: left"><span class="cluster-icon" :style="{backgroundColor: clusterColorList[i]}"></span> 簇 # {{(i+1)}}</div>
+      <div style="text-align: left; overflow:auto;"><span class="cluster-icon" :style="{backgroundColor: clusterColorList[i]}"></span> 簇 # {{(i+1)}}</div>
     </div>
   </div>
 </template>
@@ -268,5 +294,8 @@ function initRadarChart(group, data) {
   height: 14px;
   border-radius: 50%;
   display: inline-block;
+}
+.area-axis{
+  stroke: #888892;
 }
 </style>

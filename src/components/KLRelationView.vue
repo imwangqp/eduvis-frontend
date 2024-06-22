@@ -144,7 +144,12 @@ function initChart(data) {
           d3.select('#' + event['target']['id'])
               .attr('r', bubbleSize * 2)
           const tooltip=d3.select('.tool-tip')
-          tooltip.html(`<div>ID：${d.id}</div><div>性别：${data.gender==='male'?'男':'女'}</div><div>年龄：${data.gender}</div><div>专业：${data.gender}</div>`)
+          tooltip.html(
+              `<div class="tool-tip-line"><span class="tool-tip-title">ID：</span>${d.id}</div>
+              <div class="tool-tip-line"><span class="tool-tip-title">性别：</span>${data.gender==='male'?'男':'女'}</div>
+              <div class="tool-tip-line"><span class="tool-tip-title">年龄：</span>${data.age}</div>
+              <div class="tool-tip-line"><span class="tool-tip-title">专业：</span>${data.major}</div>
+              `)
               .style('visibility', 'visible')
               .style('left', `${event.pageX + 5}px`)
               .style('top', `${event.pageY + 5}px`)

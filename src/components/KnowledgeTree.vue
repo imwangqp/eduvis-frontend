@@ -1,7 +1,7 @@
 <script setup>
 import * as d3 from 'd3'
 import { ref, onMounted, watch, nextTick} from 'vue'
-import {getKnowledgeColor} from '../utils/getColor.js'
+import {getKnowledgeColor, titleColorList} from '../utils/getColor.js'
 import titleInfo from './titleInfo.vue'
 // import title_studentInfoData from '../utils/title_studentInfo.json'
 import title_knowledge from '../utils/title_knowledge.json'
@@ -170,7 +170,7 @@ const drawGraph = () => {
 
     const svg = d3.select(graphRef.value)
         .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
+        .attr('height', 2000)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`)
 
@@ -344,21 +344,21 @@ const drawGraph = () => {
         .attr('stroke', d => {
             if(d.group === 2){
                 if(d.id === 'r8S3g_l0p5viby' || d.id === 'r8S3g_n0m9rsw4')
-                    return '#fbb4ae'
-                else if(d.id === 't5V9e_e1k6cixp')
-                    return '#b3cde3'
-                else if(d.id === 'm3D1v_r1d7fr3l' || d.id === 'm3D1v_v3d9is1x' || d.id === 'm3D1v_t0v5ts9h')
-                    return '#ccebc5'
-                else if(d.id === 's8Y2f_v4x8by9j')
-                    return '#decbe4'
-                else if(d.id === 'k4W1c_h5r6nux7')
-                    return '#fed9a6'
-                else if(d.id === 'g7R2j_e0v1yls8' || d.id === 'g7R2j_j1g8gd3v')
                     return '#b3e2cd'
+                else if(d.id === 't5V9e_e1k6cixp')
+                    return '#fdcdac'
+                else if(d.id === 'm3D1v_r1d7fr3l' || d.id === 'm3D1v_v3d9is1x' || d.id === 'm3D1v_t0v5ts9h')
+                    return '#cbd5e8'
+                else if(d.id === 's8Y2f_v4x8by9j')
+                    return '#f4cae4'
+                else if(d.id === 'k4W1c_h5r6nux7')
+                    return '#e6f5c9'
+                else if(d.id === 'g7R2j_e0v1yls8' || d.id === 'g7R2j_j1g8gd3v')
+                    return '#fff2ae'
                 else if(d.id === 'b3C9s_l4z6od7y' || d.id === 'b3C9s_j0v1yls8')
-                    return '#e5d8bd'
+                    return '#f1e2cc'
                 else if(d.id === 'y9W5d_c0w4mj5h' || d.id === 'y9W5d_p8g6dgtv' || d.id === 'y9W5d_e2j7p95s')
-                    return '#fddaec'
+                    return '#cccccc'
             }
         })
         .attr('stroke-width', d => {
@@ -510,21 +510,13 @@ const drawGraph = () => {
         const bar = rightSide.append('g')
                 .attr('transform',`translate(${x},${y})`)
         
-        const colorMap = {
-            'r8S3g': '#fbb4ae',
-            't5V9e': '#b3cde3',
-            'm3D1v': '#ccebc5',
-            's8Y2f': '#decbe4',
-            'k4W1c': '#fed9a6',
-            'g7R2j': '#b3e2cd',
-            'b3C9s': '#e5d8bd',
-            'y9W5d': '#fddaec'
-        };
+        const colorMap = titleColorList;
             
-        const firstknowledgePrefix = d.knowledge[0].slice(0,5)
-        const secondknowledgePrefix = d.knowledge[1] ? d.knowledge[1].slice(0,5) : null
-        const firstcolor = colorMap[firstknowledgePrefix]
-        const secondcolor = secondknowledgePrefix ? colorMap[secondknowledgePrefix] : null
+        const firstknowledgePrefix = d.Knowledge[0].slice(0,5)
+        const secondknowledgePrefix = d.Knowledge[1] ? d.Knowledge[1].slice(0,5) : null
+      console.log(firstknowledgePrefix)
+        const firstcolor = getKnowledgeColor(firstknowledgePrefix)
+        const secondcolor = secondknowledgePrefix ? getKnowledgeColor(secondknowledgePrefix) : null
          
         const maxHeight = 30
         //题目对应一个知识点
@@ -540,9 +532,10 @@ const drawGraph = () => {
                     return x
                 })
                 .attr('y', d => maxHeight - barYscale(d))
-                .attr('width', barWidth)
+                .attr('width', barWidth*2)
                 .attr('height', d => barYscale(d))
                 .attr('fill', d => {
+                  console.log(d)
                     return firstcolor
                 })
             
@@ -587,6 +580,7 @@ const drawGraph = () => {
             const secondpoints = []
             d.value.forEach((v, j) => {
                 v.forEach((value, k) => {
+                  console.log(d)
                     bar.append('rect')
                         .attr('x', d => {
                             const x = k * (barWidth + barPadding) + 20 + (j === 1 ? 12 : 0)
@@ -599,7 +593,7 @@ const drawGraph = () => {
                             return x
                         })
                         .attr('y', maxHeight - barYscale(value))
-                        .attr('width', barWidth * 0.5)
+                        .attr('width', d.value.length===2?barWidth * 0.5:barWidth)
                         .attr('height', barYscale(value))
                         .attr('fill', j === 0 ? firstcolor : secondcolor)
                 })
@@ -643,7 +637,7 @@ const drawGraph = () => {
                         const element = d3.select(d.srcElement)
                         //const circle = bar.selectAll('circle')  
                         if(element.attr('stroke') === '#d0d0d0'){
-                            element.attr('stroke','#9e9e9e')
+                            element.attr('stroke','#fdc086')
                             //console.log(element)
                             if(d.srcElement.id === 'first'){
                                 console.log('first')
@@ -699,7 +693,7 @@ onMounted(() => {
 
 <template>
   <div class="w-full h-full flex">
-    <div class="overflow-scroll" style="flex: 6" ref="graphDiv" id="graphDiv">
+    <div class="overflow-y-scroll" style="flex: 6" ref="graphDiv" id="graphDiv">
       <svg ref="graphRef"></svg>
     </div>
     <div style="flex: 4" class="h-full" ref="tableRef">

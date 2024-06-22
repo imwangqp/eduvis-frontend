@@ -55,4 +55,16 @@ body {
   z-index: 10;
   visibility: hidden;
   color: #242424;
+  font-size: 13px;
+}
+
+.tool-tip-title{
+  font-weight: bold;
+}
+
+.tool-tip-content{
+}
+
+.tool-tip-line{
+  text-align: left;
 }

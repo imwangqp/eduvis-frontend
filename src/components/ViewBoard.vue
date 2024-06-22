@@ -26,7 +26,7 @@ import * as d3 from "d3";
       <div class="col-span-3">
         <KLRelationView />
       </div>
-      <div class="col-span-2">
+      <div class="col-span-2" style="height: 100%;">
         <StudyMode />
       </div> <!-- 绿色部分，flex-grow值为4 -->
 <!--      <div class="flex-grow-6">-->

@@ -44,10 +44,9 @@ const drawGlyph = () => {
             .attr('fill', getKnowledgeColor(d.name))
             // .attr('stroke', '#ccc')
             .attr('stroke-width', 1.3)
-            .on('mouseover', function(event, d) {
-
+            .on('mouseover', function(event, dd) {
               const tooltip=d3.select('.tool-tip')
-              tooltip.html(`<div>知识点：${d.name}</div><div>正确率：${d.value.toFixed(2)}</div>`)
+              tooltip.html(`<div class="tool-tip-line"><span class="tool-tip-title">知识点：</span><span class="tool-tip-content">${d.name}</span></div><div class="tool-tip-line"><span class="tool-tip-title">正确率：</span><span class="tool-tip-content">${d.value.toFixed(2)}</span></div>`)
                   .style('visibility', 'visible')
                   .style('left', `${event.pageX + 5}px`)
                   .style('top', `${event.pageY + 5}px`)
