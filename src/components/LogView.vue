@@ -56,9 +56,9 @@
       </div>
     </div>
 
-    <div class="tooltip">
-      <!-- <span class="tooltipText"> {{ content }} </span> -->
-    </div>
+<!--    <div class="tooltip">-->
+<!--      &lt;!&ndash; <span class="tooltipText"> {{ content }} </span> &ndash;&gt;-->
+<!--    </div>-->
   </div>
 
 </template>
@@ -830,8 +830,7 @@ function initLog(index) {
   //     .attr("class", "tooltip")
   //     .style("opacity", 0.9);
 
-  const tooltip = d3.select(".tooltip")
-      .style("opacity", 0)
+  const tooltip = d3.select(".tool-tip")
 
   function handleMouseOver(event, d) {
     if (d.log == null)
@@ -844,20 +843,22 @@ function initLog(index) {
 
     tooltip.transition()
         .duration(200)
-        .style("opacity", 0.8);
+        // .style("opacity", 0.8);
 
     console.log(event.pageX)
     console.log(d3.pointer(event)[1])
     tooltip.html(`${d.log.status}: ${d.log.score}`)
-        .style("left", (event.pageX) + "px")
-        .style("top", (event.pageY) + "px");
+        .style('visibility', 'visible')
+        .style("left", (event.pageX)+5 + "px")
+        .style("top", (event.pageY)+5 + "px");
   }
 
   function handleMouseOut() {
     d3.select(this).style("filter", null)
-    tooltip.transition()
-        .duration(500)
-        .style("opacity", 0);
+    // tooltip.transition()
+    //     .duration(500)
+    //     .style("opacity", 0);
+    d3.select('.tool-tip').style('visibility', 'hidden');
   }
 
 }

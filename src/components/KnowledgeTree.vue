@@ -358,7 +358,7 @@ const drawGraph = () => {
                 else if(d.id === 'b3C9s_l4z6od7y' || d.id === 'b3C9s_j0v1yls8')
                     return '#f1e2cc'
                 else if(d.id === 'y9W5d_c0w4mj5h' || d.id === 'y9W5d_p8g6dgtv' || d.id === 'y9W5d_e2j7p95s')
-                    return '#cccccc'
+                    return '#fed9a6'
             }
         })
         .attr('stroke-width', d => {
@@ -368,9 +368,9 @@ const drawGraph = () => {
         })
     
     svg.selectAll('rect.question')
-        .attr('fill', '#c0c0c0')
+        .attr('fill', 'none')
         .attr('stroke', '#c0c0c0')
-        .attr('stroke-width', 2)
+        .attr('stroke-width', 3)
         .on('click', (d, item) => {
           axios.post('/api/getMasteryByTitle', {'id': item['id']}).then(res=>{
             tableData.value = res.data.data
@@ -415,8 +415,8 @@ const drawGraph = () => {
             }
         });
 
-    node.append('title')
-        .text(d => d.id)
+    // node.append('title')
+    //     .text(d => d.id)
 
     const rightSide = svg.append('g')
         .attr('transform',`translate(${width * 0.5 + margin.left},${margin.top})`)
