@@ -22,11 +22,11 @@ import * as d3 from "d3";
       <LogView class="chart-subcomponent"></LogView>
 <!--      -->
     </div>
-    <div class="row-span-5 chart-component grid grid-cols-5">
+    <div class="row-span-5 col-span-1 chart-component grid grid-cols-5">
       <div class="col-span-3">
         <KLRelationView />
       </div>
-      <div class="col-span-2">
+      <div class="col-span-2" style="height: 100%;">
         <StudyMode />
       </div> <!-- 绿色部分，flex-grow值为4 -->
 <!--      <div class="flex-grow-6">-->
@@ -49,8 +49,8 @@ import * as d3 from "d3";
   height: 100vh;
   width: 100%;
   display: grid;
-  grid-template-rows: 2rem repeat(8, 1fr); /* 第一行的高度为20px，其余的行平均分配剩余空间 */
-  grid-template-columns: 5fr 4fr; /* 两列平均分配空间 */
+  grid-template-rows: 2rem repeat(8, 1fr);    
+  grid-template-columns: 5fr 4fr;   
 }
 
 .view-title{

@@ -104,6 +104,7 @@ var signal = ref(0)
 var tempIds = []
 var meanLines = new Map();
 var knowledgeData = new Map();
+var outLineX = ref(-1)
 
 onMounted(()=>{
     console.log("store"+JSON.stringify(store.getters.getId))
@@ -171,7 +172,7 @@ onMounted(()=>{
                     initLineChart(newId)
                 })
                 .catch(error => {
-                console.log(error)
+                    console.log(error)
                 })
             })
             .catch(error => {
@@ -382,9 +383,16 @@ function getColor(status) {
     return "#F19292"; 
 }
 
+// function addOutLine(index, data){
+//     const lineSvg = d3.select(`#line-${index}`)
+//     const lines = lineSvg.selectAll(".outLine");
+//     var outLineData = [[data, 0], [data, 1]]
+//     lines.d
+// }
+
 function addHighlight(num, index) {
-    console.log("addhighlight"+num)
-    console.log("addhighlight"+index)
+    // console.log("addhighlight"+num)
+    // console.log("addhighlight"+index)
     const dotSvg = d3.select(`#knowledge-${index}`)
     const svg = d3.select(`#log-${index}`)
     const dots = dotSvg.selectAll(".kl")
@@ -410,16 +418,7 @@ function addHighlight(num, index) {
     rects.filter((d, i) => d.xx !== num)
     .attr("filter", "url(#blur)")
     .attr("opacity", 0.5);
-    
 
-    //突出显示
-    // const box = d3.selectAll("rect")
-    // .filter(function() {
-    //     return d3.select(this).style("opacity") == "0";
-    // });
-    // const box = d3.select("body").selectAll("rect:empty");
-    // const box = d3.selectAll(".box")
-    // box.filter((d, i) => i === index).attr("opacity", "1")
 
     const shadowFilter = svg.append("filter")
     .attr("id", "shadowFilter")
@@ -589,6 +588,11 @@ function initLineChart(index) {
 
     var x = d3.scaleLinear().range([0, width-margin.left-margin.right]).nice();
     var y = d3.scaleLinear().range([height-margin.top-margin.bottom, 0]).nice();
+    const allXValues = lineData.flatMap(d => d.map(p => p.x));
+    const allYValues = lineData.flatMap(d => d.map(p => p.y));
+        
+    x.domain(d3.extent(allXValues));
+    y.domain([0, 1]);
 
     var xAxis = d3.axisBottom(x).ticks(5).tickSizeOuter(0);
     var yAxis = d3.axisLeft(y).ticks(5).tickSizeOuter(0);
@@ -656,6 +660,15 @@ function initLineChart(index) {
       .curve(d3.curveBasis);
      // .curve(d3.curveCardinal);
 
+    let lines = [
+        [20, 0],
+        [20, 1]
+    ]
+    let linePath = d3.line()
+        .x((d) => {console.log("xxxxxx"+d[0]) ;return x(d[0])})
+        .y((d) =>{console.log("yyyyyyy"+d[1]) ;return y(d[1])});
+
+
     // 添加多条线
     var paths = lineG.selectAll(".brokenLine")
         .data(lineData)
@@ -673,9 +686,6 @@ function initLineChart(index) {
       .y(d => {/*console.log("yyyy"+y(d));*/ return y(d)})
       .curve(d3.curveBasis);
     
-    //   console.log("meanlines", meanLines[index])
- 
-    
 
     //添加面积
     var areas = lineG.selectAll(".area")
@@ -692,17 +702,14 @@ function initLineChart(index) {
             .curve(d3.curveBasis)
         )
 
+    var outline
+
      // 更新函数
     function updateChart(newDataset) {
         // 更新比例尺的域
         const allXValues = newDataset.flatMap(d => d.map(p => p.x));
         const allYValues = newDataset.flatMap(d => d.map(p => p.y));
         
-        // console.log("meanlines", d3.max(meanData))
-        // console.log("extent"+d3.extent(allXValues))
-        // console.log("extent"+Math.max(d3.max(allYValues), d3.max(meanLines[index])))
-        // x.domain(d3.extent(allXValues));
-        // y.domain(d3.extent(allYValues));
         x.domain(d3.extent(allXValues));
         y.domain([0, 1]);
         // y.domain([0, d3.max(allYValues)]);
@@ -725,6 +732,7 @@ function initLineChart(index) {
             .transition()
             .duration(10)
             .attr("d", line);
+     
 
         var meanPath = lineG
         .append("path")
@@ -734,6 +742,20 @@ function initLineChart(index) {
         .attr("stroke", "#FF0000") // 使用不同颜色
         .attr("stroke-width", lineWidth)
         .attr("d", line2);
+
+
+        outline = lineG
+        // .selectAll(".outLine")
+        // .data(lines)
+        // .enter()
+        .append('path')
+        .attr("class", "outLine")
+        .attr('d', linePath(lines))
+        .attr('stroke', 'red')
+        .attr('stroke-width', "2px");
+
+
+        outline.attr("stroke", null)
 
         paths.attr("stroke", null)
 
@@ -752,7 +774,24 @@ function initLineChart(index) {
     }
 
     updateChart(lineData)
+
+    watch(outLineX,(New, Old)=>{
+        if(New == -1) {
+            outline.attr("stroke", null)
+            return
+        }
+        console.log(`新值:${New} ——— 老值:${Old}`)
+        lines = [
+            [New, 0],
+            [New, 1]
+        ]
+        outline.attr('d', linePath(lines))
+        .attr('stroke', 'gray').
+        attr("stroke-width", "1px")
+    })
 }
+
+
 
 function initLog(index) {
     var logData = data.get(cards[index])
@@ -841,7 +880,14 @@ function initLog(index) {
         if(selectedKnowledge[index] != -1 && selectedKnowledge[index] != d.xx)
             return;
 
+        if(selectedKnowledge[index] == d.xx) {
+            var data = d3.select(this).datum().yy
+            console.log("datxxxxxxxxxx"+data)
+            outLineX.value = data
+        }
+
         d3.select(this).style("filter", "drop-shadow(3px 3px 3px #B8B8B8)")
+        
 
         tooltip.transition()
             .duration(200)
@@ -855,6 +901,13 @@ function initLog(index) {
     }
 
     function handleMouseOut() {
+        // if(selectedKnowledge[index] == d.xx) {
+        //     var data = d3.select(this).datum().yy
+        //     console.log("datxxxxxxxxxx"+data)
+            
+        // }
+        outLineX.value = -1
+
         d3.select(this).style("filter", null)
         tooltip.transition()
             .duration(500)

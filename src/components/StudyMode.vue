@@ -6,6 +6,7 @@ import {clusterColorList, CommonColor, getKnowledgeColor, titleColorList} from "
 import _ from 'lodash'
 import store from "@/store/index.js";
 import emitter from "@/utils/mitt.js";
+import sample_data from '../assets/data.json'
 
 const clusters=[0,1,2]
 
@@ -127,9 +128,10 @@ const circleData = [
 const modeRef = ref()
 
 onMounted(()=>{
-  emitter.on('detail', detail=>{
-    initChart(detail)
-  })
+  initChart(sample_data)
+  // emitter.on('detail', detail=>{
+  //   initChart(detail)
+  // })
 })
 
 function initChart(detail){
@@ -255,14 +257,21 @@ function initRadarChart(group, data) {
 </script>
 
 <template>
-  <div>
-    <div ref="modeRef" class="w-full chart-subcomponent" v-for="i in clusters" :id='`cluster-feature-${i}`'>
-      <div style="text-align: left"><span class="cluster-icon" :style="{backgroundColor: clusterColorList[i]}"></span> 簇 # {{(i+1)}}</div>
+  <div class="overflow-scroll container" style="height: 40%;">
+    <div ref="modeRef" class="w-full chart-subcomponent" v-for="i in clusters" :key="i" :id='`cluster-feature-${i}`'>
+      <div style="text-align: left">
+        <span class="cluster-icon" :style="{backgroundColor: clusterColorList[i]}">
+        </span> 簇 # {{(i+1)}}
+      </div>
     </div>
+    <!-- <div style="width:50px;height:1000px;border:1px solid #000;">This is a rectangle!</div> -->
   </div>
 </template>
 
 <style scoped>
+.container::-webkit-scrollbar {
+    display: none;
+}
 .cluster-icon{
   width: 14px;
   height: 14px;
