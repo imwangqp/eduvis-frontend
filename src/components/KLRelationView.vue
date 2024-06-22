@@ -12,6 +12,7 @@ import axios from "axios";
 import {clusterColorList, CommonColor} from "@/utils/getColor.js";
 import emitter from '../utils/mitt'
 import store from "@/store/index.js";
+import sample_data from '../assets/data.json'
 
 
 
@@ -51,10 +52,15 @@ let data = [{
 }]
 
 onMounted(() => {
-  axios.get('/api/getStudyModeScatter').then(res => {
-    initChart(res.data.scatter)
-    emitter.emit('detail', res.data.detail)
-  })
+  // initChart(sample_data)
+  // axios.get('/api/getStudyModeScatter').then(res => {
+  //   initChart(res.data.scatter)
+    
+  //   emitter.emit('detail', res.data.detail)
+  // })
+  // .catch(error => {
+  //             console.log(error)
+  // })
   // initClusterBarChart(data)
 })
 
